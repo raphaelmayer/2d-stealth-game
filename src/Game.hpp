@@ -130,15 +130,19 @@ class Game : public Engine {
 		RigidBody &c = ecs.getComponent<RigidBody>(e);
 		//c.endPosition = {16 * TILE_SIZE, 6 * TILE_SIZE};
 		//c.isMoving = true;
+		
+		// This was/is for the custom BT implementation 
 		//auto moveToNode = std::make_unique<MoveToNode>();
 		//auto btree = std::make_shared<BehaviorTree>(std::move(moveToNode));
 		//AI aiComp{Blackboard(ecs, e)};
 		//aiComp.targetPosition = {16 * TILE_SIZE, 6 * TILE_SIZE};
 		////aiComp.behaviorTree = btree;
-		Vision vision;
-		//
 		//ecs.addComponent<AI>(e, aiComp);
+		
+		Vision vision;
+		AI ai;
 		ecs.addComponent<Vision>(e, vision);
+		ecs.addComponent<AI>(e, ai);
 	}
 
 	SDL_Texture *spritesheet;

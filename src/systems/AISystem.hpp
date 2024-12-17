@@ -27,7 +27,7 @@ class AISystem final : public System {
 
 		perceptionSystem.update(ecs, deltaTime);
 
-		// Update state machine for high-level decisions
+		// Update state machine for high-level decisions (currently done within the loop down below)
 		// stateMachine.updateState(ecs, entity, deltaTime);
 		
 		// act
@@ -39,15 +39,15 @@ class AISystem final : public System {
 					
 					updateState(ai, vision, deltaTime);
 
-					ai.blackboard.deltaTime = deltaTime;
+					// ai.blackboard.deltaTime = deltaTime;
 
 					switch (ai.state) {
 					case AIState::Unaware:
-							ubt.tick(ai.blackboard);
+							// ubt.tick(ai.blackboard);
 							break;
 
 						case AIState::Detecting:
-							dbt.tick(ai.blackboard);
+							// dbt.tick(ai.blackboard);
 							break;
 
 						case AIState::Searching:

@@ -1,6 +1,7 @@
 #define CATCH_CONFIG_MAIN
 
-#include "behaviortree/BehaviorTree.test.hpp"
+// These tests currently do not work as we switch to a BT library
+// #include "behaviortree/BehaviorTree.test.hpp"
 #include "ecs/ECSManager.test.cpp"
 #include "ecs/Registry.test.cpp"
 #include "engine/Vec2d.test.cpp" 

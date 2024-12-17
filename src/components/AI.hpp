@@ -17,10 +17,11 @@ struct AI {
 	std::vector<Vec2d> path = {};							// Current path to the target
 	Vec2d targetPosition;									// Current target
 	
-	Blackboard blackboard;
 	// std::shared_ptr<BehaviorTree> behaviorTree; // Behavior tree instance
 
-	AI(Blackboard blackboard_) : blackboard(blackboard_) {}
+	// this was/is for custom BT implementation
+	// Blackboard blackboard;
+	// AI(Blackboard blackboard_) : blackboard(blackboard_) {}
 
 	// TODO: handle serialization, when the time comes
 	template <class Archive>
