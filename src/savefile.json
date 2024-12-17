@@ -1,0 +1,1758 @@
+{
+    "value0": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15,
+        16,
+        17,
+        18,
+        19,
+        20,
+        21,
+        22,
+        23,
+        24,
+        25,
+        26,
+        27,
+        28,
+        29,
+        30,
+        31,
+        32
+    ],
+    "value1": [
+        {
+            "tuple_element0": 0,
+            "tuple_element1": "10Animatable",
+            "tuple_element2": {
+                "value0": 1,
+                "value1": {
+                    "value0": 896,
+                    "value1": 920,
+                    "value2": 944,
+                    "value3": 920
+                }
+            }
+        },
+        {
+            "tuple_element0": 1,
+            "tuple_element1": "10Animatable",
+            "tuple_element2": {
+                "value0": 1,
+                "value1": {
+                    "value0": 808,
+                    "value1": 832,
+                    "value2": 856,
+                    "value3": 832
+                }
+            }
+        },
+        {
+            "tuple_element0": 2,
+            "tuple_element1": "10Animatable",
+            "tuple_element2": {
+                "value0": 1,
+                "value1": {
+                    "value0": 808,
+                    "value1": 832,
+                    "value2": 856,
+                    "value3": 832
+                }
+            }
+        },
+        {
+            "tuple_element0": 3,
+            "tuple_element1": "10Animatable",
+            "tuple_element2": {
+                "value0": 1,
+                "value1": {
+                    "value0": 720,
+                    "value1": 744,
+                    "value2": 768,
+                    "value3": 744
+                }
+            }
+        },
+        {
+            "tuple_element0": 4,
+            "tuple_element1": "10Animatable",
+            "tuple_element2": {
+                "value0": 1,
+                "value1": {
+                    "value0": 808,
+                    "value1": 832,
+                    "value2": 856,
+                    "value3": 832
+                }
+            }
+        },
+        {
+            "tuple_element0": 5,
+            "tuple_element1": "10Animatable",
+            "tuple_element2": {
+                "value0": 1,
+                "value1": {
+                    "value0": 720,
+                    "value1": 744,
+                    "value2": 768,
+                    "value3": 744
+                }
+            }
+        },
+        {
+            "tuple_element0": 6,
+            "tuple_element1": "10Animatable",
+            "tuple_element2": {
+                "value0": 1,
+                "value1": {
+                    "value0": 720,
+                    "value1": 744,
+                    "value2": 768,
+                    "value3": 744
+                }
+            }
+        },
+        {
+            "tuple_element0": 7,
+            "tuple_element1": "10Animatable",
+            "tuple_element2": {
+                "value0": 1,
+                "value1": {
+                    "value0": 720,
+                    "value1": 744,
+                    "value2": 768,
+                    "value3": 744
+                }
+            }
+        },
+        {
+            "tuple_element0": 18,
+            "tuple_element1": "10Animatable",
+            "tuple_element2": {
+                "value0": 1,
+                "value1": {
+                    "value0": 808,
+                    "value1": 832,
+                    "value2": 856,
+                    "value3": 832
+                }
+            }
+        },
+        {
+            "tuple_element0": 19,
+            "tuple_element1": "10Animatable",
+            "tuple_element2": {
+                "value0": 1,
+                "value1": {
+                    "value0": 720,
+                    "value1": 744,
+                    "value2": 768,
+                    "value3": 744
+                }
+            }
+        }
+    ],
+    "value2": [],
+    "value3": [
+        {
+            "tuple_element0": 10,
+            "tuple_element1": "11Collectable",
+            "tuple_element2": {
+                "value0": "Coin",
+                "value1": "Money.",
+                "value2": 0
+            }
+        },
+        {
+            "tuple_element0": 11,
+            "tuple_element1": "11Collectable",
+            "tuple_element2": {
+                "value0": "Coin",
+                "value1": "Money.",
+                "value2": 0
+            }
+        },
+        {
+            "tuple_element0": 12,
+            "tuple_element1": "11Collectable",
+            "tuple_element2": {
+                "value0": "Apple",
+                "value1": "Healthy Fruit.",
+                "value2": 0
+            }
+        },
+        {
+            "tuple_element0": 13,
+            "tuple_element1": "11Collectable",
+            "tuple_element2": {
+                "value0": "Apple",
+                "value1": "Healthy Fruit.",
+                "value2": 0
+            }
+        },
+        {
+            "tuple_element0": 14,
+            "tuple_element1": "11Collectable",
+            "tuple_element2": {
+                "value0": "Onion",
+                "value1": "Always brings you to tears.",
+                "value2": 0
+            }
+        },
+        {
+            "tuple_element0": 15,
+            "tuple_element1": "11Collectable",
+            "tuple_element2": {
+                "value0": "Onion",
+                "value1": "Always brings you to tears.",
+                "value2": 0
+            }
+        },
+        {
+            "tuple_element0": 16,
+            "tuple_element1": "11Collectable",
+            "tuple_element2": {
+                "value0": "Onion",
+                "value1": "Always brings you to tears.",
+                "value2": 0
+            }
+        },
+        {
+            "tuple_element0": 17,
+            "tuple_element1": "11Collectable",
+            "tuple_element2": {
+                "value0": "Cat",
+                "value1": "Charming and dangerous.",
+                "value2": 0
+            }
+        },
+        {
+            "tuple_element0": 23,
+            "tuple_element1": "11Collectable",
+            "tuple_element2": {
+                "value0": "Mush Room",
+                "value1": "Mighty king of the ants!",
+                "value2": 0
+            }
+        },
+        {
+            "tuple_element0": 28,
+            "tuple_element1": "11Collectable",
+            "tuple_element2": {
+                "value0": "Sword",
+                "value1": "Makes fear among the ants",
+                "value2": 0
+            }
+        },
+        {
+            "tuple_element0": 29,
+            "tuple_element1": "11Collectable",
+            "tuple_element2": {
+                "value0": "Helmet",
+                "value1": "Increases armour by 30",
+                "value2": 30
+            }
+        },
+        {
+            "tuple_element0": 30,
+            "tuple_element1": "11Collectable",
+            "tuple_element2": {
+                "value0": "ChestPlate",
+                "value1": "Increases armour by 30",
+                "value2": 30
+            }
+        },
+        {
+            "tuple_element0": 31,
+            "tuple_element1": "11Collectable",
+            "tuple_element2": {
+                "value0": "Shoes",
+                "value1": "Increases armour by 30",
+                "value2": 30
+            }
+        },
+        {
+            "tuple_element0": 32,
+            "tuple_element1": "11Collectable",
+            "tuple_element2": {
+                "value0": "Shield",
+                "value1": "Increases armour by 30",
+                "value2": 30
+            }
+        }
+    ],
+    "value4": [
+        {
+            "tuple_element0": 0,
+            "tuple_element1": "8Collider",
+            "tuple_element2": {
+                "value0": null
+            }
+        },
+        {
+            "tuple_element0": 1,
+            "tuple_element1": "8Collider",
+            "tuple_element2": {
+                "value0": null
+            }
+        },
+        {
+            "tuple_element0": 2,
+            "tuple_element1": "8Collider",
+            "tuple_element2": {
+                "value0": null
+            }
+        },
+        {
+            "tuple_element0": 3,
+            "tuple_element1": "8Collider",
+            "tuple_element2": {
+                "value0": null
+            }
+        },
+        {
+            "tuple_element0": 4,
+            "tuple_element1": "8Collider",
+            "tuple_element2": {
+                "value0": null
+            }
+        },
+        {
+            "tuple_element0": 5,
+            "tuple_element1": "8Collider",
+            "tuple_element2": {
+                "value0": null
+            }
+        },
+        {
+            "tuple_element0": 6,
+            "tuple_element1": "8Collider",
+            "tuple_element2": {
+                "value0": null
+            }
+        },
+        {
+            "tuple_element0": 7,
+            "tuple_element1": "8Collider",
+            "tuple_element2": {
+                "value0": null
+            }
+        },
+        {
+            "tuple_element0": 8,
+            "tuple_element1": "8Collider",
+            "tuple_element2": {
+                "value0": null
+            }
+        },
+        {
+            "tuple_element0": 9,
+            "tuple_element1": "8Collider",
+            "tuple_element2": {
+                "value0": null
+            }
+        },
+        {
+            "tuple_element0": 10,
+            "tuple_element1": "8Collider",
+            "tuple_element2": {
+                "value0": null
+            }
+        },
+        {
+            "tuple_element0": 11,
+            "tuple_element1": "8Collider",
+            "tuple_element2": {
+                "value0": null
+            }
+        },
+        {
+            "tuple_element0": 12,
+            "tuple_element1": "8Collider",
+            "tuple_element2": {
+                "value0": null
+            }
+        },
+        {
+            "tuple_element0": 13,
+            "tuple_element1": "8Collider",
+            "tuple_element2": {
+                "value0": null
+            }
+        },
+        {
+            "tuple_element0": 14,
+            "tuple_element1": "8Collider",
+            "tuple_element2": {
+                "value0": null
+            }
+        },
+        {
+            "tuple_element0": 15,
+            "tuple_element1": "8Collider",
+            "tuple_element2": {
+                "value0": null
+            }
+        },
+        {
+            "tuple_element0": 16,
+            "tuple_element1": "8Collider",
+            "tuple_element2": {
+                "value0": null
+            }
+        },
+        {
+            "tuple_element0": 17,
+            "tuple_element1": "8Collider",
+            "tuple_element2": {
+                "value0": null
+            }
+        },
+        {
+            "tuple_element0": 18,
+            "tuple_element1": "8Collider",
+            "tuple_element2": {
+                "value0": null
+            }
+        },
+        {
+            "tuple_element0": 19,
+            "tuple_element1": "8Collider",
+            "tuple_element2": {
+                "value0": null
+            }
+        },
+        {
+            "tuple_element0": 20,
+            "tuple_element1": "8Collider",
+            "tuple_element2": {
+                "value0": null
+            }
+        },
+        {
+            "tuple_element0": 21,
+            "tuple_element1": "8Collider",
+            "tuple_element2": {
+                "value0": null
+            }
+        },
+        {
+            "tuple_element0": 22,
+            "tuple_element1": "8Collider",
+            "tuple_element2": {
+                "value0": null
+            }
+        },
+        {
+            "tuple_element0": 23,
+            "tuple_element1": "8Collider",
+            "tuple_element2": {
+                "value0": null
+            }
+        },
+        {
+            "tuple_element0": 24,
+            "tuple_element1": "8Collider",
+            "tuple_element2": {
+                "value0": null
+            }
+        },
+        {
+            "tuple_element0": 25,
+            "tuple_element1": "8Collider",
+            "tuple_element2": {
+                "value0": null
+            }
+        },
+        {
+            "tuple_element0": 26,
+            "tuple_element1": "8Collider",
+            "tuple_element2": {
+                "value0": null
+            }
+        },
+        {
+            "tuple_element0": 27,
+            "tuple_element1": "8Collider",
+            "tuple_element2": {
+                "value0": null
+            }
+        },
+        {
+            "tuple_element0": 28,
+            "tuple_element1": "8Collider",
+            "tuple_element2": {
+                "value0": null
+            }
+        },
+        {
+            "tuple_element0": 29,
+            "tuple_element1": "8Collider",
+            "tuple_element2": {
+                "value0": null
+            }
+        },
+        {
+            "tuple_element0": 30,
+            "tuple_element1": "8Collider",
+            "tuple_element2": {
+                "value0": null
+            }
+        },
+        {
+            "tuple_element0": 31,
+            "tuple_element1": "8Collider",
+            "tuple_element2": {
+                "value0": null
+            }
+        },
+        {
+            "tuple_element0": 32,
+            "tuple_element1": "8Collider",
+            "tuple_element2": {
+                "value0": null
+            }
+        }
+    ],
+    "value5": [
+        {
+            "tuple_element0": 12,
+            "tuple_element1": "10Consumable",
+            "tuple_element2": {
+                "value0": 50
+            }
+        },
+        {
+            "tuple_element0": 13,
+            "tuple_element1": "10Consumable",
+            "tuple_element2": {
+                "value0": 50
+            }
+        }
+    ],
+    "value6": [
+        {
+            "tuple_element0": 0,
+            "tuple_element1": "12Controllable",
+            "tuple_element2": {
+                "value0": 0,
+                "value1": false,
+                "value2": false
+            }
+        }
+    ],
+    "value7": [
+        {
+            "tuple_element0": 1,
+            "tuple_element1": "12Interactable",
+            "tuple_element2": {
+                "value0": "Shelly: Aren't they wonderful? Oh thank you for this beautiful cat!",
+                "value1": false
+            }
+        },
+        {
+            "tuple_element0": 2,
+            "tuple_element1": "12Interactable",
+            "tuple_element2": {
+                "value0": "Tina: Shelly? She moved to the South a long time ago.",
+                "value1": false
+            }
+        },
+        {
+            "tuple_element0": 3,
+            "tuple_element1": "12Interactable",
+            "tuple_element2": {
+                "value0": "Gardener: You need two coins to enter the apple garden.",
+                "value1": false
+            }
+        },
+        {
+            "tuple_element0": 4,
+            "tuple_element1": "12Interactable",
+            "tuple_element2": {
+                "value0": "Tanja: Shelly? Ah yes, that old lady from the east!",
+                "value1": false
+            }
+        },
+        {
+            "tuple_element0": 5,
+            "tuple_element1": "12Interactable",
+            "tuple_element2": {
+                "value0": "You need more health, have you tried eating some fruits?",
+                "value1": false
+            }
+        },
+        {
+            "tuple_element0": 6,
+            "tuple_element1": "12Interactable",
+            "tuple_element2": {
+                "value0": "We can not let you enter the realm of Shelly without a proper gift.",
+                "value1": false
+            }
+        },
+        {
+            "tuple_element0": 7,
+            "tuple_element1": "12Interactable",
+            "tuple_element2": {
+                "value0": "She loves cute little cats!",
+                "value1": false
+            }
+        },
+        {
+            "tuple_element0": 8,
+            "tuple_element1": "12Interactable",
+            "tuple_element2": {
+                "value0": "Find Shelly.",
+                "value1": false
+            }
+        },
+        {
+            "tuple_element0": 9,
+            "tuple_element1": "12Interactable",
+            "tuple_element2": {
+                "value0": "Here once lived Shelly.",
+                "value1": false
+            }
+        },
+        {
+            "tuple_element0": 10,
+            "tuple_element1": "12Interactable",
+            "tuple_element2": {
+                "value0": "Added coin to your inventory.",
+                "value1": false
+            }
+        },
+        {
+            "tuple_element0": 11,
+            "tuple_element1": "12Interactable",
+            "tuple_element2": {
+                "value0": "Added coin to your inventory.",
+                "value1": false
+            }
+        },
+        {
+            "tuple_element0": 12,
+            "tuple_element1": "12Interactable",
+            "tuple_element2": {
+                "value0": "Added Apple to your inventory.",
+                "value1": false
+            }
+        },
+        {
+            "tuple_element0": 13,
+            "tuple_element1": "12Interactable",
+            "tuple_element2": {
+                "value0": "Added Apple to your inventory.",
+                "value1": false
+            }
+        },
+        {
+            "tuple_element0": 14,
+            "tuple_element1": "12Interactable",
+            "tuple_element2": {
+                "value0": "Oink!",
+                "value1": false
+            }
+        },
+        {
+            "tuple_element0": 15,
+            "tuple_element1": "12Interactable",
+            "tuple_element2": {
+                "value0": "Oink!",
+                "value1": false
+            }
+        },
+        {
+            "tuple_element0": 16,
+            "tuple_element1": "12Interactable",
+            "tuple_element2": {
+                "value0": "Oink!",
+                "value1": false
+            }
+        },
+        {
+            "tuple_element0": 17,
+            "tuple_element1": "12Interactable",
+            "tuple_element2": {
+                "value0": "Miau!",
+                "value1": false
+            }
+        },
+        {
+            "tuple_element0": 18,
+            "tuple_element1": "12Interactable",
+            "tuple_element2": {
+                "value0": "These ants are super afraid of swords! Too bad I lost mine on this island...",
+                "value1": false
+            }
+        },
+        {
+            "tuple_element0": 19,
+            "tuple_element1": "12Interactable",
+            "tuple_element2": {
+                "value0": "Peter: Get some full armour I will help you get the shield!",
+                "value1": false
+            }
+        },
+        {
+            "tuple_element0": 20,
+            "tuple_element1": "12Interactable",
+            "tuple_element2": {
+                "value0": "You can not enter without a shiny shield!",
+                "value1": false
+            }
+        },
+        {
+            "tuple_element0": 21,
+            "tuple_element1": "12Interactable",
+            "tuple_element2": {
+                "value0": "Welcome to desert island!",
+                "value1": false
+            }
+        },
+        {
+            "tuple_element0": 22,
+            "tuple_element1": "12Interactable",
+            "tuple_element2": {
+                "value0": "Beware of the ants!",
+                "value1": false
+            }
+        },
+        {
+            "tuple_element0": 23,
+            "tuple_element1": "12Interactable",
+            "tuple_element2": {
+                "value0": "Now that is a true knight, I will come with you",
+                "value1": false
+            }
+        },
+        {
+            "tuple_element0": 24,
+            "tuple_element1": "12Interactable",
+            "tuple_element2": {
+                "value0": "Ant: grrrr...",
+                "value1": false
+            }
+        },
+        {
+            "tuple_element0": 25,
+            "tuple_element1": "12Interactable",
+            "tuple_element2": {
+                "value0": "Ant: You shall not pass!",
+                "value1": false
+            }
+        },
+        {
+            "tuple_element0": 26,
+            "tuple_element1": "12Interactable",
+            "tuple_element2": {
+                "value0": "Ant: grrrr...",
+                "value1": false
+            }
+        },
+        {
+            "tuple_element0": 27,
+            "tuple_element1": "12Interactable",
+            "tuple_element2": {
+                "value0": "Ant: grrrr...",
+                "value1": false
+            }
+        },
+        {
+            "tuple_element0": 28,
+            "tuple_element1": "12Interactable",
+            "tuple_element2": {
+                "value0": "Added sword to your inventory.",
+                "value1": false
+            }
+        },
+        {
+            "tuple_element0": 29,
+            "tuple_element1": "12Interactable",
+            "tuple_element2": {
+                "value0": "Added helmet to your inventory.",
+                "value1": false
+            }
+        },
+        {
+            "tuple_element0": 30,
+            "tuple_element1": "12Interactable",
+            "tuple_element2": {
+                "value0": "Added chest plate to your inventory.",
+                "value1": false
+            }
+        },
+        {
+            "tuple_element0": 31,
+            "tuple_element1": "12Interactable",
+            "tuple_element2": {
+                "value0": "Added shoes to your inventory.",
+                "value1": false
+            }
+        },
+        {
+            "tuple_element0": 32,
+            "tuple_element1": "12Interactable",
+            "tuple_element2": {
+                "value0": "Added shield to your inventory.",
+                "value1": false
+            }
+        }
+    ],
+    "value8": [
+        {
+            "tuple_element0": 0,
+            "tuple_element1": "9Inventory",
+            "tuple_element2": {
+                "value0": []
+            }
+        }
+    ],
+    "value9": [
+        {
+            "tuple_element0": 0,
+            "tuple_element1": "12Positionable",
+            "tuple_element2": {
+                "value0": {
+                    "value0": 256,
+                    "value1": 112
+                }
+            }
+        },
+        {
+            "tuple_element0": 1,
+            "tuple_element1": "12Positionable",
+            "tuple_element2": {
+                "value0": {
+                    "value0": 496,
+                    "value1": 352
+                }
+            }
+        },
+        {
+            "tuple_element0": 2,
+            "tuple_element1": "12Positionable",
+            "tuple_element2": {
+                "value0": {
+                    "value0": 512,
+                    "value1": 112
+                }
+            }
+        },
+        {
+            "tuple_element0": 3,
+            "tuple_element1": "12Positionable",
+            "tuple_element2": {
+                "value0": {
+                    "value0": 208,
+                    "value1": 112
+                }
+            }
+        },
+        {
+            "tuple_element0": 4,
+            "tuple_element1": "12Positionable",
+            "tuple_element2": {
+                "value0": {
+                    "value0": 320,
+                    "value1": 160
+                }
+            }
+        },
+        {
+            "tuple_element0": 5,
+            "tuple_element1": "12Positionable",
+            "tuple_element2": {
+                "value0": {
+                    "value0": 240,
+                    "value1": 272
+                }
+            }
+        },
+        {
+            "tuple_element0": 6,
+            "tuple_element1": "12Positionable",
+            "tuple_element2": {
+                "value0": {
+                    "value0": 256,
+                    "value1": 288
+                }
+            }
+        },
+        {
+            "tuple_element0": 7,
+            "tuple_element1": "12Positionable",
+            "tuple_element2": {
+                "value0": {
+                    "value0": 272,
+                    "value1": 272
+                }
+            }
+        },
+        {
+            "tuple_element0": 8,
+            "tuple_element1": "12Positionable",
+            "tuple_element2": {
+                "value0": {
+                    "value0": 272,
+                    "value1": 96
+                }
+            }
+        },
+        {
+            "tuple_element0": 9,
+            "tuple_element1": "12Positionable",
+            "tuple_element2": {
+                "value0": {
+                    "value0": 496,
+                    "value1": 96
+                }
+            }
+        },
+        {
+            "tuple_element0": 10,
+            "tuple_element1": "12Positionable",
+            "tuple_element2": {
+                "value0": {
+                    "value0": 560,
+                    "value1": 128
+                }
+            }
+        },
+        {
+            "tuple_element0": 11,
+            "tuple_element1": "12Positionable",
+            "tuple_element2": {
+                "value0": {
+                    "value0": 224,
+                    "value1": 80
+                }
+            }
+        },
+        {
+            "tuple_element0": 12,
+            "tuple_element1": "12Positionable",
+            "tuple_element2": {
+                "value0": {
+                    "value0": 128,
+                    "value1": 128
+                }
+            }
+        },
+        {
+            "tuple_element0": 13,
+            "tuple_element1": "12Positionable",
+            "tuple_element2": {
+                "value0": {
+                    "value0": 208,
+                    "value1": 160
+                }
+            }
+        },
+        {
+            "tuple_element0": 14,
+            "tuple_element1": "12Positionable",
+            "tuple_element2": {
+                "value0": {
+                    "value0": 320,
+                    "value1": 304
+                }
+            }
+        },
+        {
+            "tuple_element0": 15,
+            "tuple_element1": "12Positionable",
+            "tuple_element2": {
+                "value0": {
+                    "value0": 416,
+                    "value1": 304
+                }
+            }
+        },
+        {
+            "tuple_element0": 16,
+            "tuple_element1": "12Positionable",
+            "tuple_element2": {
+                "value0": {
+                    "value0": 448,
+                    "value1": 320
+                }
+            }
+        },
+        {
+            "tuple_element0": 17,
+            "tuple_element1": "12Positionable",
+            "tuple_element2": {
+                "value0": {
+                    "value0": 416,
+                    "value1": 384
+                }
+            }
+        },
+        {
+            "tuple_element0": 18,
+            "tuple_element1": "12Positionable",
+            "tuple_element2": {
+                "value0": {
+                    "value0": 768,
+                    "value1": 224
+                }
+            }
+        },
+        {
+            "tuple_element0": 19,
+            "tuple_element1": "12Positionable",
+            "tuple_element2": {
+                "value0": {
+                    "value0": 976,
+                    "value1": 320
+                }
+            }
+        },
+        {
+            "tuple_element0": 20,
+            "tuple_element1": "12Positionable",
+            "tuple_element2": {
+                "value0": {
+                    "value0": 1136,
+                    "value1": 224
+                }
+            }
+        },
+        {
+            "tuple_element0": 21,
+            "tuple_element1": "12Positionable",
+            "tuple_element2": {
+                "value0": {
+                    "value0": 768,
+                    "value1": 336
+                }
+            }
+        },
+        {
+            "tuple_element0": 22,
+            "tuple_element1": "12Positionable",
+            "tuple_element2": {
+                "value0": {
+                    "value0": 784,
+                    "value1": 336
+                }
+            }
+        },
+        {
+            "tuple_element0": 23,
+            "tuple_element1": "12Positionable",
+            "tuple_element2": {
+                "value0": {
+                    "value0": 1152,
+                    "value1": 144
+                }
+            }
+        },
+        {
+            "tuple_element0": 24,
+            "tuple_element1": "12Positionable",
+            "tuple_element2": {
+                "value0": {
+                    "value0": 848,
+                    "value1": 224
+                }
+            }
+        },
+        {
+            "tuple_element0": 25,
+            "tuple_element1": "12Positionable",
+            "tuple_element2": {
+                "value0": {
+                    "value0": 848,
+                    "value1": 352
+                }
+            }
+        },
+        {
+            "tuple_element0": 26,
+            "tuple_element1": "12Positionable",
+            "tuple_element2": {
+                "value0": {
+                    "value0": 848,
+                    "value1": 368
+                }
+            }
+        },
+        {
+            "tuple_element0": 27,
+            "tuple_element1": "12Positionable",
+            "tuple_element2": {
+                "value0": {
+                    "value0": 928,
+                    "value1": 304
+                }
+            }
+        },
+        {
+            "tuple_element0": 28,
+            "tuple_element1": "12Positionable",
+            "tuple_element2": {
+                "value0": {
+                    "value0": 1296,
+                    "value1": 96
+                }
+            }
+        },
+        {
+            "tuple_element0": 29,
+            "tuple_element1": "12Positionable",
+            "tuple_element2": {
+                "value0": {
+                    "value0": 880,
+                    "value1": 352
+                }
+            }
+        },
+        {
+            "tuple_element0": 30,
+            "tuple_element1": "12Positionable",
+            "tuple_element2": {
+                "value0": {
+                    "value0": 1184,
+                    "value1": 320
+                }
+            }
+        },
+        {
+            "tuple_element0": 31,
+            "tuple_element1": "12Positionable",
+            "tuple_element2": {
+                "value0": {
+                    "value0": 1056,
+                    "value1": 144
+                }
+            }
+        },
+        {
+            "tuple_element0": 32,
+            "tuple_element1": "12Positionable",
+            "tuple_element2": {
+                "value0": {
+                    "value0": 880,
+                    "value1": 304
+                }
+            }
+        }
+    ],
+    "value10": [
+        {
+            "tuple_element0": 0,
+            "tuple_element1": "10Renderable",
+            "tuple_element2": {
+                "value0": {
+                    "value0": 32,
+                    "value1": 896
+                },
+                "value1": {
+                    "value0": 16,
+                    "value1": 24
+                },
+                "value2": -8
+            }
+        },
+        {
+            "tuple_element0": 1,
+            "tuple_element1": "10Renderable",
+            "tuple_element2": {
+                "value0": {
+                    "value0": 32,
+                    "value1": 808
+                },
+                "value1": {
+                    "value0": 16,
+                    "value1": 24
+                },
+                "value2": -8
+            }
+        },
+        {
+            "tuple_element0": 2,
+            "tuple_element1": "10Renderable",
+            "tuple_element2": {
+                "value0": {
+                    "value0": 32,
+                    "value1": 808
+                },
+                "value1": {
+                    "value0": 16,
+                    "value1": 24
+                },
+                "value2": -8
+            }
+        },
+        {
+            "tuple_element0": 3,
+            "tuple_element1": "10Renderable",
+            "tuple_element2": {
+                "value0": {
+                    "value0": 32,
+                    "value1": 720
+                },
+                "value1": {
+                    "value0": 16,
+                    "value1": 24
+                },
+                "value2": -8
+            }
+        },
+        {
+            "tuple_element0": 4,
+            "tuple_element1": "10Renderable",
+            "tuple_element2": {
+                "value0": {
+                    "value0": 32,
+                    "value1": 808
+                },
+                "value1": {
+                    "value0": 16,
+                    "value1": 24
+                },
+                "value2": -8
+            }
+        },
+        {
+            "tuple_element0": 5,
+            "tuple_element1": "10Renderable",
+            "tuple_element2": {
+                "value0": {
+                    "value0": 32,
+                    "value1": 720
+                },
+                "value1": {
+                    "value0": 16,
+                    "value1": 24
+                },
+                "value2": -8
+            }
+        },
+        {
+            "tuple_element0": 6,
+            "tuple_element1": "10Renderable",
+            "tuple_element2": {
+                "value0": {
+                    "value0": 32,
+                    "value1": 720
+                },
+                "value1": {
+                    "value0": 16,
+                    "value1": 24
+                },
+                "value2": -8
+            }
+        },
+        {
+            "tuple_element0": 7,
+            "tuple_element1": "10Renderable",
+            "tuple_element2": {
+                "value0": {
+                    "value0": 32,
+                    "value1": 720
+                },
+                "value1": {
+                    "value0": 16,
+                    "value1": 24
+                },
+                "value2": -8
+            }
+        },
+        {
+            "tuple_element0": 8,
+            "tuple_element1": "10Renderable",
+            "tuple_element2": {
+                "value0": {
+                    "value0": 80,
+                    "value1": 16
+                },
+                "value1": {
+                    "value0": 16,
+                    "value1": 16
+                },
+                "value2": 0
+            }
+        },
+        {
+            "tuple_element0": 9,
+            "tuple_element1": "10Renderable",
+            "tuple_element2": {
+                "value0": {
+                    "value0": 80,
+                    "value1": 16
+                },
+                "value1": {
+                    "value0": 16,
+                    "value1": 16
+                },
+                "value2": 0
+            }
+        },
+        {
+            "tuple_element0": 10,
+            "tuple_element1": "10Renderable",
+            "tuple_element2": {
+                "value0": {
+                    "value0": 64,
+                    "value1": 1000
+                },
+                "value1": {
+                    "value0": 16,
+                    "value1": 16
+                },
+                "value2": 0
+            }
+        },
+        {
+            "tuple_element0": 11,
+            "tuple_element1": "10Renderable",
+            "tuple_element2": {
+                "value0": {
+                    "value0": 64,
+                    "value1": 1000
+                },
+                "value1": {
+                    "value0": 16,
+                    "value1": 16
+                },
+                "value2": 0
+            }
+        },
+        {
+            "tuple_element0": 12,
+            "tuple_element1": "10Renderable",
+            "tuple_element2": {
+                "value0": {
+                    "value0": 96,
+                    "value1": 1000
+                },
+                "value1": {
+                    "value0": 16,
+                    "value1": 16
+                },
+                "value2": 0
+            }
+        },
+        {
+            "tuple_element0": 13,
+            "tuple_element1": "10Renderable",
+            "tuple_element2": {
+                "value0": {
+                    "value0": 96,
+                    "value1": 1000
+                },
+                "value1": {
+                    "value0": 16,
+                    "value1": 16
+                },
+                "value2": 0
+            }
+        },
+        {
+            "tuple_element0": 14,
+            "tuple_element1": "10Renderable",
+            "tuple_element2": {
+                "value0": {
+                    "value0": 48,
+                    "value1": 1128
+                },
+                "value1": {
+                    "value0": 16,
+                    "value1": 16
+                },
+                "value2": 0
+            }
+        },
+        {
+            "tuple_element0": 15,
+            "tuple_element1": "10Renderable",
+            "tuple_element2": {
+                "value0": {
+                    "value0": 48,
+                    "value1": 1128
+                },
+                "value1": {
+                    "value0": 16,
+                    "value1": 16
+                },
+                "value2": 0
+            }
+        },
+        {
+            "tuple_element0": 16,
+            "tuple_element1": "10Renderable",
+            "tuple_element2": {
+                "value0": {
+                    "value0": 48,
+                    "value1": 1128
+                },
+                "value1": {
+                    "value0": 16,
+                    "value1": 16
+                },
+                "value2": 0
+            }
+        },
+        {
+            "tuple_element0": 17,
+            "tuple_element1": "10Renderable",
+            "tuple_element2": {
+                "value0": {
+                    "value0": 0,
+                    "value1": 1128
+                },
+                "value1": {
+                    "value0": 16,
+                    "value1": 16
+                },
+                "value2": 0
+            }
+        },
+        {
+            "tuple_element0": 18,
+            "tuple_element1": "10Renderable",
+            "tuple_element2": {
+                "value0": {
+                    "value0": 32,
+                    "value1": 808
+                },
+                "value1": {
+                    "value0": 16,
+                    "value1": 24
+                },
+                "value2": -8
+            }
+        },
+        {
+            "tuple_element0": 19,
+            "tuple_element1": "10Renderable",
+            "tuple_element2": {
+                "value0": {
+                    "value0": 32,
+                    "value1": 720
+                },
+                "value1": {
+                    "value0": 16,
+                    "value1": 24
+                },
+                "value2": -8
+            }
+        },
+        {
+            "tuple_element0": 20,
+            "tuple_element1": "10Renderable",
+            "tuple_element2": {
+                "value0": {
+                    "value0": 80,
+                    "value1": 16
+                },
+                "value1": {
+                    "value0": 16,
+                    "value1": 16
+                },
+                "value2": 0
+            }
+        },
+        {
+            "tuple_element0": 21,
+            "tuple_element1": "10Renderable",
+            "tuple_element2": {
+                "value0": {
+                    "value0": 80,
+                    "value1": 16
+                },
+                "value1": {
+                    "value0": 16,
+                    "value1": 16
+                },
+                "value2": 0
+            }
+        },
+        {
+            "tuple_element0": 22,
+            "tuple_element1": "10Renderable",
+            "tuple_element2": {
+                "value0": {
+                    "value0": 80,
+                    "value1": 16
+                },
+                "value1": {
+                    "value0": 16,
+                    "value1": 16
+                },
+                "value2": 0
+            }
+        },
+        {
+            "tuple_element0": 23,
+            "tuple_element1": "10Renderable",
+            "tuple_element2": {
+                "value0": {
+                    "value0": 80,
+                    "value1": 1128
+                },
+                "value1": {
+                    "value0": 16,
+                    "value1": 16
+                },
+                "value2": 0
+            }
+        },
+        {
+            "tuple_element0": 24,
+            "tuple_element1": "10Renderable",
+            "tuple_element2": {
+                "value0": {
+                    "value0": 16,
+                    "value1": 1128
+                },
+                "value1": {
+                    "value0": 16,
+                    "value1": 16
+                },
+                "value2": 0
+            }
+        },
+        {
+            "tuple_element0": 25,
+            "tuple_element1": "10Renderable",
+            "tuple_element2": {
+                "value0": {
+                    "value0": 16,
+                    "value1": 1128
+                },
+                "value1": {
+                    "value0": 16,
+                    "value1": 16
+                },
+                "value2": 0
+            }
+        },
+        {
+            "tuple_element0": 26,
+            "tuple_element1": "10Renderable",
+            "tuple_element2": {
+                "value0": {
+                    "value0": 16,
+                    "value1": 1128
+                },
+                "value1": {
+                    "value0": 16,
+                    "value1": 16
+                },
+                "value2": 0
+            }
+        },
+        {
+            "tuple_element0": 27,
+            "tuple_element1": "10Renderable",
+            "tuple_element2": {
+                "value0": {
+                    "value0": 16,
+                    "value1": 1128
+                },
+                "value1": {
+                    "value0": 16,
+                    "value1": 16
+                },
+                "value2": 0
+            }
+        },
+        {
+            "tuple_element0": 28,
+            "tuple_element1": "10Renderable",
+            "tuple_element2": {
+                "value0": {
+                    "value0": 80,
+                    "value1": 1032
+                },
+                "value1": {
+                    "value0": 16,
+                    "value1": 16
+                },
+                "value2": 0
+            }
+        },
+        {
+            "tuple_element0": 29,
+            "tuple_element1": "10Renderable",
+            "tuple_element2": {
+                "value0": {
+                    "value0": 48,
+                    "value1": 1032
+                },
+                "value1": {
+                    "value0": 16,
+                    "value1": 16
+                },
+                "value2": 0
+            }
+        },
+        {
+            "tuple_element0": 30,
+            "tuple_element1": "10Renderable",
+            "tuple_element2": {
+                "value0": {
+                    "value0": 64,
+                    "value1": 1032
+                },
+                "value1": {
+                    "value0": 16,
+                    "value1": 16
+                },
+                "value2": 0
+            }
+        },
+        {
+            "tuple_element0": 31,
+            "tuple_element1": "10Renderable",
+            "tuple_element2": {
+                "value0": {
+                    "value0": 32,
+                    "value1": 1032
+                },
+                "value1": {
+                    "value0": 16,
+                    "value1": 16
+                },
+                "value2": 0
+            }
+        },
+        {
+            "tuple_element0": 32,
+            "tuple_element1": "10Renderable",
+            "tuple_element2": {
+                "value0": {
+                    "value0": 16,
+                    "value1": 1032
+                },
+                "value1": {
+                    "value0": 16,
+                    "value1": 16
+                },
+                "value2": 0
+            }
+        }
+    ],
+    "value11": [
+        {
+            "tuple_element0": 0,
+            "tuple_element1": "9RigidBody",
+            "tuple_element2": {
+                "value0": false,
+                "value1": {
+                    "value0": 256,
+                    "value1": 112
+                },
+                "value2": {
+                    "value0": 256,
+                    "value1": 112
+                },
+                "value3": 0.0,
+                "value4": 0.0
+            }
+        }
+    ],
+    "value12": [
+        {
+            "tuple_element0": 0,
+            "tuple_element1": "9Rotatable",
+            "tuple_element2": {
+                "value0": 1
+            }
+        },
+        {
+            "tuple_element0": 1,
+            "tuple_element1": "9Rotatable",
+            "tuple_element2": {
+                "value0": 0
+            }
+        },
+        {
+            "tuple_element0": 2,
+            "tuple_element1": "9Rotatable",
+            "tuple_element2": {
+                "value0": 3
+            }
+        },
+        {
+            "tuple_element0": 3,
+            "tuple_element1": "9Rotatable",
+            "tuple_element2": {
+                "value0": 1
+            }
+        },
+        {
+            "tuple_element0": 4,
+            "tuple_element1": "9Rotatable",
+            "tuple_element2": {
+                "value0": 1
+            }
+        },
+        {
+            "tuple_element0": 5,
+            "tuple_element1": "9Rotatable",
+            "tuple_element2": {
+                "value0": 1
+            }
+        },
+        {
+            "tuple_element0": 6,
+            "tuple_element1": "9Rotatable",
+            "tuple_element2": {
+                "value0": 0
+            }
+        },
+        {
+            "tuple_element0": 7,
+            "tuple_element1": "9Rotatable",
+            "tuple_element2": {
+                "value0": 3
+            }
+        },
+        {
+            "tuple_element0": 18,
+            "tuple_element1": "9Rotatable",
+            "tuple_element2": {
+                "value0": 0
+            }
+        },
+        {
+            "tuple_element0": 19,
+            "tuple_element1": "9Rotatable",
+            "tuple_element2": {
+                "value0": 3
+            }
+        }
+    ],
+    "value13": [
+        {
+            "tuple_element0": 0,
+            "tuple_element1": "5Stats",
+            "tuple_element2": {
+                "value0": 100,
+                "value1": 0,
+                "value2": 0,
+                "value3": 0
+            }
+        }
+    ],
+    "value14": []
+}
