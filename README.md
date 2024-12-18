@@ -111,3 +111,4 @@ cmake --open xbuild
 - switch from TXT to TMX map files
 - collision check currently happens based on position of other entities, which is a problem when trying to move to a tile where an entity is moving on already
 - we broke `ProgressSystem` because it relies on `interactable.isTextVisible`
+- test
