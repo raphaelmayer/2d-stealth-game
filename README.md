@@ -111,3 +111,7 @@ cmake --open xbuild
 - switch from TXT to TMX map files
 - collision check currently happens based on position of other entities, which is a problem when trying to move to a tile where an entity is moving on already
 - we broke `ProgressSystem` because it relies on `interactable.isTextVisible`
+- Change CMake config for assets. Currently it is kind of cumbersome (see `src/CMakeLists.txt`)
+- AI:
+	- implement actual state machine
+	- introduce `SyncActionNode` base class for specialized methods (Annoying, if we need to add a base class for others aswell (i.e. `AsyncActionNode`).

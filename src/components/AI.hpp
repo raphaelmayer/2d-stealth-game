@@ -5,19 +5,24 @@
 #include "../ai/Blackboard.hpp"
 #include "../behaviortree/BehaviorTree.hpp"
 #include "../engine/Vec2d.hpp"
+#include "behaviortree_cpp/bt_factory.h"
+#include <memory>
 #include <vector>
 
 struct AI {
+	Vec2d originalPosition; // The fallback position for AI to return to
+
 	// AIRole role = AIRole::Neutral;
 	AIState state = AIState::Unaware;
 	AIState previousState = AIState::Unaware;
-	double detectionTime = 0;								// for state transitions
-	double searchTime = 0;									// for state transitions
 
-	std::vector<Vec2d> path = {};							// Current path to the target
-	Vec2d targetPosition;									// Current target
-	
-	// std::shared_ptr<BehaviorTree> behaviorTree; // Behavior tree instance
+	double detectionTime = 0; // for state transitions
+	double searchTime = 0;    // for state transitions
+
+	std::vector<Vec2d> path = {}; // Current path to the target
+	Vec2d targetPosition;         // Current target
+
+	// BT::Tree tree; // Behavior tree instance
 
 	// this was/is for custom BT implementation
 	// Blackboard blackboard;

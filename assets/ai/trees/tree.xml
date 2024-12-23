@@ -1,0 +1,21 @@
+<!--
+<root BTCPP_format="4" >
+  <BehaviorTree ID="MainTree">
+    <Sequence name="root_sequence">
+      <SaySomething     message="hello" />
+      <ThinkWhatToSay   text="{the_answer}"/>
+      <SaySomething     message="{the_answer}" />
+    </Sequence>
+  </BehaviorTree>
+</root>
+-->
+
+<root BTCPP_format="4" >
+  <BehaviorTree ID="MainTree">
+    <Sequence name="root_sequence">
+      <IsEnemyVisible entity="{entity}" />
+      <WaitFor entity="{entity}" deltaTime="{deltaTime}" />
+      <TurnTo entity="{entity}" />
+    </Sequence>
+  </BehaviorTree>
+</root>

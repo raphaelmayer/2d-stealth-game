@@ -1,6 +1,6 @@
 #pragma once
 
-#include "ai/MoveToNode.hpp"
+#include "SDL_mixer.h"
 #include "components/AI.hpp"
 #include "constants.hpp"
 #include "ecs/ECSManager.hpp"
@@ -10,12 +10,12 @@
 #include "entities/npc.hpp"
 #include "entities/player.hpp"
 #include "entities/sign.hpp"
+#include "modules/BTManager.hpp"
 #include "modules/Camera.hpp"
 #include "modules/GameStateManager.hpp"
 #include "modules/MapManager.hpp"
 #include "modules/MenuStack.hpp"
 #include "modules/SaveGameManager.hpp"
-#include "SDL_mixer.h"
 #include "systems/AISystem.hpp"
 #include "systems/AudioSystem.hpp"
 #include "systems/DebugSystem.hpp"
@@ -46,7 +46,7 @@ class Game : public Engine {
 			throw std::runtime_error("Error. InputSystemUnable to open overworld spritesheet");
 		}
 		mainMenuBackground = std::shared_ptr<SDL_Texture>(loadTexture(MAINMENU_BACKGROUND), SDL_DestroyTexture);
-		
+
 		mapManager.loadMap(0);
 
 		saveGameManager.load(WORLD_DEFINITION_PATH);
@@ -90,7 +90,7 @@ class Game : public Engine {
 
 			renderSystem->update(ecs, deltaTime);
 
-			// Needs to happen after rendering entities to be on top but before interactionsystem, 
+			// Needs to happen after rendering entities to be on top but before interactionsystem,
 			// otherwise same input might close just opened dialogue.
 			menuStack.update();
 
@@ -116,7 +116,7 @@ class Game : public Engine {
 	void initializeSystems()
 	{
 		inputSystem = std::make_unique<InputSystem>(*this);
-		aiSystem = std::make_unique<AISystem>(mapManager);
+		aiSystem = std::make_unique<AISystem>(btManager, mapManager);
 		physicsSystem = std::make_unique<PhysicsSystem>(mapManager);
 		interactionSystem = std::make_unique<InteractionSystem>(*this, menuStack);
 		renderSystem = std::make_unique<RenderSystem>(*this, mapManager, camera, spritesheet);
@@ -125,34 +125,40 @@ class Game : public Engine {
 		debugSystem = std::make_unique<DebugSystem>(*this, mapManager, camera);
 	}
 
-	void createTestEntity() { 
+	void createTestEntity()
+	{
 		Entity e = instantiateNPCEntity(ecs, {15, 6});
 		RigidBody &c = ecs.getComponent<RigidBody>(e);
-		//c.endPosition = {16 * TILE_SIZE, 6 * TILE_SIZE};
-		//c.isMoving = true;
-		
-		// This was/is for the custom BT implementation 
-		//auto moveToNode = std::make_unique<MoveToNode>();
-		//auto btree = std::make_shared<BehaviorTree>(std::move(moveToNode));
-		//AI aiComp{Blackboard(ecs, e)};
-		//aiComp.targetPosition = {16 * TILE_SIZE, 6 * TILE_SIZE};
+		// c.endPosition = {16 * TILE_SIZE, 6 * TILE_SIZE};
+		// c.isMoving = true;
+
+		// This was/is for the custom BT implementation
+		// auto moveToNode = std::make_unique<MoveToNode>();
+		// auto btree = std::make_shared<BehaviorTree>(std::move(moveToNode));
+		// AI aiComp{Blackboard(ecs, e)};
+		// aiComp.targetPosition = {16 * TILE_SIZE, 6 * TILE_SIZE};
 		////aiComp.behaviorTree = btree;
-		//ecs.addComponent<AI>(e, aiComp);
-		
+		// ecs.addComponent<AI>(e, aiComp);
+
 		Vision vision;
 		AI ai;
+
+		//ai.tree = btmanager.createTree("assets/ai/trees/tree.xml");
 		ecs.addComponent<Vision>(e, vision);
 		ecs.addComponent<AI>(e, ai);
+		btManager.createTreeForEntity(e);
 	}
 
 	SDL_Texture *spritesheet;
 	std::shared_ptr<SDL_Texture> mainMenuBackground;
 	ECSManager ecs;
 	MapManager mapManager;
+	BTManager btManager = BTManager(ecs);
 	SaveGameManager saveGameManager = SaveGameManager(ecs);
 	GameStateManager gameStateManager;
 	MenuStack menuStack;
 	Camera camera;
+	// BTManager btmanager; in AISystem right now
 
 	std::unique_ptr<InputSystem> inputSystem;
 	std::unique_ptr<AISystem> aiSystem;
