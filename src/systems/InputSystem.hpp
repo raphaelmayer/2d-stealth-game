@@ -24,6 +24,7 @@ class InputSystem final : public System {
 
 				// only allow input if player is not currently moving
 				if (!rigidBody.isMoving){
+				//if (rigidBody.endPosition == position) {
 					// allow movement or starting an interaction, if player is not in an interaction
 					if (controllable.isInInteractionWith == 0) {
 						if (keyState[SDL_SCANCODE_RETURN].pressed) {
@@ -54,17 +55,18 @@ class InputSystem final : public System {
 
 			if (keyState[SDL_GetScancodeFromKey(SDLK_w)].held) {
 				velocity.y = -1;
-				rigidBody.isMoving = true;
+				//rigidBody.isMoving = true;
 			} else if (keyState[SDL_GetScancodeFromKey(SDLK_d)].held) {
 				velocity.x = 1;
-				rigidBody.isMoving = true;
+				//rigidBody.isMoving = true;
 			} else if (keyState[SDL_GetScancodeFromKey(SDLK_s)].held) {
 				velocity.y = 1;
-				rigidBody.isMoving = true;
+				//rigidBody.isMoving = true;
 			} else if (keyState[SDL_GetScancodeFromKey(SDLK_a)].held) {
 				velocity.x = -1;
-				rigidBody.isMoving = true;
+				//rigidBody.isMoving = true;
 			}
+			// TODO: change comment, if we don't set isMoving here anymore.
 			// movement mechanism: if isMoving && endPosition => move
 			rigidBody.endPosition = {positionable.position.x + velocity.x * TILE_SIZE,
 			                         positionable.position.y + velocity.y * TILE_SIZE};

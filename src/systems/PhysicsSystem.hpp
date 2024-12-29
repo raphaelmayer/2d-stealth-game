@@ -6,10 +6,7 @@
 
 class PhysicsSystem final : public System {
   public:
-	PhysicsSystem(const MapManager &mapManager)
-	    : mapManager_(mapManager)
-	{
-	}
+	PhysicsSystem(const MapManager &mapManager) : mapManager_(mapManager) {}
 
 	void update(ECSManager &ecs, const double deltaTime) override
 	{
@@ -20,11 +17,18 @@ class PhysicsSystem final : public System {
 				auto &position = ecs.getComponent<Positionable>(entity).position;
 				auto &rigidBody = ecs.getComponent<RigidBody>(entity);
 
-				if (rigidBody.isMoving) {
+				if (ecs.hasComponent<AI>(entity)) {
+					auto &ai = ecs.getComponent<AI>(entity);
+					handleAIPathfinding(position, rigidBody, ai);
+				}
+
+				// if (rigidBody.isMoving) {
+				if (rigidBody.endPosition != position) {
+					rigidBody.isMoving = true;
 					if (ecs.hasComponent<Rotatable>(entity))
 						applyRotation(position, rigidBody, ecs.getComponent<Rotatable>(entity));
 					if (checkCollisions(ecs, entity, rigidBody)) {
-						resetCurrentMovementParams(ecs, entity);
+						resetCurrentMovementParams(position, rigidBody);
 					}
 					// while progress is smaller than TILE_SIZE, we move WALKSPEED pixels per second in this direction
 					if (rigidBody.progress < TILE_SIZE) {
@@ -32,19 +36,46 @@ class PhysicsSystem final : public System {
 					} else {
 						// we might slightly overshoot endPos, thus we clamp position back to the grid
 						position = rigidBody.endPosition;
-						resetCurrentMovementParams(ecs, entity);
+						resetCurrentMovementParams(position, rigidBody);
 					}
+				} else {
+					resetCurrentMovementParams(position, rigidBody);
 				}
 			}
 		}
 	}
 
   private:
-	static void resetCurrentMovementParams(ECSManager &ecs, const Entity entity)
+	void handleAIPathfinding(Vec2d &position, RigidBody &rigidBody, AI &ai)
 	{
-		const auto &position = ecs.getComponent<Positionable>(entity).position;
-		auto &rigidBody = ecs.getComponent<RigidBody>(entity);
+		if (ai.targetPosition != Vec2d{-1, -1} && ai.targetPosition != position) {
+			// If path does not point to target position, calculate a new one
+			if (ai.path.empty() || ai.targetPosition != ai.path[ai.path.size() - 1]) {
+				std::cout << "Recalculating path. pathIndex=" << ai.pathIndex << "\n";
+				// ai.path = AStar::findPath({}, position, ai.targetPosition);
+				// hardcoded path for testing
+				ai.path =
+				    std::vector<Vec2d>{Vec2d{15, 6} * TILE_SIZE, Vec2d{16, 6} * TILE_SIZE, Vec2d{16, 5} * TILE_SIZE,
+				                       Vec2d{17, 5} * TILE_SIZE, Vec2d{18, 5} * TILE_SIZE, Vec2d{19, 5} * TILE_SIZE,
+				                       Vec2d{19, 6} * TILE_SIZE};
+				ai.pathIndex = 0;
+			}
 
+			// If we reach an intermediate position on our path, increment to next path position.
+			if (ai.path[ai.pathIndex] == position) {
+				if (ai.pathIndex < ai.path.size() - 1) {
+					ai.pathIndex += 1;
+					rigidBody.endPosition = ai.path[ai.pathIndex];
+					resetCurrentMovementParams(position, rigidBody);
+				}
+			} else {
+				rigidBody.endPosition = ai.path[ai.pathIndex];
+			}
+		}
+	}
+
+	void resetCurrentMovementParams(const Vec2d &position, RigidBody &rigidBody)
+	{
 		rigidBody.isMoving = false;
 		rigidBody.progress = 0;
 
@@ -94,7 +125,7 @@ class PhysicsSystem final : public System {
 		}
 	}
 
-	void applyRotation(Vec2d &position, RigidBody &rigidBody, Rotatable & rotatable)
+	void applyRotation(Vec2d &position, RigidBody &rigidBody, Rotatable &rotatable)
 	{
 		const Vec2d direction = (rigidBody.endPosition - position).sign();
 

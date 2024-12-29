@@ -31,6 +31,7 @@
 #include <iostream>
 #include <random>
 #include <thread>
+#include "components/Patrol.hpp"
 
 class Game : public Engine {
   public:
@@ -49,7 +50,7 @@ class Game : public Engine {
 
 		mapManager.loadMap(0);
 
-		saveGameManager.load(WORLD_DEFINITION_PATH);
+		//saveGameManager.load(WORLD_DEFINITION_PATH);
 
 		initializeSystems();
 
@@ -128,25 +129,10 @@ class Game : public Engine {
 	void createTestEntity()
 	{
 		Entity e = instantiateNPCEntity(ecs, {15, 6});
-		RigidBody &c = ecs.getComponent<RigidBody>(e);
-		// c.endPosition = {16 * TILE_SIZE, 6 * TILE_SIZE};
-		// c.isMoving = true;
-
-		// This was/is for the custom BT implementation
-		// auto moveToNode = std::make_unique<MoveToNode>();
-		// auto btree = std::make_shared<BehaviorTree>(std::move(moveToNode));
-		// AI aiComp{Blackboard(ecs, e)};
-		// aiComp.targetPosition = {16 * TILE_SIZE, 6 * TILE_SIZE};
-		////aiComp.behaviorTree = btree;
-		// ecs.addComponent<AI>(e, aiComp);
-
-		Vision vision;
-		AI ai;
-
-		//ai.tree = btmanager.createTree("assets/ai/trees/tree.xml");
-		ecs.addComponent<Vision>(e, vision);
-		ecs.addComponent<AI>(e, ai);
-		btManager.createTreeForEntity(e);
+		ecs.addComponent<Vision>(e, Vision{});
+		ecs.addComponent<AI>(e, AI{});
+		//ecs.addComponent<Patrol>(e, Patrol{{{{15, 6}, Rotation::SOUTH, 2}, {{16, 6}, Rotation::SOUTH, 2}}});
+		btManager.createTreeForEntity(e, "../assets/ai/trees/tree.xml");
 	}
 
 	SDL_Texture *spritesheet;
@@ -158,7 +144,6 @@ class Game : public Engine {
 	GameStateManager gameStateManager;
 	MenuStack menuStack;
 	Camera camera;
-	// BTManager btmanager; in AISystem right now
 
 	std::unique_ptr<InputSystem> inputSystem;
 	std::unique_ptr<AISystem> aiSystem;

@@ -33,7 +33,7 @@ class IsEnemyVisible : public BT::SyncActionNode {
 		Entity entity = getInputOrThrow<Entity>("entity");
 		Vision vision = ecs.getComponent<Vision>(entity);
 
-		if (vision.visibleEntities.size() > 0) {
+		if (!vision.visibleEntities.empty()) {
 			return BT::NodeStatus::SUCCESS;
 		}
 

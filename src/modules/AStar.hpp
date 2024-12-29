@@ -24,7 +24,7 @@ class AStar {
   public:
 	// Finds the shortest path between two points on a 2D grid using the A* algorithm.
 	// The map is a grid of booleans, where 1 indicates a blocking tile.
-	std::vector<Vec2d> findPath(const std::vector<std::vector<bool>> &map, Vec2d start, Vec2d target)
+	static std::vector<Vec2d> findPath(const std::vector<std::vector<bool>> &map, Vec2d start, Vec2d target)
 	{
 		// Check if start and target positions are within bounds
 		if (!isInBounds(map, start) || !isInBounds(map, target)) {
@@ -67,7 +67,7 @@ class AStar {
 			visited.push_back(currentNode);
 
 			// Directions for neighbors
-			Vec2d directions[8] = {{0, -1}, {1, -1}, {1, 0}, {1, 1}, {0, 1}, {-1, 1}, {-1, 0}, {-1, -1}};
+			static const Vec2d directions[8] = {{0, -1}, {1, -1}, {1, 0}, {1, 1}, {0, 1}, {-1, 1}, {-1, 0}, {-1, -1}};
 
 			// Check neighbors
 			for (int i = 0; i < 8; ++i) {
@@ -98,25 +98,25 @@ class AStar {
 	}
 
   private:
-	int heuristic(Vec2d start, Vec2d end)
+	static int heuristic(Vec2d start, Vec2d end)
 	{
 		// Euclidean distance multiplied by 10 (scaled for integer arithmetic)
 		Vec2d delta = end - start;
 		return static_cast<int>(10 * std::sqrt(delta.x * delta.x + delta.y * delta.y));
 	}
 
-	bool isInBounds(const std::vector<std::vector<bool>> &map, Vec2d pos)
+	static bool isInBounds(const std::vector<std::vector<bool>> &map, Vec2d pos)
 	{
 		return pos.x >= 0 && pos.y >= 0 && pos.y < map.size() && pos.x < map[0].size();
 	}
 
-	bool isVisited(const std::vector<Node *> &visited, Vec2d position)
+	static bool isVisited(const std::vector<Node *> &visited, Vec2d position)
 	{
 		return std::any_of(visited.begin(), visited.end(),
 		                   [&position](Node *node) { return node->position == position; });
 	}
 
-	std::vector<Vec2d> reconstructPath(Node *node)
+	static std::vector<Vec2d> reconstructPath(Node *node)
 	{
 		std::vector<Vec2d> path;
 		while (node) {
@@ -127,7 +127,7 @@ class AStar {
 		return path;
 	}
 
-	void cleanUpMemory(std::priority_queue<Node *, std::vector<Node *>, decltype(pQueueCmp)> &queue,
+	static void cleanUpMemory(std::priority_queue<Node *, std::vector<Node *>, decltype(pQueueCmp)> &queue,
 	                   std::vector<Node *> &visited)
 	{
 		while (!queue.empty()) {

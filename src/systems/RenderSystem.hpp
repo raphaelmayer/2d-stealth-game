@@ -26,7 +26,6 @@ class RenderSystem final : public System {
 	void update(ECSManager &ecs, const double deltaTime) override
 	{
 		Vec2d camPos = camera_.getPosition(); // Cache the camera's position to ensure consistent camera positioning.
-		timeElapsed_ += deltaTime;
 
 		drawMap(camPos);
 
@@ -49,6 +48,7 @@ class RenderSystem final : public System {
 
 				if (ecs.hasComponent<Animatable>(entity)) {
 					auto &animatable = ecs.getComponent<Animatable>(entity);
+					animatable.timeElapsed += deltaTime;
 					handleAnimation(ecs, entity, animatable, spriteSrc.y);
 				}
 
@@ -73,8 +73,8 @@ class RenderSystem final : public System {
   private:
 	void handleAnimation(ECSManager &ecs, const Entity entity, Animatable &animatable, int &spriteSrcY)
 	{
-		if (timeElapsed_ > ANIMATION_UPDATE_RATE_IN_SECONDS){
-			timeElapsed_ = 0;
+		if (animatable.timeElapsed > ANIMATION_UPDATE_RATE_IN_SECONDS){
+			animatable.timeElapsed = 0;
 			if (ecs.hasComponent<RigidBody>(entity) && ecs.getComponent<RigidBody>(entity).isMoving) {
 				animatable.currentAnimation += 1;
 				if (animatable.currentAnimation >= PLAYER_NUMBER_ANIMATIONS) {
@@ -189,5 +189,4 @@ class RenderSystem final : public System {
 	const Camera &camera_;
 	SDL_Texture *spritesheet_;
 	SDL_Texture *weaponTexture;
-	double timeElapsed_ = 0; // elapsed time since last animation update
 };

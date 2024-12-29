@@ -43,7 +43,7 @@ class AISystem final : public System {
 
 					updateHighLevelAIState(ecs, entity, deltaTime);
 
-					btManager.getTree(entity).tickOnce();
+					btManager.tickTree(entity);
 				}
 			}
 		}

@@ -44,7 +44,7 @@ class AIPerceptionSystem : public System {
 
 			// update hearing
 
-			// update other sensory inputs
+			// update other sensory inputs (danger)
 		}
 	}
 

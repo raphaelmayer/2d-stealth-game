@@ -19,14 +19,9 @@ struct AI {
 	double detectionTime = 0; // for state transitions
 	double searchTime = 0;    // for state transitions
 
+	Vec2d targetPosition{-1, -1}; // Current target
 	std::vector<Vec2d> path = {}; // Current path to the target
-	Vec2d targetPosition;         // Current target
-
-	// BT::Tree tree; // Behavior tree instance
-
-	// this was/is for custom BT implementation
-	// Blackboard blackboard;
-	// AI(Blackboard blackboard_) : blackboard(blackboard_) {}
+	int pathIndex = 0;
 
 	// TODO: handle serialization, when the time comes
 	template <class Archive>

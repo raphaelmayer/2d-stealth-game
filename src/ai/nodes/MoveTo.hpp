@@ -1,18 +1,20 @@
 #pragma once
 
+#include "../../components/AI.hpp"
 #include "../../components/Positionable.hpp"
-#include "../../components/Rotatable.hpp"
-#include "../../components/Vision.hpp"
+#include "../../components/RigidBody.hpp"
 #include "../../ecs/ECSManager.hpp"
 #include "../../engine/Vec2d.hpp"
+#include "../../modules/AStar.hpp"
 #include "behaviortree_cpp/action_node.h"
 #include "behaviortree_cpp/basic_types.h" // ports etc
 #include "behaviortree_cpp/tree_node.h"   // NodeConfig
+#include <iostream>
 #include <string>
 
-class WaitFor : public BT::StatefulActionNode {
+class MoveTo : public BT::StatefulActionNode {
   public:
-	WaitFor(const std::string &name, const BT::NodeConfig &config, ECSManager &ecs_)
+	MoveTo(const std::string &name, const BT::NodeConfig &config, ECSManager &ecs_)
 	    : BT::StatefulActionNode(name, config), ecs(ecs_)
 	{
 	}
@@ -21,44 +23,43 @@ class WaitFor : public BT::StatefulActionNode {
 	{
 		// clang-format off
 		return {
-			BT::InputPort<Entity>("entity"),
-			BT::InputPort<double>("deltaTime")
+			BT::InputPort<Entity>("entity")
 		};
 		// clang-format on
 	}
 
 	BT::NodeStatus onStart() override
 	{
-		acc = 0;
+		// TODO
 		return BT::NodeStatus::RUNNING;
 	}
 
 	BT::NodeStatus onRunning() override
 	{
 		BT::Expected<Entity> entity = getInput<Entity>("entity");
-		BT::Expected<double> deltaTime = getInput<double>("deltaTime");
 
-		if (!entity || !deltaTime)
+		if (!entity)
 			return BT::NodeStatus::FAILURE;
 
-		if (acc <= maxTime) {
-			acc += deltaTime.value();
-			return BT::NodeStatus::RUNNING;
-		}
+		auto &ai = ecs.getComponent<AI>(entity.value());
+		auto &rigidBody = ecs.getComponent<RigidBody>(entity.value());
+		const auto &position = ecs.getComponent<Positionable>(entity.value()).position;
 
-		return BT::NodeStatus::SUCCESS;
+		// TODO: Hardcoded value for testing
+		ai.targetPosition = Vec2d{19, 6} * TILE_SIZE;
+
+		if (position == ai.targetPosition)
+			return BT::NodeStatus::SUCCESS;
+
+		return BT::NodeStatus::RUNNING;
 	}
 
 	void onHalted() override
 	{
 		// nothing to do here...
-		std::cout << "WaitFor node interrupted" << std::endl;
+		std::cout << "MoveTo node interrupted" << std::endl;
 	}
 
   private:
 	ECSManager &ecs;
-	// TODO: acc does not really work here, since it persists and only resets when acc >= maxTime.
-	// We'll probably resort to saving it in some ecs component.
-	double acc = 0;
-	const double maxTime = 1;
 };
