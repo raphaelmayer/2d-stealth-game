@@ -15,12 +15,14 @@
 class DebugSystem : public System {
   public:
 	DebugSystem(const Engine &engine, const MapManager &mapManager, const Camera &camera)
-	: engine_(engine), mapManager_(mapManager), camera_(camera)
+	    : engine_(engine), mapManager_(mapManager), camera_(camera)
 	{
 	}
 
-	void update(ECSManager &ecs, const double deltaTime) override { 
+	void update(ECSManager &ecs, const double deltaTime) override
+	{
 		renderVisionDebug(ecs);
+		renderPaths(ecs);
 	}
 
   private:
@@ -34,23 +36,23 @@ class DebugSystem : public System {
 					engine_.drawRectangle(visibleEntityPosition - camera_.getPosition(), TILE_SIZE, TILE_SIZE,
 					                      {255, 255, 255, 255});
 					engine_.drawLine(pos - camera_.getPosition(), visibleEntityPosition - camera_.getPosition(),
-					               {255, 255, 255, 255});
+					                 {255, 255, 255, 255});
 					engine_.drawLine(pos - camera_.getPosition() + Vec2d{TILE_SIZE, 0},
-					               visibleEntityPosition - camera_.getPosition() + Vec2d{TILE_SIZE, 0},
-					               {255, 255, 255, 255});
+					                 visibleEntityPosition - camera_.getPosition() + Vec2d{TILE_SIZE, 0},
+					                 {255, 255, 255, 255});
 					engine_.drawLine(pos - camera_.getPosition() + Vec2d{0, TILE_SIZE},
-					               visibleEntityPosition - camera_.getPosition() + Vec2d{0, TILE_SIZE},
-					               {255, 255, 255, 255});
+					                 visibleEntityPosition - camera_.getPosition() + Vec2d{0, TILE_SIZE},
+					                 {255, 255, 255, 255});
 					engine_.drawLine(pos - camera_.getPosition() + Vec2d{TILE_SIZE, TILE_SIZE},
-					               visibleEntityPosition - camera_.getPosition() + Vec2d{TILE_SIZE, TILE_SIZE},
-					               {255, 255, 255, 255});
+					                 visibleEntityPosition - camera_.getPosition() + Vec2d{TILE_SIZE, TILE_SIZE},
+					                 {255, 255, 255, 255});
 				}
 				drawViewCone(ecs, entity);
 			}
 		}
 	}
 
-		void drawViewCone(ECSManager &ecs, const Entity &entity)
+	void drawViewCone(ECSManager &ecs, const Entity &entity)
 	{
 		const auto &pos = ecs.getComponent<Positionable>(entity).position;
 		const auto &rot = ecs.getComponent<Rotatable>(entity).rotation;
@@ -74,7 +76,8 @@ class DebugSystem : public System {
 		engine_.drawLine(pos - camera_.getPosition() + TILE_SIZE / 2,
 		                 (pos + rightEdge.toVec2d()) - camera_.getPosition() + TILE_SIZE / 2, {0, 255, 0, 255});
 		engine_.drawLine(pos - camera_.getPosition() + TILE_SIZE / 2,
-		                 (pos + forwardDirection.toVec2d() * vision.range) - camera_.getPosition() + TILE_SIZE / 2, {0, 255, 0, 255});
+		                 (pos + forwardDirection.toVec2d() * vision.range) - camera_.getPosition() + TILE_SIZE / 2,
+		                 {0, 255, 0, 255});
 
 		// TODO: draw the arc of the cone
 	}
@@ -104,6 +107,21 @@ class DebugSystem : public System {
 			break;
 		}
 		return {0, 0};
+	}
+
+	void renderPaths(ECSManager &ecs)
+	{
+		for (const auto &entity : ecs.getEntities()) {
+			if (ecs.hasComponent<AI>(entity)) {
+				const auto &ai = ecs.getComponent<AI>(entity);
+				for (size_t i = ai.pathIndex; i < ai.path.size(); i++) {
+					if (i + 1 < ai.path.size())
+						engine_.drawLine(ai.path[i] - camera_.getPosition() + TILE_SIZE / 2,
+						                 ai.path[i + 1] - camera_.getPosition() + TILE_SIZE / 2, {255, 255, 255, 255});
+				}
+				engine_.drawCircle(ai.targetPosition - camera_.getPosition() + TILE_SIZE/2, TILE_SIZE / 2, {255, 255, 255, 255});
+			}
+		}
 	}
 
 	const Engine &engine_;

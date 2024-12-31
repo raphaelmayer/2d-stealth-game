@@ -32,6 +32,7 @@
 #include <random>
 #include <thread>
 #include "components/Patrol.hpp"
+#include "systems/PathfindingSystem.hpp"
 
 class Game : public Engine {
   public:
@@ -84,6 +85,7 @@ class Game : public Engine {
 
 			inputSystem->update(ecs, deltaTime);
 			aiSystem->update(ecs, deltaTime);
+			pathfindingSystem->update(ecs, deltaTime);
 			physicsSystem->update(ecs, deltaTime);
 
 			// must happen in between update of physicsystem and rendersystem, or will result in flickering
@@ -124,6 +126,7 @@ class Game : public Engine {
 		progressSystem = std::make_unique<ProgressSystem>();
 		audioSystem = std::make_unique<AudioSystem>(PLAYER);
 		debugSystem = std::make_unique<DebugSystem>(*this, mapManager, camera);
+		pathfindingSystem = std::make_unique<PathfindingSystem>(mapManager);
 	}
 
 	void createTestEntity()
@@ -153,4 +156,5 @@ class Game : public Engine {
 	std::unique_ptr<ProgressSystem> progressSystem;
 	std::unique_ptr<AudioSystem> audioSystem;
 	std::unique_ptr<DebugSystem> debugSystem;
+	std::unique_ptr<PathfindingSystem> pathfindingSystem;
 };

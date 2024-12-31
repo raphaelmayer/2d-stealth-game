@@ -24,7 +24,8 @@ class AStar {
   public:
 	// Finds the shortest path between two points on a 2D grid using the A* algorithm.
 	// The map is a grid of booleans, where 1 indicates a blocking tile.
-	static std::vector<Vec2d> findPath(const std::vector<std::vector<bool>> &map, Vec2d start, Vec2d target)
+	// This implementation expects start and target to be in tile space.
+	static std::vector<Vec2d> findPath(const std::vector<std::vector<int>> &map, Vec2d start, Vec2d target)
 	{
 		// Check if start and target positions are within bounds
 		if (!isInBounds(map, start) || !isInBounds(map, target)) {
@@ -67,10 +68,12 @@ class AStar {
 			visited.push_back(currentNode);
 
 			// Directions for neighbors
-			static const Vec2d directions[8] = {{0, -1}, {1, -1}, {1, 0}, {1, 1}, {0, 1}, {-1, 1}, {-1, 0}, {-1, -1}};
+			// static const Vec2d directions[8] = {{0, -1}, {1, -1}, {1, 0}, {1, 1}, {0, 1}, {-1, 1}, {-1, 0}, {-1,
+			// -1}};
+			static const Vec2d directions[4] = {{0, -1}, {1, 0}, {0, 1}, {-1, 0}};
 
 			// Check neighbors
-			for (int i = 0; i < 8; ++i) {
+			for (int i = 0; i < 4; ++i) {
 				Vec2d nextPosition = currentNode->position + directions[i];
 
 				// Check bounds
@@ -105,7 +108,7 @@ class AStar {
 		return static_cast<int>(10 * std::sqrt(delta.x * delta.x + delta.y * delta.y));
 	}
 
-	static bool isInBounds(const std::vector<std::vector<bool>> &map, Vec2d pos)
+	static bool isInBounds(const std::vector<std::vector<int>> &map, Vec2d pos)
 	{
 		return pos.x >= 0 && pos.y >= 0 && pos.y < map.size() && pos.x < map[0].size();
 	}
@@ -128,7 +131,7 @@ class AStar {
 	}
 
 	static void cleanUpMemory(std::priority_queue<Node *, std::vector<Node *>, decltype(pQueueCmp)> &queue,
-	                   std::vector<Node *> &visited)
+	                          std::vector<Node *> &visited)
 	{
 		while (!queue.empty()) {
 			delete queue.top();

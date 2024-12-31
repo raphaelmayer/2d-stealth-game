@@ -1,8 +1,11 @@
+#include "../components/Positionable.hpp"
+#include "../components/RigidBody.hpp"
 #include "../constants.hpp"
 #include "../ecs/Entity.hpp"
 #include "../modules/MapManager.hpp"
 #include "System.hpp"
 #include <cmath>
+#include <set>
 
 class PhysicsSystem final : public System {
   public:
@@ -17,11 +20,6 @@ class PhysicsSystem final : public System {
 				auto &position = ecs.getComponent<Positionable>(entity).position;
 				auto &rigidBody = ecs.getComponent<RigidBody>(entity);
 
-				if (ecs.hasComponent<AI>(entity)) {
-					auto &ai = ecs.getComponent<AI>(entity);
-					handleAIPathfinding(position, rigidBody, ai);
-				}
-
 				// if (rigidBody.isMoving) {
 				if (rigidBody.endPosition != position) {
 					rigidBody.isMoving = true;
@@ -33,6 +31,8 @@ class PhysicsSystem final : public System {
 					// while progress is smaller than TILE_SIZE, we move WALKSPEED pixels per second in this direction
 					if (rigidBody.progress < TILE_SIZE) {
 						applyMovement(position, rigidBody, deltaTime);
+						if (position == rigidBody.endPosition)
+							resetCurrentMovementParams(position, rigidBody);
 					} else {
 						// we might slightly overshoot endPos, thus we clamp position back to the grid
 						position = rigidBody.endPosition;
@@ -46,34 +46,6 @@ class PhysicsSystem final : public System {
 	}
 
   private:
-	void handleAIPathfinding(Vec2d &position, RigidBody &rigidBody, AI &ai)
-	{
-		if (ai.targetPosition != Vec2d{-1, -1} && ai.targetPosition != position) {
-			// If path does not point to target position, calculate a new one
-			if (ai.path.empty() || ai.targetPosition != ai.path[ai.path.size() - 1]) {
-				std::cout << "Recalculating path. pathIndex=" << ai.pathIndex << "\n";
-				// ai.path = AStar::findPath({}, position, ai.targetPosition);
-				// hardcoded path for testing
-				ai.path =
-				    std::vector<Vec2d>{Vec2d{15, 6} * TILE_SIZE, Vec2d{16, 6} * TILE_SIZE, Vec2d{16, 5} * TILE_SIZE,
-				                       Vec2d{17, 5} * TILE_SIZE, Vec2d{18, 5} * TILE_SIZE, Vec2d{19, 5} * TILE_SIZE,
-				                       Vec2d{19, 6} * TILE_SIZE};
-				ai.pathIndex = 0;
-			}
-
-			// If we reach an intermediate position on our path, increment to next path position.
-			if (ai.path[ai.pathIndex] == position) {
-				if (ai.pathIndex < ai.path.size() - 1) {
-					ai.pathIndex += 1;
-					rigidBody.endPosition = ai.path[ai.pathIndex];
-					resetCurrentMovementParams(position, rigidBody);
-				}
-			} else {
-				rigidBody.endPosition = ai.path[ai.pathIndex];
-			}
-		}
-	}
-
 	void resetCurrentMovementParams(const Vec2d &position, RigidBody &rigidBody)
 	{
 		rigidBody.isMoving = false;
@@ -102,6 +74,7 @@ class PhysicsSystem final : public System {
 
 			// check map tiles separately, because they are not entities
 			// TODO: improve collision detection between player and map, as soon as map loading is sorted
+			// if (mapManager_.getWalkableMapView()[tileSizedEndPos.y][tileSizedEndPos.x])
 			if (!mapManager_.getTileData(endTile.objectId).walkable)
 				return true;
 		}
