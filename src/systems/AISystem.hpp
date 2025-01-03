@@ -26,10 +26,7 @@ class AISystem final : public System {
 		const std::set<Entity> entities = ecs.getEntities();
 
 		perceptionSystem.update(ecs, deltaTime);
-		// TODO: Update all blackboards with deltaTime (need to add a method to btmanager)
-		// tree.rootBlackboard()->set("deltaTime", deltaTime); // propagate deltaTime to all nodes
 		btManager.setGlobalTreeValue<double>("deltaTime", deltaTime);
-
 		// Update state machine for high-level decisions (currently done within the loop down below)
 		// stateMachine.updateState(ecs, entity, deltaTime);
 

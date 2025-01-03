@@ -31,7 +31,7 @@ class BTManager {
 
 	void tickTree(Entity entity) { trees[entity].tickOnce(); }
 
-	// Set a value globally for every tree.
+	// Set a value globally for every entity.
 	template <typename T>
 	void setGlobalTreeValue(const std::string &key, const T &value)
 	{

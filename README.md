@@ -108,6 +108,7 @@ cmake --open xbuild
 - basic AI implementation for roaming NPC's
 - pathfinding:
 	- If the current path becomes blocked, the affected entity waits (= runs against the other entity) until the path is free again To fix this we need to reset the path on collision.
+	- If an entity stands on a waypoint, we encounter a runtime error. Most likely because the pathfinding algorithm expects the target position to be unoccupied.
 - switch from TXT to TMX map files
 - If two entities move onto the same tile approx. at the same time, they can. To fix this we also need to check `rigidBody.endPosition` when checking collision.
 - we broke `ProgressSystem` because it relies on `interactable.isTextVisible`
