@@ -41,21 +41,21 @@ class PatrolTo : public BT::SyncActionNode {
 		if (!ecs.hasComponent<Patrol>(entity.value()))
 			return BT::NodeStatus::FAILURE;
 
+		const Vec2d &position = ecs.getComponent<Positionable>(entity.value()).position;
+		const auto &ai = ecs.getComponent<AI>(entity.value());
 		auto &patrol = ecs.getComponent<Patrol>(entity.value());
-		auto &ai = ecs.getComponent<AI>(entity.value());
-		const auto &position = ecs.getComponent<Positionable>(entity.value()).position;
-		auto currentPatrolPoint = patrol.waypoints[patrol.patrolIndex];
+		const PatrolPoint &currentPatrolPoint = patrol.waypoints[patrol.patrolIndex];
 
 		// Reached patrol point, set next one.
 		if (position == ai.targetPosition && ai.targetPosition == currentPatrolPoint.position
 		    || ai.targetPosition == Vec2d{-1, -1}) {
 
 			patrol.patrolIndex = (patrol.patrolIndex + 1) % patrol.waypoints.size();
-			currentPatrolPoint = patrol.waypoints[patrol.patrolIndex];
+			const PatrolPoint newPatrolPoint = patrol.waypoints[patrol.patrolIndex];
 
-			setOutput<Vec2d>("targetPosition", currentPatrolPoint.position);
-			setOutput<Rotation>("direction", currentPatrolPoint.rotation);
-		    setOutput<double>("duration", currentPatrolPoint.duration);
+			setOutput<Vec2d>("targetPosition", newPatrolPoint.position);
+			setOutput<Rotation>("direction", newPatrolPoint.rotation);
+			setOutput<double>("duration", newPatrolPoint.duration);
 		}
 
 		return BT::NodeStatus::SUCCESS;

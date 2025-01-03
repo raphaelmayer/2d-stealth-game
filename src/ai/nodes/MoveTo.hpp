@@ -45,7 +45,7 @@ class MoveTo : public BT::StatefulActionNode {
 
 		auto &ai = ecs.getComponent<AI>(entity.value());
 		auto &rigidBody = ecs.getComponent<RigidBody>(entity.value());
-		const auto &position = ecs.getComponent<Positionable>(entity.value()).position;
+		const Vec2d &position = ecs.getComponent<Positionable>(entity.value()).position;
 
 		ai.targetPosition = pos.value();
 

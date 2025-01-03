@@ -17,9 +17,9 @@
 
   <BehaviorTree ID="DetectTree">
     <ReactiveSequence name="detect_sequence">
-      <IsEnemyVisible entity="{entity}" otherEntity="{otherEntity}" otherPosition="{otherPosition}" otherDirection="{otherDirection}" />
+      <IsEnemyVisible entity="{entity}" otherEntity="{otherEntity}" otherPosition="{otherPosition}" direction="{direction}" />
       <WaitFor entity="{entity}" deltaTime="{deltaTime}" duration="{1}" />
-      <TurnTo entity="{entity}" direction="{otherDirection}" />
+      <TurnTo entity="{entity}" direction="{direction}" />
     </ReactiveSequence>
   </BehaviorTree>
 </root>

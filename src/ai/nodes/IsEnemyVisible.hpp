@@ -34,19 +34,23 @@ class IsEnemyVisible : public BT::SyncActionNode {
 	BT::NodeStatus tick() override
 	{
 		Entity entity = getInputOrThrow<Entity>("entity");
-		Vision vision = ecs.getComponent<Vision>(entity);
+		const Vision &vision = ecs.getComponent<Vision>(entity);
 
 		if (vision.visibleEntities.empty()) {
 			return BT::NodeStatus::FAILURE;
 		}
 
-		Entity otherEntity = vision.visibleEntities[0];
-		Vec2d otherPosition = ecs.getComponent<Positionable>(otherEntity).position;
-		Rotation otherDirection = ecs.getComponent<Rotatable>(otherEntity).rotation;
+		const Vec2d &position = ecs.getComponent<Positionable>(entity).position;
+		const Rotation &rotation = ecs.getComponent<Rotatable>(entity).rotation;
+		const Entity &otherEntity = vision.visibleEntities[0];
+		const Vec2d &otherPosition = ecs.getComponent<Positionable>(otherEntity).position;
+
+		// TODO: Is this actually the best place to do this?
+		Rotation direction = calculateDirection(position, otherPosition, rotation);
 
 		setOutput<Entity>("otherEntity", otherEntity);
 		setOutput<Vec2d>("otherPosition", otherPosition);
-		setOutput<Rotation>("otherDirection", otherDirection);
+		setOutput<Rotation>("direction", direction);
 
 		return BT::NodeStatus::SUCCESS;
 	}
@@ -54,7 +58,7 @@ class IsEnemyVisible : public BT::SyncActionNode {
   private:
 	// TODO: Implement a base class, which implements this function? Syntax is kind of neat.
 	template <typename T>
-	T getInputOrThrow(std::string key)
+	T getInputOrThrow(const std::string &key)
 	{
 		BT::Expected<T> exp = getInput<T>(key);
 
@@ -62,6 +66,28 @@ class IsEnemyVisible : public BT::SyncActionNode {
 			throw std::runtime_error("Node input \"" + key + "\" could not be found.");
 
 		return exp.value();
+	}
+
+	Rotation calculateDirection(const Vec2d &start, const Vec2d &end, const Rotation &currentRotation)
+	{
+		// Calculate the difference between the points
+		double dx = end.x - start.x;
+		double dy = end.y - start.y;
+
+		// Normalize the direction vector
+		double magnitude = std::sqrt(dx * dx + dy * dy);
+		if (magnitude == 0) {
+			return currentRotation; // Default direction for no movement
+		}
+		dx /= magnitude;
+		dy /= magnitude;
+
+		// Determine direction based on dominant axis
+		if (std::abs(dx) > std::abs(dy)) {
+			return dx > 0 ? Rotation::EAST : Rotation::WEST;
+		} else {
+			return dy > 0 ? Rotation::SOUTH : Rotation::NORTH;
+		}
 	}
 
 	ECSManager &ecs;

@@ -135,8 +135,8 @@ class Game : public Engine {
 		ecs.addComponent<Vision>(e, Vision{});
 		ecs.addComponent<AI>(e, AI{});
 		ecs.addComponent<Patrol>(e, Patrol{{{Vec2d{15, 6} * TILE_SIZE, Rotation::SOUTH, 2},
-		                                    {Vec2d{19, 6} * TILE_SIZE, Rotation::SOUTH, 2},
-		                                    {Vec2d{24, 7} * TILE_SIZE, Rotation::SOUTH, 2}}});
+		                                    {Vec2d{19, 5} * TILE_SIZE, Rotation::NORTH, 2},
+		                                    {Vec2d{24, 7} * TILE_SIZE, Rotation::EAST, 2}}});
 		btManager.createTreeForEntity(e, "../assets/ai/trees/tree.xml");
 	}
 

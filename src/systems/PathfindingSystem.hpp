@@ -41,9 +41,6 @@ class PathfindingSystem final : public System {
 			if (ai.path.empty() || ai.targetPosition != ai.path[ai.path.size() - 1]) {
 				std::cout << "Recalculating path. pathIndex=" << ai.pathIndex << "\n";
 				ai.path = AStar::findPath(walkableView, position.toTileSize(), ai.targetPosition.toTileSize());
-				//  hardcoded path for testing
-				/*ai.path = std::vector<Vec2d>{Vec2d{15, 6}, Vec2d{16, 6}, Vec2d{16, 5}, Vec2d{17, 5},
-				                             Vec2d{18, 5}, Vec2d{19, 5}, Vec2d{19, 6}};*/
 				for (auto &waypoint : ai.path) // A* works in tile space, so we transform back to pixel space.
 					waypoint *= TILE_SIZE;
 				ai.pathIndex = 0;
