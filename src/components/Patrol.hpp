@@ -5,16 +5,17 @@
 #include <vector>
 
 struct PatrolPoint {
-	Vec2d waypoint;
+	Vec2d position;
 	Rotation rotation;
 	double duration;
 
 	// Maybe add field for special behavior, like triggering an animation or talking to an NPC.
+	// Probably better handled within th BT.
 
 	template <class Archive>
 	void serialize(Archive &archive)
 	{
-		archive(waypoint, rotation, duration);
+		archive(position, rotation, duration);
 	}
 };
 

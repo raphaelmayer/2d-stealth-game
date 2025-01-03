@@ -1,7 +1,8 @@
 #pragma once
 
-#include "ai/MoveToNode.hpp"
+#include "SDL_mixer.h"
 #include "components/AI.hpp"
+#include "components/Patrol.hpp"
 #include "constants.hpp"
 #include "ecs/ECSManager.hpp"
 #include "ecs/Entity.hpp"
@@ -10,17 +11,18 @@
 #include "entities/npc.hpp"
 #include "entities/player.hpp"
 #include "entities/sign.hpp"
+#include "modules/BTManager.hpp"
 #include "modules/Camera.hpp"
 #include "modules/GameStateManager.hpp"
 #include "modules/MapManager.hpp"
 #include "modules/MenuStack.hpp"
 #include "modules/SaveGameManager.hpp"
-#include "SDL_mixer.h"
 #include "systems/AISystem.hpp"
 #include "systems/AudioSystem.hpp"
 #include "systems/DebugSystem.hpp"
 #include "systems/InputSystem.hpp"
 #include "systems/InteractionSystem.hpp"
+#include "systems/PathfindingSystem.hpp"
 #include "systems/PhysicsSystem.hpp"
 #include "systems/ProgressSystem.hpp"
 #include "systems/RenderSystem.hpp"
@@ -46,10 +48,10 @@ class Game : public Engine {
 			throw std::runtime_error("Error. InputSystemUnable to open overworld spritesheet");
 		}
 		mainMenuBackground = std::shared_ptr<SDL_Texture>(loadTexture(MAINMENU_BACKGROUND), SDL_DestroyTexture);
-		
+
 		mapManager.loadMap(0);
 
-		saveGameManager.load(WORLD_DEFINITION_PATH);
+		// saveGameManager.load(WORLD_DEFINITION_PATH);
 
 		initializeSystems();
 
@@ -83,6 +85,7 @@ class Game : public Engine {
 
 			inputSystem->update(ecs, deltaTime);
 			aiSystem->update(ecs, deltaTime);
+			pathfindingSystem->update(ecs, deltaTime);
 			physicsSystem->update(ecs, deltaTime);
 
 			// must happen in between update of physicsystem and rendersystem, or will result in flickering
@@ -90,7 +93,7 @@ class Game : public Engine {
 
 			renderSystem->update(ecs, deltaTime);
 
-			// Needs to happen after rendering entities to be on top but before interactionsystem, 
+			// Needs to happen after rendering entities to be on top but before interactionsystem,
 			// otherwise same input might close just opened dialogue.
 			menuStack.update();
 
@@ -116,39 +119,32 @@ class Game : public Engine {
 	void initializeSystems()
 	{
 		inputSystem = std::make_unique<InputSystem>(*this);
-		aiSystem = std::make_unique<AISystem>(mapManager);
+		aiSystem = std::make_unique<AISystem>(btManager, mapManager);
 		physicsSystem = std::make_unique<PhysicsSystem>(mapManager);
 		interactionSystem = std::make_unique<InteractionSystem>(*this, menuStack);
 		renderSystem = std::make_unique<RenderSystem>(*this, mapManager, camera, spritesheet);
 		progressSystem = std::make_unique<ProgressSystem>();
 		audioSystem = std::make_unique<AudioSystem>(PLAYER);
 		debugSystem = std::make_unique<DebugSystem>(*this, mapManager, camera);
+		pathfindingSystem = std::make_unique<PathfindingSystem>(mapManager);
 	}
 
-	void createTestEntity() { 
+	void createTestEntity()
+	{
 		Entity e = instantiateNPCEntity(ecs, {15, 6});
-		RigidBody &c = ecs.getComponent<RigidBody>(e);
-		//c.endPosition = {16 * TILE_SIZE, 6 * TILE_SIZE};
-		//c.isMoving = true;
-		
-		// This was/is for the custom BT implementation 
-		//auto moveToNode = std::make_unique<MoveToNode>();
-		//auto btree = std::make_shared<BehaviorTree>(std::move(moveToNode));
-		//AI aiComp{Blackboard(ecs, e)};
-		//aiComp.targetPosition = {16 * TILE_SIZE, 6 * TILE_SIZE};
-		////aiComp.behaviorTree = btree;
-		//ecs.addComponent<AI>(e, aiComp);
-		
-		Vision vision;
-		AI ai;
-		ecs.addComponent<Vision>(e, vision);
-		ecs.addComponent<AI>(e, ai);
+		ecs.addComponent<Vision>(e, Vision{});
+		ecs.addComponent<AI>(e, AI{});
+		ecs.addComponent<Patrol>(e, Patrol{{{Vec2d{15, 6} * TILE_SIZE, Rotation::SOUTH, 2},
+		                                    {Vec2d{19, 5} * TILE_SIZE, Rotation::NORTH, 2},
+		                                    {Vec2d{24, 7} * TILE_SIZE, Rotation::EAST, 2}}});
+		btManager.createTreeForEntity(e, "MainTree");
 	}
 
 	SDL_Texture *spritesheet;
 	std::shared_ptr<SDL_Texture> mainMenuBackground;
 	ECSManager ecs;
 	MapManager mapManager;
+	BTManager btManager = BTManager(ecs);
 	SaveGameManager saveGameManager = SaveGameManager(ecs);
 	GameStateManager gameStateManager;
 	MenuStack menuStack;
@@ -162,4 +158,5 @@ class Game : public Engine {
 	std::unique_ptr<ProgressSystem> progressSystem;
 	std::unique_ptr<AudioSystem> audioSystem;
 	std::unique_ptr<DebugSystem> debugSystem;
+	std::unique_ptr<PathfindingSystem> pathfindingSystem;
 };

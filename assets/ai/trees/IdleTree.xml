@@ -1,0 +1,10 @@
+<root>
+  <BehaviorTree ID="IdleTree">
+    <Sequence name="patrol_sequence">
+      <PatrolTo entity="{entity}" targetPosition="{pos}" direction="{dir}" duration="{dur}" />
+      <MoveTo entity="{entity}" position="{pos}" />
+      <TurnTo entity="{entity}" direction="{dir}" />
+      <WaitFor entity="{entity}" deltaTime="{deltaTime}" duration="{dur}" />
+    </Sequence>
+  </BehaviorTree>
+</root>

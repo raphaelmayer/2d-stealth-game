@@ -1,15 +1,15 @@
+#include "../components/Positionable.hpp"
+#include "../components/RigidBody.hpp"
 #include "../constants.hpp"
 #include "../ecs/Entity.hpp"
 #include "../modules/MapManager.hpp"
 #include "System.hpp"
 #include <cmath>
+#include <set>
 
 class PhysicsSystem final : public System {
   public:
-	PhysicsSystem(const MapManager &mapManager)
-	    : mapManager_(mapManager)
-	{
-	}
+	PhysicsSystem(const MapManager &mapManager) : mapManager_(mapManager) {}
 
 	void update(ECSManager &ecs, const double deltaTime) override
 	{
@@ -20,31 +20,34 @@ class PhysicsSystem final : public System {
 				auto &position = ecs.getComponent<Positionable>(entity).position;
 				auto &rigidBody = ecs.getComponent<RigidBody>(entity);
 
-				if (rigidBody.isMoving) {
+				// if (rigidBody.isMoving) {
+				if (rigidBody.endPosition != position) {
+					rigidBody.isMoving = true;
 					if (ecs.hasComponent<Rotatable>(entity))
 						applyRotation(position, rigidBody, ecs.getComponent<Rotatable>(entity));
 					if (checkCollisions(ecs, entity, rigidBody)) {
-						resetCurrentMovementParams(ecs, entity);
+						resetCurrentMovementParams(position, rigidBody);
 					}
 					// while progress is smaller than TILE_SIZE, we move WALKSPEED pixels per second in this direction
 					if (rigidBody.progress < TILE_SIZE) {
 						applyMovement(position, rigidBody, deltaTime);
+						if (position == rigidBody.endPosition)
+							resetCurrentMovementParams(position, rigidBody);
 					} else {
 						// we might slightly overshoot endPos, thus we clamp position back to the grid
 						position = rigidBody.endPosition;
-						resetCurrentMovementParams(ecs, entity);
+						resetCurrentMovementParams(position, rigidBody);
 					}
+				} else {
+					resetCurrentMovementParams(position, rigidBody);
 				}
 			}
 		}
 	}
 
   private:
-	static void resetCurrentMovementParams(ECSManager &ecs, const Entity entity)
+	void resetCurrentMovementParams(const Vec2d &position, RigidBody &rigidBody)
 	{
-		const auto &position = ecs.getComponent<Positionable>(entity).position;
-		auto &rigidBody = ecs.getComponent<RigidBody>(entity);
-
 		rigidBody.isMoving = false;
 		rigidBody.progress = 0;
 
@@ -71,6 +74,7 @@ class PhysicsSystem final : public System {
 
 			// check map tiles separately, because they are not entities
 			// TODO: improve collision detection between player and map, as soon as map loading is sorted
+			// if (mapManager_.getWalkableMapView()[tileSizedEndPos.y][tileSizedEndPos.x])
 			if (!mapManager_.getTileData(endTile.objectId).walkable)
 				return true;
 		}
@@ -94,7 +98,7 @@ class PhysicsSystem final : public System {
 		}
 	}
 
-	void applyRotation(Vec2d &position, RigidBody &rigidBody, Rotatable & rotatable)
+	void applyRotation(Vec2d &position, RigidBody &rigidBody, Rotatable &rotatable)
 	{
 		const Vec2d direction = (rigidBody.endPosition - position).sign();
 

@@ -5,23 +5,23 @@
 #include "../ai/Blackboard.hpp"
 #include "../behaviortree/BehaviorTree.hpp"
 #include "../engine/Vec2d.hpp"
+#include "behaviortree_cpp/bt_factory.h"
+#include <memory>
 #include <vector>
 
 struct AI {
+	Vec2d originalPosition; // The fallback position for AI to return to
+
 	// AIRole role = AIRole::Neutral;
 	AIState state = AIState::Unaware;
 	AIState previousState = AIState::Unaware;
-	double detectionTime = 0;								// for state transitions
-	double searchTime = 0;									// for state transitions
 
-	std::vector<Vec2d> path = {};							// Current path to the target
-	Vec2d targetPosition;									// Current target
-	
-	// std::shared_ptr<BehaviorTree> behaviorTree; // Behavior tree instance
+	double detectionTime = 0; // for state transitions
+	double searchTime = 0;    // for state transitions
 
-	// this was/is for custom BT implementation
-	// Blackboard blackboard;
-	// AI(Blackboard blackboard_) : blackboard(blackboard_) {}
+	Vec2d targetPosition{-1, -1}; // Current target
+	std::vector<Vec2d> path = {}; // Current path to the target
+	int pathIndex = 0;
 
 	// TODO: handle serialization, when the time comes
 	template <class Archive>

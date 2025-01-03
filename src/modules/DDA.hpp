@@ -8,7 +8,7 @@
 
 class DDA {
   public:
-	bool castRay(const std::vector<std::vector<int>> &map, Vec2d startTile, Vec2d endTile)
+	static bool castRay(const std::vector<std::vector<int>> &map, Vec2d startTile, Vec2d endTile)
 	{
 		// Offset the start and end to the center of tiles
 		Vf2d start = Vf2d(startTile.x + 0.5f, startTile.y + 0.5f);

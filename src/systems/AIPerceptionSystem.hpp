@@ -13,10 +13,10 @@
 #include <cmath>
 #include <iostream>
 
-// This system is a subsystem of AISystem. This means it is contained and run within the AISystem class. 
+// This system is a subsystem of AISystem. This means it is contained and run within the AISystem class.
 class AIPerceptionSystem : public System {
   public:
-	AIPerceptionSystem(const MapManager &mapManager) : mapManager_(mapManager) { createVisionMap(); }
+	AIPerceptionSystem(const MapManager &mapManager) : mapManager_(mapManager) { visionMap = mapManager.getWalkableMapView(); }
 
 	void update(ECSManager &ecs, const double deltaTime)
 	{
@@ -34,7 +34,7 @@ class AIPerceptionSystem : public System {
 
 					if (isWithinViewCone(pos, otherPos, rot, vision.range, vision.angle)) {
 						// Perform obstacle check
-						bool didCollide = dda.castRay(visionMap, pos.toTileSize(), otherPos.toTileSize());
+						bool didCollide = DDA::castRay(visionMap, pos.toTileSize(), otherPos.toTileSize());
 						if (!didCollide) {
 							vision.visibleEntities.push_back(otherEntity);
 						}
@@ -44,27 +44,11 @@ class AIPerceptionSystem : public System {
 
 			// update hearing
 
-			// update other sensory inputs
+			// update other sensory inputs (danger)
 		}
 	}
 
   private:
-	// TODO: Maybe provide this as part of mapManager?
-	void createVisionMap()
-	{
-		for (int y = 0; y < MAP_SIZE_Y; y++) {
-			visionMap.push_back({});
-			for (int x = 0; x < MAP_SIZE_X; x++) {
-				const std::vector<TileMetadata> fullTiledata = mapManager_.getTileData(x, y);
-				if (fullTiledata[1].walkable)
-					visionMap[y].push_back(0);
-				else
-					visionMap[y].push_back(1);
-				std::cout << visionMap[y][x];
-			}
-			std::cout << std::endl;
-		}
-	}
 
 	int calculateDistance(Vec2d start, Vec2d end)
 	{
@@ -121,5 +105,4 @@ class AIPerceptionSystem : public System {
 
 	const MapManager &mapManager_;
 	std::vector<std::vector<int>> visionMap;
-	DDA dda;
 };

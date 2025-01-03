@@ -34,6 +34,11 @@ configure_file(
     ${CMAKE_BINARY_DIR}/assets/overworld_spritesheet.png
     COPYONLY
 )
+configure_file(
+    ${CMAKE_SOURCE_DIR}/assets/ai/trees/MainTree.xml
+    ${CMAKE_BINARY_DIR}/assets/ai/trees/MainTree.xml
+    COPYONLY
+)
 
 # Add your main.cpp and lib.cpp files if they are not already included
 add_executable(${PROJECT_NAME} main.cpp 
