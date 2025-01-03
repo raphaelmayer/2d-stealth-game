@@ -46,14 +46,14 @@ enum Rotation{NORTH, EAST, SOUTH, WEST };
 #define MAP_OBJECTS "../assets/overworld_map_objects.txt"
 #define MAINMENU_BACKGROUND "../assets/mainmenu_background.png"
 #define M4A1 "../assets/weapons/m4a1.png"
-
 // Audio
 #define SFX_COLLECT_ITEM "../assets/audio/sfx/item_collect.wav"
 #define SFX_REMOVE_ITEM "../assets/audio/sfx/pop.wav"
 #define SFX_FOOTSTEP "../assets/audio/sfx/grass_footstep.wav"
 #define BACKGROUND_MUSIC_1 "../assets/audio/music/background_1.mp3"
 #define BACKGROUND_MUSIC_2 "../assets/audio/music/background_2.mp3"
-
+// Behavior trees
+#define BT_DIRECTORY "../assets/ai/trees"
 //Fonts
 #define FONT_ARIAL "../assets/fonts/Arial.ttf"
 

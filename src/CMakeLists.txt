@@ -35,8 +35,8 @@ configure_file(
     COPYONLY
 )
 configure_file(
-    ${CMAKE_SOURCE_DIR}/assets/ai/trees/tree.xml
-    ${CMAKE_BINARY_DIR}/assets/ai/trees/tree.xml
+    ${CMAKE_SOURCE_DIR}/assets/ai/trees/MainTree.xml
+    ${CMAKE_BINARY_DIR}/assets/ai/trees/MainTree.xml
     COPYONLY
 )
 

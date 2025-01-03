@@ -7,6 +7,7 @@
 #include "../ai/nodes/RandomSelector.hpp"
 #include "../ai/nodes/TurnTo.hpp"
 #include "../ai/nodes/WaitFor.hpp"
+#include "../constants.hpp"
 #include "../ecs/ECSManager.hpp"
 #include "behaviortree_cpp/bt_factory.h"
 #include <unordered_map>
@@ -15,19 +16,14 @@ class BTManager {
   public:
 	explicit BTManager(ECSManager &ecs)
 	{
-		factory.registerNodeType<IsEnemyVisible>("IsEnemyVisible", std::ref(ecs));
-		factory.registerNodeType<TurnTo>("TurnTo", std::ref(ecs));
-		factory.registerNodeType<WaitFor>("WaitFor", std::ref(ecs));
-		factory.registerNodeType<MoveTo>("MoveTo", std::ref(ecs));
-		factory.registerNodeType<PatrolTo>("PatrolTo", std::ref(ecs));
-		factory.registerNodeType<RandomSelector>("RandomSelector");
-		factory.registerNodeType<IsInState>("IsInState", std::ref(ecs));
+		registerNodes(ecs);
+		registerTreesFromDirectory(BT_DIRECTORY);
 	}
 
-	void createTreeForEntity(Entity entity, std::string filepath)
+	void createTreeForEntity(const Entity &entity, const std::string &treeName)
 	{
 		// TODO?: if entity has tree
-		auto tree = createTree(filepath);
+		auto tree = factory.createTree(treeName);
 		tree.rootBlackboard()->set("entity", entity);
 		tree.rootBlackboard()->set("deltaTime", 0.0);
 		trees[entity] = std::move(tree);
@@ -35,8 +31,9 @@ class BTManager {
 
 	void tickTree(Entity entity) { trees[entity].tickOnce(); }
 
+	// Set a value globally for every tree.
 	template <typename T>
-	void setGlobalTreeValue(std::string key, T value)
+	void setGlobalTreeValue(const std::string &key, const T &value)
 	{
 		for (auto &[Entity, tree] : trees) {
 			tree.rootBlackboard()->set(key, value); // propagate deltaTime to all nodes
@@ -44,15 +41,28 @@ class BTManager {
 	}
 
   private:
-	BT::Tree createTree(const std::string path)
+	void registerNodes(ECSManager &ecs)
 	{
-		if (!std::filesystem::exists(path)) {
-			throw std::runtime_error("File does not exist at: " + path);
+		factory.registerNodeType<RandomSelector>("RandomSelector");
+
+		factory.registerNodeType<IsEnemyVisible>("IsEnemyVisible", std::ref(ecs));
+		factory.registerNodeType<TurnTo>("TurnTo", std::ref(ecs));
+		factory.registerNodeType<WaitFor>("WaitFor", std::ref(ecs));
+		factory.registerNodeType<MoveTo>("MoveTo", std::ref(ecs));
+		factory.registerNodeType<PatrolTo>("PatrolTo", std::ref(ecs));
+		factory.registerNodeType<IsInState>("IsInState", std::ref(ecs));
+	}
+
+	// Find all the XML files in a folder and register all of them.
+	void registerTreesFromDirectory(const std::string &directory)
+	{
+		using std::filesystem::directory_iterator;
+		for (auto const &entry : directory_iterator(directory)) {
+			if (entry.path().extension() == ".xml") {
+				std::cout << entry.path().string() << "\n";
+				factory.registerBehaviorTreeFromFile(entry.path().string());
+			}
 		}
-
-		auto tree = factory.createTreeFromFile(path);
-
-		return tree;
 	}
 
 	BT::BehaviorTreeFactory factory;
