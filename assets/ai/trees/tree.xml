@@ -1,9 +1,17 @@
 <root BTCPP_format="4" main_tree_to_execute="MainTree">
   <BehaviorTree ID="MainTree">
-    <ReactiveSequence name="idle_check">
-      <!--<IsInState state="{'IDLE'}" />-->
-      <SubTree ID="IdleTree" entity="{entity}" deltaTime="{deltaTime}" />
-    </ReactiveSequence>
+    <ReactiveFallback name="main_selector">
+      <ReactiveSequence name="detect_check">
+        <IsInState state="1" entity="{entity}" />
+        <SubTree ID="DetectTree" entity="{entity}" deltaTime="{deltaTime}" />
+      </ReactiveSequence>
+      
+      <ReactiveSequence name="idle_check">
+        <IsInState state="0" entity="{entity}" />
+        <SubTree ID="IdleTree" entity="{entity}" deltaTime="{deltaTime}" />
+      </ReactiveSequence>
+
+    </ReactiveFallback>
   </BehaviorTree>
 
   <BehaviorTree ID="IdleTree">
@@ -18,7 +26,7 @@
   <BehaviorTree ID="DetectTree">
     <ReactiveSequence name="detect_sequence">
       <IsEnemyVisible entity="{entity}" otherEntity="{otherEntity}" otherPosition="{otherPosition}" direction="{direction}" />
-      <WaitFor entity="{entity}" deltaTime="{deltaTime}" duration="{1}" />
+      <WaitFor entity="{entity}" deltaTime="{deltaTime}" duration="1" />
       <TurnTo entity="{entity}" direction="{direction}" />
     </ReactiveSequence>
   </BehaviorTree>

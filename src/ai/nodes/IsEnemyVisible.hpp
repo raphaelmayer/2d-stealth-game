@@ -26,7 +26,7 @@ class IsEnemyVisible : public BT::SyncActionNode {
 			BT::InputPort<Entity>("entity"),
 			BT::OutputPort<Entity>("otherEntity"),
 			BT::OutputPort<Vec2d>("otherPosition"),
-			BT::OutputPort<Rotation>("otherDirection")
+			BT::OutputPort<Rotation>("direction")
 		};
 		// clang-format on
 	}
