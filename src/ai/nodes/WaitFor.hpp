@@ -22,7 +22,8 @@ class WaitFor : public BT::StatefulActionNode {
 		// clang-format off
 		return {
 			BT::InputPort<Entity>("entity"),
-			BT::InputPort<double>("deltaTime")
+			BT::InputPort<double>("deltaTime"),
+			BT::InputPort<double>("duration")
 		};
 		// clang-format on
 	}
@@ -37,11 +38,12 @@ class WaitFor : public BT::StatefulActionNode {
 	{
 		BT::Expected<Entity> entity = getInput<Entity>("entity");
 		BT::Expected<double> deltaTime = getInput<double>("deltaTime");
+		BT::Expected<double> duration = getInput<double>("duration");
 
 		if (!entity || !deltaTime)
 			return BT::NodeStatus::FAILURE;
 
-		if (acc <= maxTime) {
+		if (acc <= duration.value()) {
 			acc += deltaTime.value();
 			return BT::NodeStatus::RUNNING;
 		}
@@ -60,5 +62,4 @@ class WaitFor : public BT::StatefulActionNode {
 	// TODO: acc does not really work here, since it persists and only resets when acc >= maxTime.
 	// We'll probably resort to saving it in some ecs component.
 	double acc = 0;
-	const double maxTime = 1;
 };

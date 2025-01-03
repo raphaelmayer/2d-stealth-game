@@ -3,6 +3,7 @@
 #include "../../components/Positionable.hpp"
 #include "../../components/Rotatable.hpp"
 #include "../../components/Vision.hpp"
+#include "../../constants.hpp"
 #include "../../ecs/ECSManager.hpp"
 #include "../../engine/Vec2d.hpp"
 #include "behaviortree_cpp/action_node.h"
@@ -21,8 +22,8 @@ class TurnTo : public BT::SyncActionNode {
 	{
 		// clang-format off
 		return {
-			BT::InputPort<Entity>("entity")
-			//BT::InputPort<Vec2d>("position")
+			BT::InputPort<Entity>("entity"),
+			BT::InputPort<Rotation>("direction")
 		};
 		// clang-format on
 	}
@@ -30,23 +31,22 @@ class TurnTo : public BT::SyncActionNode {
 	BT::NodeStatus tick() override
 	{
 		BT::Expected<Entity> entity = getInput<Entity>("entity");
-		// BT::Expected<Vec2d> position = getInput<Vec2d>("position");
+		BT::Expected<Rotation> direction = getInput<Rotation>("direction");
 
 		if (!entity)
 			return BT::NodeStatus::FAILURE;
 
-		// We might need a check like this, if we change our approach (i.e. no condition node)
-		/*	if (ecs.hasComponent<AI>(entity) && ecs.hasComponent<Vision>(entity)) {
-		    return BT::NodeStatus::FAILURE;
-		}*/
-
-		// Vec2d &otherPos = getInput<Vec2d>("position"); // TODO: read from blackboard or maybe decide here?
 		const auto &position = ecs.getComponent<Positionable>(entity.value()).position;
-		const Entity &otherEntity = ecs.getComponent<Vision>(entity.value()).visibleEntities[0];
-		const Vec2d &otherPos = ecs.getComponent<Positionable>(otherEntity).position;
-		auto &rotation = ecs.getComponent<Rotatable>(entity.value()).rotation;
 
-		rotation = calculateDirection(position, otherPos, rotation);
+		// TODO: Move code below with calculateDirection function to to IsEnemyVisible component. TurnTo should only get
+		// direction and turn accordingly.
+		// const Entity &otherEntity = ecs.getComponent<Vision>(entity.value()).visibleEntities[0];
+		// const Vec2d &otherPos = ecs.getComponent<Positionable>(otherEntity).position;
+
+		auto &rotation = ecs.getComponent<Rotatable>(entity.value()).rotation;
+		// rotation = calculateDirection(position, otherPos, rotation);
+
+		rotation = direction.value();
 
 		return BT::NodeStatus::SUCCESS;
 	}

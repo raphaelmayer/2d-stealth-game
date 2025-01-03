@@ -23,7 +23,8 @@ class MoveTo : public BT::StatefulActionNode {
 	{
 		// clang-format off
 		return {
-			BT::InputPort<Entity>("entity")
+			BT::InputPort<Entity>("entity"),
+			BT::InputPort<Vec2d>("position")
 		};
 		// clang-format on
 	}
@@ -37,6 +38,7 @@ class MoveTo : public BT::StatefulActionNode {
 	BT::NodeStatus onRunning() override
 	{
 		BT::Expected<Entity> entity = getInput<Entity>("entity");
+		BT::Expected<Vec2d> pos = getInput<Vec2d>("position");
 
 		if (!entity)
 			return BT::NodeStatus::FAILURE;
@@ -45,8 +47,7 @@ class MoveTo : public BT::StatefulActionNode {
 		auto &rigidBody = ecs.getComponent<RigidBody>(entity.value());
 		const auto &position = ecs.getComponent<Positionable>(entity.value()).position;
 
-		// TODO: Hardcoded value for testing
-		ai.targetPosition = Vec2d{19, 6} * TILE_SIZE;
+		ai.targetPosition = pos.value();
 
 		if (position == ai.targetPosition)
 			return BT::NodeStatus::SUCCESS;

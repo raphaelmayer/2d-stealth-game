@@ -2,6 +2,7 @@
 
 #include "SDL_mixer.h"
 #include "components/AI.hpp"
+#include "components/Patrol.hpp"
 #include "constants.hpp"
 #include "ecs/ECSManager.hpp"
 #include "ecs/Entity.hpp"
@@ -21,6 +22,7 @@
 #include "systems/DebugSystem.hpp"
 #include "systems/InputSystem.hpp"
 #include "systems/InteractionSystem.hpp"
+#include "systems/PathfindingSystem.hpp"
 #include "systems/PhysicsSystem.hpp"
 #include "systems/ProgressSystem.hpp"
 #include "systems/RenderSystem.hpp"
@@ -31,8 +33,6 @@
 #include <iostream>
 #include <random>
 #include <thread>
-#include "components/Patrol.hpp"
-#include "systems/PathfindingSystem.hpp"
 
 class Game : public Engine {
   public:
@@ -51,7 +51,7 @@ class Game : public Engine {
 
 		mapManager.loadMap(0);
 
-		//saveGameManager.load(WORLD_DEFINITION_PATH);
+		// saveGameManager.load(WORLD_DEFINITION_PATH);
 
 		initializeSystems();
 
@@ -134,7 +134,9 @@ class Game : public Engine {
 		Entity e = instantiateNPCEntity(ecs, {15, 6});
 		ecs.addComponent<Vision>(e, Vision{});
 		ecs.addComponent<AI>(e, AI{});
-		//ecs.addComponent<Patrol>(e, Patrol{{{{15, 6}, Rotation::SOUTH, 2}, {{16, 6}, Rotation::SOUTH, 2}}});
+		ecs.addComponent<Patrol>(e, Patrol{{{Vec2d{15, 6} * TILE_SIZE, Rotation::SOUTH, 2},
+		                                    {Vec2d{19, 6} * TILE_SIZE, Rotation::SOUTH, 2},
+		                                    {Vec2d{24, 7} * TILE_SIZE, Rotation::SOUTH, 2}}});
 		btManager.createTreeForEntity(e, "../assets/ai/trees/tree.xml");
 	}
 

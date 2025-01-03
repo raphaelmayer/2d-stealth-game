@@ -22,8 +22,14 @@
 
 <root BTCPP_format="4" >
   <BehaviorTree ID="MainTree">
-    <Sequence name="root_sequence">
-      <MoveTo entity="{entity}" />
-    </Sequence>
+    <ReactiveSequence name="idle_check">
+      <!--<IsInState state="{'IDLE'}" />-->
+      <Sequence name="patrol_sequence">
+        <PatrolTo entity="{entity}" targetPosition="{pos}" direction="{dir}" duration="{dur}" />
+        <MoveTo entity="{entity}" position="{pos}" />
+        <TurnTo entity="{entity}" direction="{dir}" />
+        <WaitFor entity="{entity}" deltaTime="{deltaTime}" duration="{dur}" />
+      </Sequence>
+    </ReactiveSequence>
   </BehaviorTree>
 </root>

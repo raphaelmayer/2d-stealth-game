@@ -23,7 +23,10 @@ class IsEnemyVisible : public BT::SyncActionNode {
 	{
 		// clang-format off
 		return {
-			BT::InputPort<Entity>("entity")
+			BT::InputPort<Entity>("entity"),
+			BT::OutputPort<Entity>("otherEntity"),
+			BT::OutputPort<Vec2d>("otherPosition"),
+			BT::OutputPort<Rotation>("otherDirection")
 		};
 		// clang-format on
 	}
@@ -33,15 +36,23 @@ class IsEnemyVisible : public BT::SyncActionNode {
 		Entity entity = getInputOrThrow<Entity>("entity");
 		Vision vision = ecs.getComponent<Vision>(entity);
 
-		if (!vision.visibleEntities.empty()) {
-			return BT::NodeStatus::SUCCESS;
+		if (vision.visibleEntities.empty()) {
+			return BT::NodeStatus::FAILURE;
 		}
 
-		return BT::NodeStatus::FAILURE;
+		Entity otherEntity = vision.visibleEntities[0];
+		Vec2d otherPosition = ecs.getComponent<Positionable>(otherEntity).position;
+		Rotation otherDirection = ecs.getComponent<Rotatable>(otherEntity).rotation;
+
+		setOutput<Entity>("otherEntity", otherEntity);
+		setOutput<Vec2d>("otherPosition", otherPosition);
+		setOutput<Rotation>("otherDirection", otherDirection);
+
+		return BT::NodeStatus::SUCCESS;
 	}
 
   private:
-	// TODO: Implement a baseclass, which implements this function? Syntax is kind of neat.
+	// TODO: Implement a base class, which implements this function? Syntax is kind of neat.
 	template <typename T>
 	T getInputOrThrow(std::string key)
 	{

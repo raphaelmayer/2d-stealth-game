@@ -2,6 +2,8 @@
 
 #include "../ai/nodes/IsEnemyVisible.hpp"
 #include "../ai/nodes/MoveTo.hpp"
+#include "../ai/nodes/PatrolTo.hpp"
+//#include "../ai/nodes/RandomSelector.hpp"
 #include "../ai/nodes/TurnTo.hpp"
 #include "../ai/nodes/WaitFor.hpp"
 #include "../ecs/ECSManager.hpp"
@@ -16,6 +18,8 @@ class BTManager {
 		factory.registerNodeType<TurnTo>("TurnTo", std::ref(ecs));
 		factory.registerNodeType<WaitFor>("WaitFor", std::ref(ecs));
 		factory.registerNodeType<MoveTo>("MoveTo", std::ref(ecs));
+		factory.registerNodeType<PatrolTo>("PatrolTo", std::ref(ecs));
+		//factory.registerNodeType<RandomSelector>("RandomSelector");
 	}
 
 	void createTreeForEntity(Entity entity, std::string filepath)
