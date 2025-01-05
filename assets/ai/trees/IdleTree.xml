@@ -1,4 +1,4 @@
-<root>
+<root BTCPP_format="4">
   <BehaviorTree ID="IdleTree">
     <Sequence name="patrol_sequence">
       <PatrolTo entity="{entity}" targetPosition="{pos}" direction="{dir}" duration="{dur}" />
