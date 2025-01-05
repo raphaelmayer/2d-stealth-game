@@ -66,6 +66,14 @@ set(BTCPP_UNIT_TESTS OFF CACHE BOOL "Disable unit tests" FORCE) # Optional
 # Make the library available
 FetchContent_MakeAvailable(BehaviorTreeCPP)
 
+FetchContent_Declare(
+    EASYS
+    GIT_REPOSITORY  https://github.com/raphaelmayer/easys
+    GIT_TAG         master
+    GIT_PROGRESS    TRUE
+)
+FetchContent_MakeAvailable(EASYS)
+
 # add sub-projects here
 add_subdirectory(src)
 add_subdirectory(tests)

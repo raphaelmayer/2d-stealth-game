@@ -37,6 +37,8 @@ class PathfindingSystem final : public System {
 	void handleAIPathfinding(Vec2d &position, RigidBody &rigidBody, AI &ai, auto walkableView)
 	{
 		if (ai.targetPosition != Vec2d{-1, -1} && ai.targetPosition != position) {
+			// TODO: We need to check, if targetPosition is reachable. If not, we could use a couple of strategies like finding the nearest reachable tile. 
+			
 			// If path does not point to target position, calculate a new one
 			if (ai.path.empty() || ai.targetPosition != ai.path[ai.path.size() - 1]) {
 				std::cout << "Recalculating path. pathIndex=" << ai.pathIndex << "\n";

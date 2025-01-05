@@ -29,12 +29,12 @@ class AStar {
 	{
 		// Check if start and target positions are within bounds
 		if (!isInBounds(map, start) || !isInBounds(map, target)) {
-			return {}; // Return empty path if out of bounds
+			return {start}; // Return empty path if out of bounds
 		}
 
 		// Check if start and target positions are blocked
 		if (map[start.y][start.x] != 0 || map[target.y][target.x] != 0) {
-			return {}; // Return empty path if start or target is blocked
+			return {start}; // Return empty path if start or target is blocked
 		}
 
 		// Priority queue with a custom comparator
