@@ -27,6 +27,9 @@ class PhysicsSystem final : public System {
 						applyRotation(position, rigidBody, ecs.getComponent<Rotatable>(entity));
 					if (checkCollisions(ecs, entity, rigidBody)) {
 						resetCurrentMovementParams(position, rigidBody);
+						// If path becomes blocked, we need to recalculate.
+						if (ecs.hasComponent<AI>(entity))
+							ecs.getComponent<AI>(entity).path = {};
 					}
 					// while progress is smaller than TILE_SIZE, we move WALKSPEED pixels per second in this direction
 					if (rigidBody.progress < TILE_SIZE) {
@@ -68,6 +71,13 @@ class PhysicsSystem final : public System {
 					const auto &otherPosition = ecs.getComponent<Positionable>(other).position;
 					if (otherPosition == rigidBody.endPosition) {
 						return true;
+					}
+					// Entities might move onto the same tile at the same time.
+					if (ecs.hasComponent<RigidBody>(other)) {
+						const auto &otherEndPosition = ecs.getComponent<RigidBody>(other).endPosition;
+						if (otherEndPosition == rigidBody.endPosition) {
+							return true;
+						}
 					}
 				}
 			}
