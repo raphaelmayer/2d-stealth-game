@@ -51,6 +51,7 @@ include_directories(SYSTEM ${CMAKE_SOURCE_DIR}/include)
 # Link the necessary libraries, including SDL
 target_link_libraries(${PROJECT_NAME} PRIVATE ${SDL_LIBRARIES})
 target_link_libraries(${PROJECT_NAME} PRIVATE BT::behaviortree_cpp)
+target_link_libraries(${PROJECT_NAME} PRIVATE easys)
 
 # Enable warnings if supported by the compiler
 target_compile_options(${PROJECT_NAME} PRIVATE
