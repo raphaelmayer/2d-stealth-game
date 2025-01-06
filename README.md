@@ -109,14 +109,17 @@ cmake --open xbuild
 - Pathfinding & Movement:
 	- If `targetPosition` is blocked or unreachable we try to recalculate a path every iteration. We need to check, if `targetPosition` is reachable. If not, we could use a couple of strategies like finding the nearest reachable tile, resetting, etc.
 - switch from TXT to TMX map files
-- Change CMake config for assets. Currently it is kind of cumbersome (see `src/CMakeLists.txt`)
+- text drawing still leaks memory (see `engine.cpp`)
 
 ### Features 
 - implement actual AI state machine
 - implement a new, free-moving camera with zoom
 - create and switch to a new testing map 
+- Sprint feature
+- Stances? Crouch, Prone
 
 ### Low priority
 - handle window resizing
 - UI rendering needs to be adjusted
 - we broke `ProgressSystem` because it relies on `interactable.isTextVisible`
+- Change CMake config for assets. Currently it is kind of cumbersome (see `src/CMakeLists.txt`)

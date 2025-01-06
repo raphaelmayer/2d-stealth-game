@@ -8,7 +8,7 @@
 #include <string>
 
 // I guess we could set a vector of all visible enemies (or just a check, since we could reuse
-// visibleEntities in later nodes) and let succeeding nodes handle their specifics like who to target etc.
+// visibleEnemies in later nodes) and let succeeding nodes handle their specifics like who to target etc.
 //
 // The fundamental question is, if we want to check our high-level state or if an enemy is visible.
 
@@ -36,13 +36,13 @@ class IsEnemyVisible : public BT::SyncActionNode {
 		Entity entity = getInputOrThrow<Entity>("entity");
 		const Vision &vision = ecs.getComponent<Vision>(entity);
 
-		if (vision.visibleEntities.empty()) {
+		if (vision.visibleEnemies.empty()) {
 			return BT::NodeStatus::FAILURE;
 		}
 
 		const Vec2d &position = ecs.getComponent<Positionable>(entity).position;
 		const Rotation &rotation = ecs.getComponent<Rotatable>(entity).rotation;
-		const Entity &otherEntity = vision.visibleEntities[0];
+		const Entity &otherEntity = vision.visibleEnemies[0];
 		const Vec2d &otherPosition = ecs.getComponent<Positionable>(otherEntity).position;
 
 		// TODO: Is this actually the best place to do this?

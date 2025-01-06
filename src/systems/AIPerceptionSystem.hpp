@@ -26,17 +26,24 @@ class AIPerceptionSystem : public System {
 				const auto &rot = ecs.getComponent<Rotatable>(entity).rotation;
 				auto &vision = ecs.getComponent<Vision>(entity);
 
-				vision.visibleEntities.clear();
+				vision.visibleEnemies.clear();
+				vision.visibleAllies.clear();
 
 				// update vision
-				for (const Entity &otherEntity : {PLAYER}) { // AI currently only needs to see the player
+				for (const Entity &otherEntity : ecs.getEntities()) { // AI currently only needs to see the player
+					if (entity == otherEntity)
+						continue;
+
 					const auto &otherPos = ecs.getComponent<Positionable>(otherEntity).position;
 
 					if (isWithinViewCone(pos, otherPos, rot, vision.range, vision.angle)) {
 						// Perform obstacle check
 						bool didCollide = DDA::castRay(visionMap, pos.toTileSize(), otherPos.toTileSize());
 						if (!didCollide) {
-							vision.visibleEntities.push_back(otherEntity);
+							if (otherEntity == PLAYER) // Currently only player can be enemy. No notion of factions etc.
+								vision.visibleEnemies.push_back(otherEntity);
+							else
+								vision.visibleAllies.push_back(otherEntity);
 						}
 					}
 				}

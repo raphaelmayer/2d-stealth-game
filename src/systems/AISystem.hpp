@@ -59,14 +59,14 @@ class AISystem final : public System {
 		const AIState currentState = ai.state;
 		switch (currentState) {
 		case AIState::Unaware:
-			if (!vision.visibleEntities.empty()) {
+			if (!vision.visibleEnemies.empty()) {
 				ai.previousState = currentState;
 				ai.state = AIState::Detecting;
 			}
 			break;
 
 		case AIState::Detecting:
-			if (vision.visibleEntities.empty()) {
+			if (vision.visibleEnemies.empty()) {
 				ai.searchTime += deltaTime;
 				ai.detectionTime = 0;
 				ai.state = ai.previousState;
@@ -86,7 +86,7 @@ class AISystem final : public System {
 			break;
 
 		case AIState::Searching:
-			if (!vision.visibleEntities.empty()) {
+			if (!vision.visibleEnemies.empty()) {
 				ai.searchTime += deltaTime;
 				ai.previousState = currentState;
 				ai.state = AIState::Detecting;
@@ -101,7 +101,7 @@ class AISystem final : public System {
 
 		case AIState::Engaging:
 			ai.searchTime = 0;
-			if (vision.visibleEntities.empty()) {
+			if (vision.visibleEnemies.empty()) {
 				ai.previousState = currentState;
 				ai.state = AIState::Searching;
 			}

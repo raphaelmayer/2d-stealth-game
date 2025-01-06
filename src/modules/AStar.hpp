@@ -97,7 +97,7 @@ class AStar {
 		}
 
 		cleanUpMemory(queue, visited);
-		return {}; // Return empty path if no path found
+		return {start}; // Return empty path if no path found
 	}
 
   private:
