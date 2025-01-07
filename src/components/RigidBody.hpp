@@ -11,8 +11,8 @@ struct RigidBody {
 	bool isMoving = false;
 	Vec2d startPosition;
 	Vec2d endPosition;
-	double progress = 0;
-	double accumulator = 0; // accumulates movement increments smaller than 1 pixel
+	float progress = 0;
+	float accumulator = 0; // accumulates movement increments smaller than 1 pixel
 
 	template <class Archive>
 	void serialize(Archive &archive)

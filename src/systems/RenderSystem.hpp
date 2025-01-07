@@ -17,8 +17,8 @@
 // It performs visibility culling using the camera's position to avoid unnecessary rendering.
 class RenderSystem final : public System {
   public:
-	RenderSystem(const Engine &engine, const MapManager &mapManager, const Camera &camera, SDL_Texture *spritesheet) 
-		: engine_(engine), mapManager_(mapManager), camera_(camera), spritesheet_(spritesheet) 
+	RenderSystem(const Engine &engine, const MapManager &mapManager, const Camera &camera, SDL_Texture *spritesheet)
+	    : engine_(engine), mapManager_(mapManager), camera_(camera), spritesheet_(spritesheet)
 	{
 		weaponTexture = engine_.loadTexture(M4A1);
 	}
@@ -26,8 +26,9 @@ class RenderSystem final : public System {
 	void update(ECSManager &ecs, const double deltaTime) override
 	{
 		Vec2d camPos = camera_.getPosition(); // Cache the camera's position to ensure consistent camera positioning.
+		float camZoom = camera_.getZoom();
 
-		drawMap(camPos);
+		drawMap(camPos, camZoom);
 
 		const std::set<Entity> &entities = ecs.getEntities();
 		for (const Entity &entity : entities) {
@@ -55,15 +56,16 @@ class RenderSystem final : public System {
 				SDL_Rect src = {spriteSrc.x, spriteSrc.y, size.x, size.y};
 				SDL_Rect dst = {position.x, position.y + offset_y, size.x, size.y};
 				// Perform visibility culling before rendering the entity.
-				if (isVisibleOnScreen(dst, camPos, engine_.getScreenSize())) {
-					SDL_Rect camAdjustedDst = {dst.x - camPos.x, dst.y - camPos.y, dst.w, dst.h};
+				if (isVisibleOnScreen(dst, camPos, engine_.getScreenSize() / camZoom)) {
+					SDL_Rect camAdjustedDst = {(dst.x - camPos.x) * camZoom, (dst.y - camPos.y) * camZoom,
+					                           dst.w * camZoom, dst.h * camZoom};
 					engine_.drawSpriteFromSheet(src, camAdjustedDst, spritesheet_);
-				
+
 					// Currently testing: rendering weapons
 					// Render the weapon if applicable
 					// renderWeapon(ecs, entity, position, camPos);
 					if (ecs.hasComponent<AI>(entity)) {
-						renderAlertnessLevel(position, ecs.getComponent<AI>(entity), camPos);
+						renderAlertnessLevel(position, ecs.getComponent<AI>(entity), camPos, camZoom);
 					}
 				}
 			}
@@ -73,7 +75,7 @@ class RenderSystem final : public System {
   private:
 	void handleAnimation(ECSManager &ecs, const Entity entity, Animatable &animatable, int &spriteSrcY)
 	{
-		if (animatable.timeElapsed > ANIMATION_UPDATE_RATE_IN_SECONDS){
+		if (animatable.timeElapsed > ANIMATION_UPDATE_RATE_IN_SECONDS) {
 			animatable.timeElapsed = 0;
 			if (ecs.hasComponent<RigidBody>(entity) && ecs.getComponent<RigidBody>(entity).isMoving) {
 				animatable.currentAnimation += 1;
@@ -89,21 +91,21 @@ class RenderSystem final : public System {
 
 	bool isVisibleOnScreen(SDL_Rect dst, Vec2d cameraPosition, Vec2d screenSize)
 	{
-		return dst.x >= (cameraPosition.x - TILE_SIZE) 
-			&& dst.x < (cameraPosition.x + screenSize.x)
-		    && dst.y >= (cameraPosition.y - TILE_SIZE) 
-			&& dst.y < (cameraPosition.y + screenSize.y);
+		return dst.x >= (cameraPosition.x - TILE_SIZE) && dst.x < (cameraPosition.x + screenSize.x)
+		       && dst.y >= (cameraPosition.y - TILE_SIZE) && dst.y < (cameraPosition.y + screenSize.y);
 	}
 
-	void drawMap(const Vec2d &camPos)
+	void drawMap(const Vec2d &camPos, const float &zoom)
 	{
 		const LevelMap &map = mapManager_.getLevelMap();
 
 		// Calculate the range of visible tiles to render based on the camera's position.
+		Vec2d visibleArea = engine_.getScreenSize() / zoom;
+
 		int startX = std::max(0, static_cast<int>(camPos.x / TILE_SIZE));
 		int startY = std::max(0, static_cast<int>(camPos.y / TILE_SIZE));
-		int endX = std::min(map.getWidth(), static_cast<int>((camPos.x + engine_.getScreenSize().x) / TILE_SIZE) + 1);
-		int endY = std::min(map.getHeight(), static_cast<int>((camPos.y + engine_.getScreenSize().y) / TILE_SIZE) + 1);
+		int endX = std::min(map.getWidth(), static_cast<int>((camPos.x + visibleArea.x) / TILE_SIZE) + 1);
+		int endY = std::min(map.getHeight(), static_cast<int>((camPos.y + visibleArea.y) / TILE_SIZE) + 1);
 
 		for (int y = startY; y < endY; y++) {
 			for (int x = startX; x < endX; x++) {
@@ -114,8 +116,9 @@ class RenderSystem final : public System {
 					SDL_Rect dst = {x * TILE_SIZE, y * TILE_SIZE, TILE_SIZE, TILE_SIZE};
 
 					// Perform visibility culling before rendering the tile.
-					if (isVisibleOnScreen(dst, camPos, engine_.getScreenSize())) {
-						SDL_Rect camAdjustedDst = {dst.x - camPos.x, dst.y - camPos.y, dst.w, dst.h};
+					if (isVisibleOnScreen(dst, camPos, engine_.getScreenSize() / zoom)) {
+						SDL_Rect camAdjustedDst = {(dst.x - camPos.x) * zoom, (dst.y - camPos.y) * zoom, dst.w * zoom,
+						                           dst.h * zoom};
 						engine_.drawSpriteFromSheet(src, camAdjustedDst, spritesheet_);
 					}
 				}
@@ -154,9 +157,9 @@ class RenderSystem final : public System {
 		}
 	}
 
-	void renderAlertnessLevel(const Vec2d &position, const AI &ai, const Vec2d &camPos)
-	{ 
-		const SDL_Rect dst{position.x - camPos.x, position.y - camPos.y - TILE_SIZE, TILE_SIZE, TILE_SIZE};
+	void renderAlertnessLevel(const Vec2d &position, const AI &ai, const Vec2d &camPos, const float &camZoom)
+	{
+		const SDL_Rect dst{(position.x - camPos.x) *camZoom, (position.y - camPos.y - TILE_SIZE) *camZoom, TILE_SIZE *camZoom, TILE_SIZE *camZoom};
 		std::string symbol;
 		switch (ai.state) {
 		case AIState::Unaware:
@@ -178,7 +181,7 @@ class RenderSystem final : public System {
 			symbol = "#"; // Fallback symbol for undefined states
 			break;
 		}
-		
+
 		if (ai.state >= AIState::Detecting) {
 			engine_.drawText(dst, symbol);
 		}

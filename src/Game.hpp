@@ -128,7 +128,7 @@ class Game : public Engine {
   private:
 	void initializeSystems()
 	{
-		inputSystem = std::make_unique<InputSystem>(*this);
+		inputSystem = std::make_unique<InputSystem>(*this, camera);
 		aiSystem = std::make_unique<AISystem>(btManager, mapManager);
 		physicsSystem = std::make_unique<PhysicsSystem>(mapManager);
 		interactionSystem = std::make_unique<InteractionSystem>(*this, menuStack);

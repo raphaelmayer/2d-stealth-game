@@ -12,11 +12,22 @@ class Camera {
   public:
 	Camera(int width, int height) { screenSize = {width, height}; }
 
-	void update(Vec2d focusPoint) { position = focusPoint - screenSize / 2; }
+	void update(Vec2d focusPoint)
+	{
+		//Vec2d visibleArea = screenSize / zoom;
+		//position = focusPoint - visibleArea / 2;
+	}
 
 	Vec2d getPosition() const { return position; }
+
+	void setPosition(Vec2d value) { position = value; }
+
+	float getZoom() const { return zoom; }
+
+	void setZoom(float value) { zoom = value; }
 
   private:
 	Vec2d screenSize;
 	Vec2d position = {0, 0};
+	float zoom = 1.0f;
 };

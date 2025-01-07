@@ -20,6 +20,7 @@ struct Vec2d {
 
 	Vec2d operator*(const Vec2d &v) const { return {x * v.x, y * v.y}; }
 	Vec2d operator*(int n) const { return {x * n, y * n}; }
+	Vec2d operator*(float n) const { return {(int)((float)x * n), (int)((float)y * n)}; }
 
 	Vec2d operator/(const Vec2d &v) const
 	{
@@ -30,6 +31,11 @@ struct Vec2d {
 	{
 		assert(n != 0);
 		return {x / n, y / n};
+	}
+	Vec2d operator/(float n) const
+	{
+		assert(n != 0);
+		return {(int)((float)x / n), (int)((float)y / n)};
 	}
 
 	Vec2d &operator+=(const Vec2d &v)
