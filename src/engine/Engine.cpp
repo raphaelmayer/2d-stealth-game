@@ -48,6 +48,7 @@ void Engine::start()
 	window_ = std::unique_ptr<SDL_Window, SDL_Deleter>(
 	    SDL_CreateWindow(title_.c_str(), SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, windowSize_.x, windowSize_.y,
 	                     SDL_WINDOW_SHOWN | SDL_WINDOW_RESIZABLE));
+	SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, "nearest");
 	renderer_ =
 	    std::unique_ptr<SDL_Renderer, SDL_Deleter>(SDL_CreateRenderer(window_.get(), -1, SDL_RENDERER_ACCELERATED));
 	
@@ -226,6 +227,11 @@ void Engine::drawTexture(const std::shared_ptr<SDL_Texture> texture, const SDL_R
 void Engine::drawSpriteFromSheet(const SDL_Rect src, const SDL_Rect dst, SDL_Texture *spritesheet) const
 {
 	SDL_RenderCopy(renderer_.get(), spritesheet, &src, &dst);
+}
+
+void Engine::drawSpriteFromSheet(const SDL_Rect src, const SDL_FRect dst, SDL_Texture *spritesheet) const
+{
+	SDL_RenderCopyF(renderer_.get(), spritesheet, &src, &dst);
 }
 
 void Engine::drawSpriteFromSheet(const SDL_Rect src, const SDL_Rect dst, SDL_Texture *spritesheet, double angle,

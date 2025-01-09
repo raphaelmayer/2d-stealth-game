@@ -45,6 +45,7 @@ class Engine {
 	void drawTexture(const std::shared_ptr<SDL_Texture> texture, const SDL_Rect dst) const;
 	void drawTexture(const std::shared_ptr<SDL_Texture> texture, const SDL_Rect src, const SDL_Rect dst) const;
 	void drawSpriteFromSheet(const SDL_Rect src, const SDL_Rect dst, SDL_Texture *spritesheet) const;
+	void drawSpriteFromSheet(const SDL_Rect src, const SDL_FRect dst, SDL_Texture *spritesheet) const;
 	void drawSpriteFromSheet(const SDL_Rect src, const SDL_Rect dst, SDL_Texture *spritesheet, double angle,
 	                                 SDL_Point *center, SDL_RendererFlip flip) const;
 	SDL_Texture *loadTexture(const std::string path) const;
