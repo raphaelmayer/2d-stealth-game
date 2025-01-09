@@ -4,6 +4,7 @@
 #include "../ecs/ECSManager.hpp"
 #include "../ecs/Entity.hpp"
 #include "../engine/Engine.hpp"
+#include "../modules/Camera.hpp"
 #include "System.hpp"
 #include <SDL.h>
 #include <set>
@@ -71,29 +72,29 @@ class InputSystem final : public System {
 				velocity.x = -1;
 				// rigidBody.isMoving = true;
 			}
-			// TODO: change comment, if we don't set isMoving here anymore.
-			// movement mechanism: if isMoving && endPosition => move
+			// TODO: change comment, if we don't set isMoving here anymore. Right now, if endPosition differs from
+			// position, we move and PhysicsSystem sets isMoving.
+			// Movement mechanism: if isMoving && endPosition => move
 			rigidBody.endPosition = {positionable.position.x + velocity.x * TILE_SIZE,
 			                         positionable.position.y + velocity.y * TILE_SIZE};
 		}
 	}
 
-	void handleCamera(const std::array<KeyState, SDL_NUM_SCANCODES> &keyState, Vec2d mouseWheelDelta, Vec2d mousePosition)
+	void handleCamera(const std::array<KeyState, SDL_NUM_SCANCODES> &keyState, Vec2d mouseWheelDelta,
+	                  Vec2d mousePosition)
 	{
 		if (mouseWheelDelta.y > 0)
-			camera_.setZoom(camera_.getZoom() + 0.01f);
+			camera_.zoomIn();
 		if (mouseWheelDelta.y < 0)
-			camera_.setZoom(camera_.getZoom() - 0.01f);
+			camera_.zoomOut();
 
-		std::cout << "x: " << mousePosition.x << ", y: " << mousePosition.y << "\n";
-		
 		if (mousePosition.x < 10)
-			camera_.setPosition(camera_.getPosition() - Vec2d{1, 0});
+			camera_.move(CamDirection::LEFT);
 		if (mousePosition.x > engine_.getWindowSize().x - 10)
-			camera_.setPosition(camera_.getPosition() + Vec2d{1, 0});
+			camera_.move(CamDirection::RIGHT);
 		if (mousePosition.y < 10)
-			camera_.setPosition(camera_.getPosition() - Vec2d{0, 1});
+			camera_.move(CamDirection::UP);
 		if (mousePosition.y > engine_.getWindowSize().y - 10)
-			camera_.setPosition(camera_.getPosition() + Vec2d{0, 1});
+			camera_.move(CamDirection::DOWN);
 	}
 };

@@ -1,5 +1,6 @@
 #pragma once
 
+#include "../components/AI.hpp"
 #include "../components/Positionable.hpp"
 #include "../components/Rotatable.hpp"
 #include "../components/Vision.hpp"
@@ -129,7 +130,8 @@ class DebugSystem : public System {
 	// Ensures lines and shapes are drawn relative to the tile grid, aligned to tile centers.
 	Vec2d offset(const Vec2d &position)
 	{
-		return (position - camera_.getPosition()) * camera_.getZoom() + (TILE_SIZE / 2) * camera_.getZoom();
+		Vec2d pos{position.x - camera_.getPosition().x, position.y - camera_.getPosition().y};
+		return (pos)*camera_.getZoom() + (TILE_SIZE / 2) * camera_.getZoom();
 	}
 
 	const Engine &engine_;
