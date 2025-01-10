@@ -17,12 +17,16 @@ enum class CamDirection { UP = 0, RIGHT, DOWN, LEFT };
 class Camera {
   public:
 	Camera(int width, int height) { screenSize = {(float)width, (float)height}; }
+	
+	void focus(Vec2d focusPoint) { 
+		Vf2d p{focusPoint.x, focusPoint.y};
+		focus(p);
+	}
 
-	// TODO: We probably want a method like this but probably as centerAround(focusPoint)
-	void update(Vec2d focusPoint)
+	void focus(Vf2d focusPoint)
 	{
-		// Vec2d visibleArea = screenSize / zoom;
-		// position = focusPoint - visibleArea / 2;
+		Vf2d visibleArea = screenSize / zoom;
+		position = focusPoint - visibleArea / 2;
 	}
 
 	Vf2d getPosition() const { return position; }

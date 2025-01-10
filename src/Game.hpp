@@ -98,9 +98,9 @@ class Game : public Engine {
 			pathfindingSystem->update(ecs, deltaTime);
 			physicsSystem->update(ecs, deltaTime);
 
-			// must happen in between update of physicsystem and rendersystem, or will result in flickering
-			camera.update(ecs.getComponent<Positionable>(PLAYER).position);
+			// camera.focus(ecs.getComponent<Positionable>(PLAYER).position);
 
+			// must happen in between update of physicsystem and rendersystem, or will result in flickering
 			renderSystem->update(ecs, deltaTime);
 
 			// Needs to happen after rendering entities to be on top but before interactionsystem,
