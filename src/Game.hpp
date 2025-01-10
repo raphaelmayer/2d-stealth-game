@@ -98,9 +98,9 @@ class Game : public Engine {
 			pathfindingSystem->update(ecs, deltaTime);
 			physicsSystem->update(ecs, deltaTime);
 
-			// must happen in between update of physicsystem and rendersystem, or will result in flickering
-			camera.update(ecs.getComponent<Positionable>(PLAYER).position);
+			// camera.focus(ecs.getComponent<Positionable>(PLAYER).position);
 
+			// must happen in between update of physicsystem and rendersystem, or will result in flickering
 			renderSystem->update(ecs, deltaTime);
 
 			// Needs to happen after rendering entities to be on top but before interactionsystem,
@@ -128,7 +128,7 @@ class Game : public Engine {
   private:
 	void initializeSystems()
 	{
-		inputSystem = std::make_unique<InputSystem>(*this);
+		inputSystem = std::make_unique<InputSystem>(*this, camera);
 		aiSystem = std::make_unique<AISystem>(btManager, mapManager);
 		physicsSystem = std::make_unique<PhysicsSystem>(mapManager);
 		interactionSystem = std::make_unique<InteractionSystem>(*this, menuStack);

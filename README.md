@@ -110,6 +110,8 @@ cmake --open xbuild
 	- If `targetPosition` is blocked or unreachable we try to recalculate a path every iteration. We need to check, if `targetPosition` is reachable. If not, we could use a couple of strategies like finding the nearest reachable tile, resetting, etc.
 - switch from TXT to TMX map files
 - text drawing still leaks memory (see `engine.cpp`)
+- need to adjust camera scrolling speed based on zoom level
+- need to adjust debug system to work with floats. This requires some new float versions of existing engine draw methods. 
 
 ### Features 
 - implement actual AI state machine

@@ -1,5 +1,6 @@
 #pragma once
 
+#include "../components/AI.hpp"
 #include "../components/Positionable.hpp"
 #include "../components/Rotatable.hpp"
 #include "../components/Vision.hpp"
@@ -46,7 +47,7 @@ class DebugSystem : public System {
 		const Vec2d &pos = ecs.getComponent<Positionable>(entity).position;
 		for (const auto &visibleEntity : others) {
 			auto visibleEntityPosition = ecs.getComponent<Positionable>(visibleEntity).position;
-			engine_.drawLine(pos + offset(), visibleEntityPosition + offset(), color);
+			engine_.drawLine(offset(pos), offset(visibleEntityPosition), color);
 		}
 	}
 
@@ -74,12 +75,11 @@ class DebugSystem : public System {
 		rightQEdge = rightQEdge * vision.range;
 
 		// Draw the cone edges
-		engine_.drawLine(pos + offset(), (pos + leftEdge.toVec2d()) + offset(), {80, 255, 255, 255});
-		engine_.drawLine(pos + offset(), (pos + rightEdge.toVec2d()) + offset(), {80, 255, 255, 255});
-		engine_.drawLine(pos + offset(), (pos + leftQEdge.toVec2d()) + offset(), {80, 255, 255, 255});
-		engine_.drawLine(pos + offset(), (pos + rightQEdge.toVec2d()) + offset(), {80, 255, 255, 255});
-		engine_.drawLine(pos + offset(), (pos + forwardDirection.toVec2d() * vision.range) + offset(),
-		                 {80, 255, 255, 255});
+		engine_.drawLine(offset(pos), offset((pos + leftEdge.toVec2d())), {80, 255, 255, 255});
+		engine_.drawLine(offset(pos), offset((pos + rightEdge.toVec2d())), {80, 255, 255, 255});
+		engine_.drawLine(offset(pos), offset((pos + leftQEdge.toVec2d())), {80, 255, 255, 255});
+		engine_.drawLine(offset(pos), offset((pos + rightQEdge.toVec2d())), {80, 255, 255, 255});
+		engine_.drawLine(offset(pos), offset((pos + forwardDirection.toVec2d() * vision.range)), {80, 255, 255, 255});
 
 		// TODO: draw the arc of the cone
 	}
@@ -118,16 +118,21 @@ class DebugSystem : public System {
 				const auto &ai = ecs.getComponent<AI>(entity);
 				for (size_t i = ai.pathIndex; i < ai.path.size(); i++) {
 					if (i + 1 < ai.path.size())
-						engine_.drawLine(ai.path[i] + offset(), ai.path[i + 1] + offset(), {255, 255, 255, 255});
+						engine_.drawLine(offset(ai.path[i]), offset(ai.path[i + 1]), {255, 255, 255, 255});
 				}
-				engine_.drawCircle(ai.targetPosition + offset(), TILE_SIZE / 2, {255, 255, 255, 255});
+				engine_.drawCircle(offset(ai.targetPosition), (TILE_SIZE / 2) * camera_.getZoom(),
+				                   {255, 255, 255, 255});
 			}
 		}
 	}
 
 	// Computes the offset to center objects within tiles and adjust for the camera's position.
 	// Ensures lines and shapes are drawn relative to the tile grid, aligned to tile centers.
-	Vec2d offset() { return (camera_.getPosition() * -1) + (TILE_SIZE / 2); }
+	Vec2d offset(const Vec2d &position)
+	{
+		Vec2d pos{position.x - camera_.getPosition().x, position.y - camera_.getPosition().y};
+		return (pos)*camera_.getZoom() + (TILE_SIZE / 2) * camera_.getZoom();
+	}
 
 	const Engine &engine_;
 	const MapManager &mapManager_;
