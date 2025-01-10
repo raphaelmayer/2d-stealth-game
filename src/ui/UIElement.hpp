@@ -2,7 +2,7 @@
 
 #include "../constants.hpp"
 #include "../engine/Engine.hpp"
-#include "../engine/Vec2d.hpp"
+#include "../engine/Vec2i.hpp"
 #include <vector>
 
 // UIElement is a base class for text-based UI elements like menus and dialog boxes.
@@ -15,7 +15,7 @@ class UIElement {
 	virtual void render() = 0;
 
   protected:
-	void renderContainer(Vec2d position, int menuWidth, int menuHeight)
+	void renderContainer(Vec2i position, int menuWidth, int menuHeight)
 	{
 		ColorRGBA BLACK = {0, 0, 0, 0};
 		ColorRGBA WHITE = {255, 255, 255, 0};
@@ -35,17 +35,17 @@ class UIElement {
 
 		// outer circles
 		game_.fillCircle(position + offset, oRad, BLACK);                                // top left
-		game_.fillCircle(position + Vec2d{menuWidth - offset - 1, offset}, oRad, BLACK); // top right
-		game_.fillCircle(position + Vec2d{menuWidth - offset - 1, menuHeight - offset - 1}, oRad,
+		game_.fillCircle(position + Vec2i{menuWidth - offset - 1, offset}, oRad, BLACK); // top right
+		game_.fillCircle(position + Vec2i{menuWidth - offset - 1, menuHeight - offset - 1}, oRad,
 		                 BLACK);                                                          // bottom right
-		game_.fillCircle(position + Vec2d{offset, menuHeight - offset - 1}, oRad, BLACK); // bottom left
+		game_.fillCircle(position + Vec2i{offset, menuHeight - offset - 1}, oRad, BLACK); // bottom left
 
 		// inner circles
 		game_.fillCircle(position + offset, iRad, WHITE);                                // top left
-		game_.fillCircle(position + Vec2d{menuWidth - offset - 1, offset}, iRad, WHITE); // top right
-		game_.fillCircle(position + Vec2d{menuWidth - offset - 1, menuHeight - offset - 1}, iRad,
+		game_.fillCircle(position + Vec2i{menuWidth - offset - 1, offset}, iRad, WHITE); // top right
+		game_.fillCircle(position + Vec2i{menuWidth - offset - 1, menuHeight - offset - 1}, iRad,
 		                 WHITE);                                                          // bottom right
-		game_.fillCircle(position + Vec2d{offset, menuHeight - offset - 1}, iRad, WHITE); // bottom left
+		game_.fillCircle(position + Vec2i{offset, menuHeight - offset - 1}, iRad, WHITE); // bottom left
 
 		game_.setRenderScale({PIXEL_SIZE, PIXEL_SIZE});
 	}

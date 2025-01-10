@@ -11,7 +11,7 @@
 #include "KeyState.hpp"
 #include "Mouse.hpp"
 #include "SDL_Deleter.hpp"
-#include "Vec2d.hpp"
+#include "Vec2i.hpp"
 #include <array>
 #include <memory>
 #include <SDL.h>
@@ -20,27 +20,27 @@
 
 class Engine {
   public:
-	Engine(const std::string title, const Vec2d screenSize, const Vec2d pixelSize, const int frameRate);
+	Engine(const std::string title, const Vec2i screenSize, const Vec2i pixelSize, const int frameRate);
 	~Engine();
 
 	void start();
 	void stop() { quit_ = true; }
 
-	Vec2d getWindowSize() const;
-	void setWindowSize(Vec2d windowSize);
-	Vec2d getScreenSize() const;
-	void setScreenSize(Vec2d screenSize);
-	Vec2d getRenderScale() const;
-	void setRenderScale(Vec2d pixelSize);
-	void resizeWindow(Vec2d pos, Vec2d size);
+	Vec2i getWindowSize() const;
+	void setWindowSize(Vec2i windowSize);
+	Vec2i getScreenSize() const;
+	void setScreenSize(Vec2i screenSize);
+	Vec2i getRenderScale() const;
+	void setRenderScale(Vec2i pixelSize);
+	void resizeWindow(Vec2i pos, Vec2i size);
 
 	void clearWindow() const;
-	void drawPoint(const Vec2d pos, const ColorRGBA color) const;
-	void drawLine(const Vec2d start, const Vec2d end, const ColorRGBA color) const;
-	void fillRectangle(const Vec2d pos, const int width, const int height, const ColorRGBA color) const;
-	void drawRectangle(const Vec2d pos, const int width, const int height, const ColorRGBA color) const;
-	void fillCircle(const Vec2d pos, const int radius, const ColorRGBA color) const;
-	void drawCircle(const Vec2d pos, const int radius, const ColorRGBA color) const;
+	void drawPoint(const Vec2i pos, const ColorRGBA color) const;
+	void drawLine(const Vec2i start, const Vec2i end, const ColorRGBA color) const;
+	void fillRectangle(const Vec2i pos, const int width, const int height, const ColorRGBA color) const;
+	void drawRectangle(const Vec2i pos, const int width, const int height, const ColorRGBA color) const;
+	void fillCircle(const Vec2i pos, const int radius, const ColorRGBA color) const;
+	void drawCircle(const Vec2i pos, const int radius, const ColorRGBA color) const;
 	void drawTexture(const std::shared_ptr<SDL_Texture> texture) const;
 	void drawTexture(const std::shared_ptr<SDL_Texture> texture, const SDL_Rect dst) const;
 	void drawTexture(const std::shared_ptr<SDL_Texture> texture, const SDL_Rect src, const SDL_Rect dst) const;
@@ -58,9 +58,9 @@ class Engine {
 	// Returns the state of a specific mouse button.
 	const KeyState &getMouseButtonState(const Uint8 button) const { return mouse_.getButtonState(button); }
 	// Returns the current mouse position.
-	const Vec2d &getMousePosition() const { return mouse_.getPosition(); }
+	const Vec2i &getMousePosition() const { return mouse_.getPosition(); }
 	// Returns the mouse wheel delta since the last frame.
-	const Vec2d &getMouseWheelDelta() const { return mouse_.getWheelDelta(); }
+	const Vec2i &getMouseWheelDelta() const { return mouse_.getWheelDelta(); }
 
 	double getFPS() const { return fpsCounter_.getFPS(); }
 
@@ -76,9 +76,9 @@ class Engine {
 	std::unique_ptr<TTF_Font, SDL_Deleter> font_;
 
 	const std::string title_;
-	Vec2d screenSize_;
-	Vec2d windowSize_;
-	Vec2d pixelSize_;
+	Vec2i screenSize_;
+	Vec2i windowSize_;
+	Vec2i pixelSize_;
 
 	bool quit_;
 

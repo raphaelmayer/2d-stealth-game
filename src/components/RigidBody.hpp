@@ -1,6 +1,6 @@
 #pragma once
 
-#include "../engine/Vec2d.hpp"
+#include "../engine/Vec2i.hpp"
 
 // This component is used for movement. An end position is set by some other system (e.g. InputSystem)
 // and the PhysicsSystem will then move the entity accordingly.
@@ -9,8 +9,8 @@
 // If the entity is moving, end position equals the immediate next tile.
 struct RigidBody {
 	bool isMoving = false;
-	Vec2d startPosition;
-	Vec2d endPosition;
+	Vec2i startPosition;
+	Vec2i endPosition;
 	float progress = 0;
 	float accumulator = 0; // accumulates movement increments smaller than 1 pixel
 

@@ -4,7 +4,7 @@
 #include "../../components/Positionable.hpp"
 #include "../../components/RigidBody.hpp"
 #include "../../ecs/ECSManager.hpp"
-#include "../../engine/Vec2d.hpp"
+#include "../../engine/Vec2i.hpp"
 #include "../../modules/AStar.hpp"
 #include "behaviortree_cpp/action_node.h"
 #include "behaviortree_cpp/basic_types.h" // ports etc
@@ -24,7 +24,7 @@ class MoveTo : public BT::StatefulActionNode {
 		// clang-format off
 		return {
 			BT::InputPort<Entity>("entity"),
-			BT::InputPort<Vec2d>("position")
+			BT::InputPort<Vec2i>("position")
 		};
 		// clang-format on
 	}
@@ -38,14 +38,14 @@ class MoveTo : public BT::StatefulActionNode {
 	BT::NodeStatus onRunning() override
 	{
 		BT::Expected<Entity> entity = getInput<Entity>("entity");
-		BT::Expected<Vec2d> pos = getInput<Vec2d>("position");
+		BT::Expected<Vec2i> pos = getInput<Vec2i>("position");
 
 		if (!entity)
 			return BT::NodeStatus::FAILURE;
 
 		auto &ai = ecs.getComponent<AI>(entity.value());
 		auto &rigidBody = ecs.getComponent<RigidBody>(entity.value());
-		const Vec2d &position = ecs.getComponent<Positionable>(entity.value()).position;
+		const Vec2i &position = ecs.getComponent<Positionable>(entity.value()).position;
 
 		ai.targetPosition = pos.value();
 

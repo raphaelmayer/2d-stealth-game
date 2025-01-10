@@ -12,24 +12,24 @@
 #include "../components/RigidBody.hpp"
 #include "../constants.hpp"
 #include "../ecs/ECSManager.hpp"
-#include "../engine/Vec2d.hpp"
+#include "../engine/Vec2i.hpp"
 
 #define ITEMS_SPRITESHEET_Y 1000
 #define SPRITE_SIZE TILE_SIZE
 
 struct CollectableItem {
-	Vec2d spriteSheetPos;
+	Vec2i spriteSheetPos;
 	Interactable interactable;
 	Collectable collectable;
 };
 
 struct InteractableItem{
-	Vec2d spriteSheetPos;
+	Vec2i spriteSheetPos;
 	Interactable interactable;
 };
 
 // instantiate item on map (not in some inventory) with tile values, not pixel values.
-Entity instantiateItemEntity(ECSManager &ecs, const Vec2d position, const Vec2d spriteSheetPos)
+Entity instantiateItemEntity(ECSManager &ecs, const Vec2i position, const Vec2i spriteSheetPos)
 {
 	Entity item = ecs.addEntity();
 
@@ -43,7 +43,7 @@ Entity instantiateItemEntity(ECSManager &ecs, const Vec2d position, const Vec2d 
 	return item;
 }
 
-Entity instantiateCollectableItemEntity(ECSManager &ecs, const Vec2d position, CollectableItem collectableItem)
+Entity instantiateCollectableItemEntity(ECSManager &ecs, const Vec2i position, CollectableItem collectableItem)
 {
 	Entity item = instantiateItemEntity(ecs, position, collectableItem.spriteSheetPos);
 	ecs.addComponent(item, std::move(collectableItem.interactable));
@@ -52,7 +52,7 @@ Entity instantiateCollectableItemEntity(ECSManager &ecs, const Vec2d position, C
 	return item;
 }
 
-Entity instantiateInteractableItemEntity(ECSManager &ecs, const Vec2d position, InteractableItem interactableItem)
+Entity instantiateInteractableItemEntity(ECSManager &ecs, const Vec2i position, InteractableItem interactableItem)
 {
 	Entity item = instantiateItemEntity(ecs, position, interactableItem.spriteSheetPos);
 	ecs.addComponent(item, std::move(interactableItem.interactable));

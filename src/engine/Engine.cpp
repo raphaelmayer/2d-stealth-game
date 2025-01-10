@@ -12,7 +12,7 @@
 #include <thread>
 #include <vector>
 
-Engine::Engine(const std::string title, const Vec2d screenSize, const Vec2d pixelSize, const int frameRate)
+Engine::Engine(const std::string title, const Vec2i screenSize, const Vec2i pixelSize, const int frameRate)
     : title_(title), screenSize_(screenSize), pixelSize_(pixelSize), quit_(false),
       frameRateLimiter_(frameRate)
 {
@@ -92,32 +92,32 @@ void Engine::start()
 	onDestroy();
 }
 
-Vec2d Engine::getWindowSize() const
+Vec2i Engine::getWindowSize() const
 {
 	return windowSize_;
 }
-void Engine::setWindowSize(Vec2d windowSize)
+void Engine::setWindowSize(Vec2i windowSize)
 {
 	windowSize_ = windowSize;
 }
-Vec2d Engine::getScreenSize() const
+Vec2i Engine::getScreenSize() const
 {
 	return screenSize_;
 }
-void Engine::setScreenSize(Vec2d screenSize)
+void Engine::setScreenSize(Vec2i screenSize)
 {
 	screenSize_ = screenSize;
 }
-void Engine::setRenderScale(Vec2d pixelSize)
+void Engine::setRenderScale(Vec2i pixelSize)
 {
 	pixelSize_ = pixelSize;
 	SDL_RenderSetScale(renderer_.get(), pixelSize_.x, pixelSize_.y);
 }
-Vec2d Engine::getRenderScale() const
+Vec2i Engine::getRenderScale() const
 {
 	return pixelSize_;
 }
-void Engine::resizeWindow(Vec2d pos, Vec2d size)
+void Engine::resizeWindow(Vec2i pos, Vec2i size)
 {
 	// TODO: implement
 }
@@ -128,19 +128,19 @@ void Engine::clearWindow() const
 	SDL_RenderClear(renderer_.get());
 }
 
-void Engine::drawPoint(const Vec2d pos, const ColorRGBA color) const
+void Engine::drawPoint(const Vec2i pos, const ColorRGBA color) const
 {
 	SDL_SetRenderDrawColor(renderer_.get(), color.r, color.g, color.b, color.a);
 	SDL_RenderDrawPoint(renderer_.get(), pos.x, pos.y);
 }
 
-void Engine::drawLine(const Vec2d start, const Vec2d end, const ColorRGBA color) const
+void Engine::drawLine(const Vec2i start, const Vec2i end, const ColorRGBA color) const
 {
 	SDL_SetRenderDrawColor(renderer_.get(), color.r, color.g, color.b, color.a);
 	SDL_RenderDrawLine(renderer_.get(), start.x, start.y, end.x, end.y);
 }
 
-void Engine::fillRectangle(const Vec2d pos, const int width, const int height, const ColorRGBA color) const
+void Engine::fillRectangle(const Vec2i pos, const int width, const int height, const ColorRGBA color) const
 {
 	SDL_Rect r;
 	r.x = pos.x;
@@ -152,7 +152,7 @@ void Engine::fillRectangle(const Vec2d pos, const int width, const int height, c
 	SDL_RenderFillRect(renderer_.get(), &r);
 }
 
-void Engine::drawRectangle(const Vec2d pos, const int width, const int height, const ColorRGBA color) const
+void Engine::drawRectangle(const Vec2i pos, const int width, const int height, const ColorRGBA color) const
 {
 	SDL_Rect r;
 	r.x = pos.x;
@@ -164,7 +164,7 @@ void Engine::drawRectangle(const Vec2d pos, const int width, const int height, c
 	SDL_RenderDrawRect(renderer_.get(), &r);
 }
 
-void Engine::fillCircle(const Vec2d pos, const int radius, const ColorRGBA color) const
+void Engine::fillCircle(const Vec2i pos, const int radius, const ColorRGBA color) const
 {
 	std::vector<SDL_Point> points;
 	for (int i = -radius; i <= radius; i++) {
@@ -179,7 +179,7 @@ void Engine::fillCircle(const Vec2d pos, const int radius, const ColorRGBA color
 	SDL_RenderDrawPoints(renderer_.get(), points.data(), static_cast<int>(points.size()));
 }
 
-void Engine::drawCircle(const Vec2d pos, const int radius, const ColorRGBA color) const
+void Engine::drawCircle(const Vec2i pos, const int radius, const ColorRGBA color) const
 {
 	// This method utilizes the Midpoint Circle Drawing Algorithm
 	std::vector<SDL_Point> points;

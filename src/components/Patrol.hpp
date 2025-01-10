@@ -1,11 +1,11 @@
 #pragma once
 
 #include "../constants.hpp"
-#include "../engine/Vec2d.hpp"
+#include "../engine/Vec2i.hpp"
 #include <vector>
 
 struct PatrolPoint {
-	Vec2d position;
+	Vec2i position;
 	Rotation rotation;
 	double duration;
 

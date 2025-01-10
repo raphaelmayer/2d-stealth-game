@@ -2,7 +2,7 @@
 
 #include "../constants.hpp"
 #include "../engine/Engine.hpp"
-#include "../engine/Vec2d.hpp"
+#include "../engine/Vec2i.hpp"
 #include "ListItem.hpp"
 #include "UIElement.hpp"
 #include <algorithm>
@@ -13,12 +13,12 @@
 // the total count exceeds the defined maximum visible items.
 class ListDialog : public UIElement {
   public:
-	ListDialog(Engine &game, std::vector<ListItem> items, Vec2d position, int menuWidth, int maxVisibleItems = 5)
+	ListDialog(Engine &game, std::vector<ListItem> items, Vec2i position, int menuWidth, int maxVisibleItems = 5)
 	    : UIElement(game), game_(game), items_(items)
 	{
 		initializeMenu(position, menuWidth, maxVisibleItems);
 	}
-	ListDialog(Engine &game, Vec2d position, int menuWidth, int maxVisibleItems = 5) : UIElement(game), game_(game)
+	ListDialog(Engine &game, Vec2i position, int menuWidth, int maxVisibleItems = 5) : UIElement(game), game_(game)
 	{
 		initializeMenu(position, menuWidth, maxVisibleItems);
 	}
@@ -62,7 +62,7 @@ class ListDialog : public UIElement {
 	std::vector<ListItem> items_;
 	int index_ = 0, top_ = 0, maxVisibleItems_;
 
-	Vec2d position_;
+	Vec2i position_;
 	int menuWidth_, menuHeight_;
 	int itemWidth_, itemHeight_;
 
@@ -118,14 +118,14 @@ class ListDialog : public UIElement {
 		}
 
 		for (size_t i = 0; i < maxVisibleItems_ && top_ + i < items_.size(); ++i) {
-			Vec2d pos = {itemX + PADDING, itemHeight_ * static_cast<int>(i) + PADDING * 2 + position_.y};
+			Vec2i pos = {itemX + PADDING, itemHeight_ * static_cast<int>(i) + PADDING * 2 + position_.y};
 			game_.drawText({pos.x, pos.y, itemWidth_, FONT_SIZE}, items_[top_ + i].name);
 		}
 
 		game_.setRenderScale({PIXEL_SIZE, PIXEL_SIZE});
 	}
 
-	void initializeMenu(Vec2d position, int menuWidth, int maxVisibleItems)
+	void initializeMenu(Vec2i position, int menuWidth, int maxVisibleItems)
 	{
 		position_ = position;
 		menuWidth_ = menuWidth;

@@ -26,7 +26,7 @@ class RenderSystem final : public System {
 
 	void update(ECSManager &ecs, const double deltaTime) override
 	{
-		Vf2d camPos = camera_.getPosition();
+		Vec2f camPos = camera_.getPosition();
 		float camZoom = camera_.getZoom();
 
 		drawMap(camPos, camZoom);
@@ -37,8 +37,8 @@ class RenderSystem final : public System {
 				auto &position = ecs.getComponent<Positionable>(entity).position;
 				auto &renderable = ecs.getComponent<Renderable>(entity);
 
-				Vec2d spriteSrc = renderable.spriteSrc;
-				Vec2d size = renderable.size;
+				Vec2i spriteSrc = renderable.spriteSrc;
+				Vec2i size = renderable.size;
 				int offset_y = renderable.offset_y;
 
 				if (ecs.hasComponent<Rotatable>(entity)) {
@@ -90,18 +90,18 @@ class RenderSystem final : public System {
 		spriteSrcY = animatable.animationAdresses[animatable.currentAnimation];
 	}
 
-	bool isVisibleOnScreen(SDL_FRect dst, Vf2d cameraPosition, Vec2d screenSize)
+	bool isVisibleOnScreen(SDL_FRect dst, Vec2f cameraPosition, Vec2i screenSize)
 	{
 		return dst.x >= (cameraPosition.x - TILE_SIZE) && dst.x < (cameraPosition.x + screenSize.x)
 		       && dst.y >= (cameraPosition.y - TILE_SIZE) && dst.y < (cameraPosition.y + screenSize.y);
 	}
 
-	void drawMap(const Vf2d &camPos, const float &zoom)
+	void drawMap(const Vec2f &camPos, const float &zoom)
 	{
 		const LevelMap &map = mapManager_.getLevelMap();
 
 		// Calculate the range of visible tiles to render based on the camera's position.
-		Vec2d visibleArea = engine_.getScreenSize() / zoom;
+		Vec2i visibleArea = engine_.getScreenSize() / zoom;
 		int startX = std::max(0, static_cast<int>(camPos.x / TILE_SIZE));
 		int startY = std::max(0, static_cast<int>(camPos.y / TILE_SIZE));
 		int endX = std::min(map.getWidth(), static_cast<int>((camPos.x + visibleArea.x) / TILE_SIZE) + 1);
@@ -112,7 +112,7 @@ class RenderSystem final : public System {
 			for (int x = startX; x < endX; x++) {
 				const std::vector<TileMetadata> fullTiledata = mapManager_.getTileData(x, y);
 				for (const TileMetadata &tiledata : fullTiledata) {
-					Vec2d srcPos = Vec2d{tiledata.spriteSheetX, tiledata.spriteSheetY} * TILE_SIZE;
+					Vec2i srcPos = Vec2i{tiledata.spriteSheetX, tiledata.spriteSheetY} * TILE_SIZE;
 					SDL_Rect src = {srcPos.x, srcPos.y, TILE_SIZE, TILE_SIZE};
 					SDL_FRect dst = {x * TILE_SIZE, y * TILE_SIZE, TILE_SIZE, TILE_SIZE};
 
@@ -130,7 +130,7 @@ class RenderSystem final : public System {
 		}
 	}
 
-	Vec2d CalculateWeaponOffset(const Rotation &rotation)
+	Vec2i CalculateWeaponOffset(const Rotation &rotation)
 	{
 		if (rotation == Rotation::EAST)
 			return {2, 6}; // EAST
@@ -144,11 +144,11 @@ class RenderSystem final : public System {
 		return {0, 0};
 	}
 
-	void renderWeapon(ECSManager &ecs, const Entity &entity, const Vec2d &position, const Vec2d &camPos)
+	void renderWeapon(ECSManager &ecs, const Entity &entity, const Vec2i &position, const Vec2i &camPos)
 	{
 		if (ecs.hasComponent<Rotatable>(entity)) {
 			const auto &rotation = ecs.getComponent<Rotatable>(entity).rotation;
-			Vec2d weaponOffset = CalculateWeaponOffset(rotation);
+			Vec2i weaponOffset = CalculateWeaponOffset(rotation);
 
 			auto flip = rotation == Rotation::EAST ? SDL_FLIP_NONE : SDL_FLIP_HORIZONTAL;
 			auto angle = rotation == Rotation::SOUTH || rotation == Rotation::NORTH ? 90 : 0;
@@ -161,7 +161,7 @@ class RenderSystem final : public System {
 		}
 	}
 
-	void renderAlertnessLevel(const Vec2d &position, const AI &ai, const Vf2d &camPos, const float &camZoom)
+	void renderAlertnessLevel(const Vec2i &position, const AI &ai, const Vec2f &camPos, const float &camZoom)
 	{
 		const SDL_Rect dst{(position.x - camPos.x) * camZoom, (position.y - camPos.y - TILE_SIZE) * camZoom,
 		                   TILE_SIZE * camZoom, TILE_SIZE * camZoom};

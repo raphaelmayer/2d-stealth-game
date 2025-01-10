@@ -36,7 +36,7 @@
 
 class Game : public Engine {
   public:
-	Game(const std::string title, Vec2d screenSize, Vec2d pixelSize, int frameRate)
+	Game(const std::string title, Vec2i screenSize, Vec2i pixelSize, int frameRate)
 	    : Engine(title, screenSize, pixelSize, frameRate), camera(screenSize.x, screenSize.y)
 	{
 	}
@@ -70,17 +70,17 @@ class Game : public Engine {
 
 			menuStack.update();
 
-			createTestEntity({15, 6}, {{Vec2d{15, 6} * TILE_SIZE, Rotation::SOUTH, 2},
-			                           {Vec2d{19, 5} * TILE_SIZE, Rotation::NORTH, 2},
-			                           {Vec2d{24, 7} * TILE_SIZE, Rotation::EAST, 2}});
-			createTestEntity({21, 7}, {{Vec2d{21, 7} * TILE_SIZE, Rotation::SOUTH, 2},
-			                           {Vec2d{21, 8} * TILE_SIZE, Rotation::NORTH, 2}});
-			createTestEntity({14, 7}, {{Vec2d{14, 7} * TILE_SIZE, Rotation::EAST, 5},
-			                           {Vec2d{20, 7} * TILE_SIZE, Rotation::WEST, 5}});
-			createTestEntity({16, 6}, {{Vec2d{16, 6} * TILE_SIZE, Rotation::SOUTH, 0},
-			                           {Vec2d{19, 6} * TILE_SIZE, Rotation::NORTH, 0},
-			                           {Vec2d{19, 7} * TILE_SIZE, Rotation::EAST, 0},
-			                           {Vec2d{16, 7} * TILE_SIZE, Rotation::WEST, 0}});
+			createTestEntity({15, 6}, {{Vec2i{15, 6} * TILE_SIZE, Rotation::SOUTH, 2},
+			                           {Vec2i{19, 5} * TILE_SIZE, Rotation::NORTH, 2},
+			                           {Vec2i{24, 7} * TILE_SIZE, Rotation::EAST, 2}});
+			createTestEntity({21, 7}, {{Vec2i{21, 7} * TILE_SIZE, Rotation::SOUTH, 2},
+			                           {Vec2i{21, 8} * TILE_SIZE, Rotation::NORTH, 2}});
+			createTestEntity({14, 7}, {{Vec2i{14, 7} * TILE_SIZE, Rotation::EAST, 5},
+			                           {Vec2i{20, 7} * TILE_SIZE, Rotation::WEST, 5}});
+			createTestEntity({16, 6}, {{Vec2i{16, 6} * TILE_SIZE, Rotation::SOUTH, 0},
+			                           {Vec2i{19, 6} * TILE_SIZE, Rotation::NORTH, 0},
+			                           {Vec2i{19, 7} * TILE_SIZE, Rotation::EAST, 0},
+			                           {Vec2i{16, 7} * TILE_SIZE, Rotation::WEST, 0}});
 
 			break;
 		}
@@ -139,7 +139,7 @@ class Game : public Engine {
 		pathfindingSystem = std::make_unique<PathfindingSystem>(mapManager);
 	}
 
-	void createTestEntity(const Vec2d &position, const std::vector<PatrolPoint> &waypoints)
+	void createTestEntity(const Vec2i &position, const std::vector<PatrolPoint> &waypoints)
 	{
 		Entity e = instantiateNPCEntity(ecs, position);
 		ecs.addComponent<Vision>(e, Vision{});

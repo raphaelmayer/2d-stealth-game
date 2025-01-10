@@ -54,7 +54,7 @@ class InteractionSystem final : public System {
 			auto &positionable = ecs.getComponent<Positionable>(entity);
 
 			// look for target entity (entity on the tile, which the player is facing)
-			Vec2d targetPosition = calculateTargetPosition(positionable.position, rotatable.rotation);
+			Vec2i targetPosition = calculateTargetPosition(positionable.position, rotatable.rotation);
 			Entity targetEntity = findTargetEntity(ecs, targetPosition);
 
 			// if there is an entity, it is interactable and has no tombstone component
@@ -104,23 +104,23 @@ class InteractionSystem final : public System {
 		targetEntity = 0;
 	}
 
-	static Vec2d calculateTargetPosition(const Vec2d position, const int rotation)
+	static Vec2i calculateTargetPosition(const Vec2i position, const int rotation)
 	{
 		switch (rotation) {
 		case NORTH:
-			return Vec2d{position.x, position.y - TILE_SIZE};
+			return Vec2i{position.x, position.y - TILE_SIZE};
 		case EAST:
-			return Vec2d{position.x + TILE_SIZE, position.y};
+			return Vec2i{position.x + TILE_SIZE, position.y};
 		case SOUTH:
-			return Vec2d{position.x, position.y + TILE_SIZE};
+			return Vec2i{position.x, position.y + TILE_SIZE};
 		case WEST:
-			return Vec2d{position.x - TILE_SIZE, position.y};
+			return Vec2i{position.x - TILE_SIZE, position.y};
 		default:
 			return position;
 		}
 	}
 
-	static Entity findTargetEntity(ECSManager &ecs, const Vec2d targetPosition)
+	static Entity findTargetEntity(ECSManager &ecs, const Vec2i targetPosition)
 	{
 		const std::set<Entity> &entities = ecs.getEntities();
 

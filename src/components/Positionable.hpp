@@ -1,10 +1,10 @@
 #pragma once
 
-#include "../engine/Vec2d.hpp"
+#include "../engine/Vec2i.hpp"
 
 // Represents the position on the map in pixels
 struct Positionable {
-	Vec2d position;
+	Vec2i position;
 
 	template <class Archive>
 	void serialize(Archive &archive)

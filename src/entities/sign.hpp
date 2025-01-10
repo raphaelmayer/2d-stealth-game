@@ -6,10 +6,10 @@
 #include "../components/Renderable.hpp"
 #include "../constants.hpp"
 #include "../ecs/ECSManager.hpp"
-#include "../engine/Vec2d.hpp"
+#include "../engine/Vec2i.hpp"
 #include <string>
 
-Entity instantiateSignEntity(ECSManager &ecs, Vec2d positionInTiles, const std::string &text = "")
+Entity instantiateSignEntity(ECSManager &ecs, Vec2i positionInTiles, const std::string &text = "")
 {
 	Entity npc = ecs.addEntity();
 
