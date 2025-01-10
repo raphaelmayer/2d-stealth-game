@@ -1,16 +1,4 @@
 #include "Engine.hpp"
-#include "../constants.hpp"
-#include <SDL.h>
-#include <SDL_image.h>
-#include <SDL_mixer.h>
-#include <SDL_ttf.h>
-#include <chrono>
-#include <cmath>
-#include <iostream>
-#include <memory>
-#include <string>
-#include <thread>
-#include <vector>
 
 Engine::Engine(const std::string title, const Vec2i screenSize, const Vec2i pixelSize, const int frameRate)
     : title_(title), screenSize_(screenSize), pixelSize_(pixelSize), quit_(false),
@@ -134,10 +122,22 @@ void Engine::drawPoint(const Vec2i pos, const ColorRGBA color) const
 	SDL_RenderDrawPoint(renderer_.get(), pos.x, pos.y);
 }
 
+void Engine::drawPoint(const Vec2f pos, const ColorRGBA color) const
+{
+	SDL_SetRenderDrawColor(renderer_.get(), color.r, color.g, color.b, color.a);
+	SDL_RenderDrawPointF(renderer_.get(), pos.x, pos.y);
+}
+
 void Engine::drawLine(const Vec2i start, const Vec2i end, const ColorRGBA color) const
 {
 	SDL_SetRenderDrawColor(renderer_.get(), color.r, color.g, color.b, color.a);
 	SDL_RenderDrawLine(renderer_.get(), start.x, start.y, end.x, end.y);
+}
+
+void Engine::drawLine(const Vec2f start, const Vec2f end, const ColorRGBA color) const
+{
+	SDL_SetRenderDrawColor(renderer_.get(), color.r, color.g, color.b, color.a);
+	SDL_RenderDrawLineF(renderer_.get(), start.x, start.y, end.x, end.y);
 }
 
 void Engine::fillRectangle(const Vec2i pos, const int width, const int height, const ColorRGBA color) const
@@ -152,6 +152,18 @@ void Engine::fillRectangle(const Vec2i pos, const int width, const int height, c
 	SDL_RenderFillRect(renderer_.get(), &r);
 }
 
+void Engine::fillRectangle(const Vec2f pos, const int width, const int height, const ColorRGBA color) const
+{
+	SDL_FRect r;
+	r.x = pos.x;
+	r.y = pos.y;
+	r.w = width;
+	r.h = height;
+
+	SDL_SetRenderDrawColor(renderer_.get(), color.r, color.g, color.b, color.a);
+	SDL_RenderFillRectF(renderer_.get(), &r);
+}
+
 void Engine::drawRectangle(const Vec2i pos, const int width, const int height, const ColorRGBA color) const
 {
 	SDL_Rect r;
@@ -162,6 +174,18 @@ void Engine::drawRectangle(const Vec2i pos, const int width, const int height, c
 
 	SDL_SetRenderDrawColor(renderer_.get(), color.r, color.g, color.b, color.a);
 	SDL_RenderDrawRect(renderer_.get(), &r);
+}
+
+void Engine::drawRectangle(const Vec2f pos, const int width, const int height, const ColorRGBA color) const
+{
+	SDL_FRect r;
+	r.x = pos.x;
+	r.y = pos.y;
+	r.w = width;
+	r.h = height;
+
+	SDL_SetRenderDrawColor(renderer_.get(), color.r, color.g, color.b, color.a);
+	SDL_RenderDrawRectF(renderer_.get(), &r);
 }
 
 void Engine::fillCircle(const Vec2i pos, const int radius, const ColorRGBA color) const
@@ -177,6 +201,21 @@ void Engine::fillCircle(const Vec2i pos, const int radius, const ColorRGBA color
 
 	SDL_SetRenderDrawColor(renderer_.get(), color.r, color.g, color.b, color.a);
 	SDL_RenderDrawPoints(renderer_.get(), points.data(), static_cast<int>(points.size()));
+}
+
+void Engine::fillCircle(const Vec2f pos, const int radius, const ColorRGBA color) const
+{
+	std::vector<SDL_FPoint> points;
+	for (int i = -radius; i <= radius; i++) {
+		for (int j = -radius; j <= radius; j++) {
+			if (i * i + j * j <= radius * radius) {
+				points.push_back({pos.x + i, pos.y + j});
+			}
+		}
+	}
+
+	SDL_SetRenderDrawColor(renderer_.get(), color.r, color.g, color.b, color.a);
+	SDL_RenderDrawPointsF(renderer_.get(), points.data(), static_cast<int>(points.size()));
 }
 
 void Engine::drawCircle(const Vec2i pos, const int radius, const ColorRGBA color) const
@@ -207,6 +246,36 @@ void Engine::drawCircle(const Vec2i pos, const int radius, const ColorRGBA color
 
 	SDL_SetRenderDrawColor(renderer_.get(), color.r, color.g, color.b, color.a);
 	SDL_RenderDrawPoints(renderer_.get(), points.data(), static_cast<int>(points.size()));
+}
+
+void Engine::drawCircle(const Vec2f pos, const int radius, const ColorRGBA color) const
+{
+	// This method utilizes the Midpoint Circle Drawing Algorithm
+	std::vector<SDL_FPoint> points;
+	int xRadius = radius;
+	int yRadius = 0;
+	int error = 0;
+
+	while (xRadius >= yRadius) {
+		points.push_back({pos.x + xRadius, pos.y + yRadius});
+		points.push_back({pos.x - xRadius, pos.y + yRadius});
+		points.push_back({pos.x + xRadius, pos.y - yRadius});
+		points.push_back({pos.x - xRadius, pos.y - yRadius});
+		points.push_back({pos.x + yRadius, pos.y + xRadius});
+		points.push_back({pos.x - yRadius, pos.y + xRadius});
+		points.push_back({pos.x + yRadius, pos.y - xRadius});
+		points.push_back({pos.x - yRadius, pos.y - xRadius});
+
+		yRadius++;
+		error += 1 + 2 * yRadius;
+		if (2 * (error - xRadius) + 1 > 0) {
+			xRadius--;
+			error += 1 - 2 * xRadius;
+		}
+	}
+
+	SDL_SetRenderDrawColor(renderer_.get(), color.r, color.g, color.b, color.a);
+	SDL_RenderDrawPointsF(renderer_.get(), points.data(), static_cast<int>(points.size()));
 }
 
 void Engine::drawTexture(const std::shared_ptr<SDL_Texture> texture) const

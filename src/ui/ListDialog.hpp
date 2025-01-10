@@ -109,12 +109,12 @@ class ListDialog : public UIElement {
 
 		// Highlight selection
 		if (index_ >= top_ && index_ < top_ + maxVisibleItems_) {
-			game_.fillRectangle({itemX + 2, itemHeight_ * (index_ - top_) + PADDING + position_.y + 1}, itemWidth_ - 4,
-			                   itemHeight_ - 2, {240, 240, 240, 0});
-			game_.drawRectangle({itemX + 2, itemHeight_ * (index_ - top_) + PADDING + position_.y + 1}, itemWidth_ - 4,
-			                   itemHeight_ - 2, {40, 40, 40, 0});
-			game_.drawRectangle({itemX + 3, itemHeight_ * (index_ - top_) + PADDING + position_.y + 2}, itemWidth_ - 6,
-			                   itemHeight_ - 4, {100, 100, 100, 0});
+			game_.fillRectangle(Vec2i{itemX + 2, itemHeight_ * (index_ - top_) + PADDING + position_.y + 1},
+			                    itemWidth_ - 4, itemHeight_ - 2, {240, 240, 240, 0});
+			game_.drawRectangle(Vec2i{itemX + 2, itemHeight_ * (index_ - top_) + PADDING + position_.y + 1},
+			                    itemWidth_ - 4, itemHeight_ - 2, {40, 40, 40, 0});
+			game_.drawRectangle(Vec2i{itemX + 3, itemHeight_ * (index_ - top_) + PADDING + position_.y + 2},
+			                    itemWidth_ - 6, itemHeight_ - 4, {100, 100, 100, 0});
 		}
 
 		for (size_t i = 0; i < maxVisibleItems_ && top_ + i < items_.size(); ++i) {

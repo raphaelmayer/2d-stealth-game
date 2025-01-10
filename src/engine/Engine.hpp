@@ -7,16 +7,24 @@
 #include "FPSCounter.hpp"
 #include "FrameRateLimiter.hpp"
 #include "FrameTimer.hpp"
-#include "Keyboard.hpp"
 #include "KeyState.hpp"
+#include "Keyboard.hpp"
 #include "Mouse.hpp"
 #include "SDL_Deleter.hpp"
+#include "Vec2f.hpp"
 #include "Vec2i.hpp"
-#include <array>
-#include <memory>
 #include <SDL.h>
+#include <SDL_image.h>
+#include <SDL_mixer.h>
 #include <SDL_ttf.h>
+#include <array>
+#include <chrono>
+#include <cmath>
+#include <iostream>
+#include <memory>
 #include <string>
+#include <thread>
+#include <vector>
 
 class Engine {
   public:
@@ -36,18 +44,24 @@ class Engine {
 
 	void clearWindow() const;
 	void drawPoint(const Vec2i pos, const ColorRGBA color) const;
+	void drawPoint(const Vec2f pos, const ColorRGBA color) const;
 	void drawLine(const Vec2i start, const Vec2i end, const ColorRGBA color) const;
+	void drawLine(const Vec2f start, const Vec2f end, const ColorRGBA color) const;
 	void fillRectangle(const Vec2i pos, const int width, const int height, const ColorRGBA color) const;
+	void fillRectangle(const Vec2f pos, const int width, const int height, const ColorRGBA color) const;
 	void drawRectangle(const Vec2i pos, const int width, const int height, const ColorRGBA color) const;
+	void drawRectangle(const Vec2f pos, const int width, const int height, const ColorRGBA color) const;
 	void fillCircle(const Vec2i pos, const int radius, const ColorRGBA color) const;
+	void fillCircle(const Vec2f pos, const int radius, const ColorRGBA color) const;
 	void drawCircle(const Vec2i pos, const int radius, const ColorRGBA color) const;
+	void drawCircle(const Vec2f pos, const int radius, const ColorRGBA color) const;
 	void drawTexture(const std::shared_ptr<SDL_Texture> texture) const;
 	void drawTexture(const std::shared_ptr<SDL_Texture> texture, const SDL_Rect dst) const;
 	void drawTexture(const std::shared_ptr<SDL_Texture> texture, const SDL_Rect src, const SDL_Rect dst) const;
 	void drawSpriteFromSheet(const SDL_Rect src, const SDL_Rect dst, SDL_Texture *spritesheet) const;
 	void drawSpriteFromSheet(const SDL_Rect src, const SDL_FRect dst, SDL_Texture *spritesheet) const;
 	void drawSpriteFromSheet(const SDL_Rect src, const SDL_Rect dst, SDL_Texture *spritesheet, double angle,
-	                                 SDL_Point *center, SDL_RendererFlip flip) const;
+	                         SDL_Point *center, SDL_RendererFlip flip) const;
 	SDL_Texture *loadTexture(const std::string path) const;
 	void drawText(SDL_Rect dst, const std::string text) const;
 
