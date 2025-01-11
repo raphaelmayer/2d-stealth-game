@@ -10,6 +10,8 @@
 #include "KeyState.hpp"
 #include "Keyboard.hpp"
 #include "Mouse.hpp"
+#include "Rectf.hpp"
+#include "Recti.hpp"
 #include "SDL_Deleter.hpp"
 #include "Vec2f.hpp"
 #include "Vec2i.hpp"
@@ -43,27 +45,27 @@ class Engine {
 	void resizeWindow(Vec2i pos, Vec2i size);
 
 	void clearWindow() const;
-	void drawPoint(const Vec2i pos, const ColorRGBA color) const;
-	void drawPoint(const Vec2f pos, const ColorRGBA color) const;
-	void drawLine(const Vec2i start, const Vec2i end, const ColorRGBA color) const;
-	void drawLine(const Vec2f start, const Vec2f end, const ColorRGBA color) const;
-	void fillRectangle(const Vec2i pos, const int width, const int height, const ColorRGBA color) const;
-	void fillRectangle(const Vec2f pos, const int width, const int height, const ColorRGBA color) const;
-	void drawRectangle(const Vec2i pos, const int width, const int height, const ColorRGBA color) const;
-	void drawRectangle(const Vec2f pos, const int width, const int height, const ColorRGBA color) const;
-	void fillCircle(const Vec2i pos, const int radius, const ColorRGBA color) const;
-	void fillCircle(const Vec2f pos, const int radius, const ColorRGBA color) const;
-	void drawCircle(const Vec2i pos, const int radius, const ColorRGBA color) const;
-	void drawCircle(const Vec2f pos, const int radius, const ColorRGBA color) const;
+	void drawPoint(const Vec2i &pos, const ColorRGBA &color) const;
+	void drawPoint(const Vec2f &pos, const ColorRGBA &color) const;
+	void drawLine(const Vec2i &start, const Vec2i &end, const ColorRGBA &color) const;
+	void drawLine(const Vec2f &start, const Vec2f &end, const ColorRGBA &color) const;
+	void fillRectangle(const Vec2i &pos, const int &width, const int &height, const ColorRGBA &color) const;
+	void fillRectangle(const Vec2f &pos, const int &width, const int &height, const ColorRGBA &color) const;
+	void drawRectangle(const Vec2i &pos, const int &width, const int &height, const ColorRGBA &color) const;
+	void drawRectangle(const Vec2f &pos, const int &width, const int &height, const ColorRGBA &color) const;
+	void fillCircle(const Vec2i &pos, const int &radius, const ColorRGBA &color) const;
+	void fillCircle(const Vec2f &pos, const int &radius, const ColorRGBA &color) const;
+	void drawCircle(const Vec2i &pos, const int &radius, const ColorRGBA &color) const;
+	void drawCircle(const Vec2f &pos, const int &radius, const ColorRGBA &color) const;
 	void drawTexture(const std::shared_ptr<SDL_Texture> texture) const;
 	void drawTexture(const std::shared_ptr<SDL_Texture> texture, const SDL_Rect dst) const;
 	void drawTexture(const std::shared_ptr<SDL_Texture> texture, const SDL_Rect src, const SDL_Rect dst) const;
-	void drawSpriteFromSheet(const SDL_Rect src, const SDL_Rect dst, SDL_Texture *spritesheet) const;
-	void drawSpriteFromSheet(const SDL_Rect src, const SDL_FRect dst, SDL_Texture *spritesheet) const;
-	void drawSpriteFromSheet(const SDL_Rect src, const SDL_Rect dst, SDL_Texture *spritesheet, double angle,
+	void drawSpriteFromSheet(const Recti &src, const Recti &dst, SDL_Texture *spritesheet) const;
+	void drawSpriteFromSheet(const Recti &src, const Rectf &dst, SDL_Texture *spritesheet) const;
+	void drawSpriteFromSheet(const Recti &src, const Recti &dst, SDL_Texture *spritesheet, double angle,
 	                         SDL_Point *center, SDL_RendererFlip flip) const;
-	SDL_Texture *loadTexture(const std::string path) const;
-	void drawText(SDL_Rect dst, const std::string text) const;
+	SDL_Texture *loadTexture(const std::string &path) const;
+	void drawText(const Recti &dst, const std::string &text) const;
 
 	// Get the state of all keys
 	const std::array<KeyState, SDL_NUM_SCANCODES> &getKeyStates() const { return keyboard_.getKeyStates(); }

@@ -54,11 +54,11 @@ class RenderSystem final : public System {
 					handleAnimation(ecs, entity, animatable, spriteSrc.y);
 				}
 
-				SDL_Rect src = {spriteSrc.x, spriteSrc.y, size.x, size.y};
-				SDL_FRect dst = {position.x, position.y + offset_y, size.x, size.y};
+				Recti src = {spriteSrc.x, spriteSrc.y, size.x, size.y};
+				Rectf dst = {position.x, position.y + offset_y, size.x, size.y};
 				// Perform visibility culling before rendering the entity.
 				if (isVisibleOnScreen(dst, camPos, engine_.getScreenSize() / camZoom)) {
-					SDL_FRect camAdjustedDst = {(dst.x - camPos.x) * camZoom, (dst.y - camPos.y) * camZoom,
+					Rectf camAdjustedDst = {(dst.x - camPos.x) * camZoom, (dst.y - camPos.y) * camZoom,
 					                           dst.w * camZoom, dst.h * camZoom};
 					engine_.drawSpriteFromSheet(src, camAdjustedDst, spritesheet_);
 
@@ -90,7 +90,7 @@ class RenderSystem final : public System {
 		spriteSrcY = animatable.animationAdresses[animatable.currentAnimation];
 	}
 
-	bool isVisibleOnScreen(SDL_FRect dst, Vec2f cameraPosition, Vec2i screenSize)
+	bool isVisibleOnScreen(Rectf dst, Vec2f cameraPosition, Vec2i screenSize)
 	{
 		return dst.x >= (cameraPosition.x - TILE_SIZE) && dst.x < (cameraPosition.x + screenSize.x)
 		       && dst.y >= (cameraPosition.y - TILE_SIZE) && dst.y < (cameraPosition.y + screenSize.y);
@@ -113,8 +113,8 @@ class RenderSystem final : public System {
 				const std::vector<TileMetadata> fullTiledata = mapManager_.getTileData(x, y);
 				for (const TileMetadata &tiledata : fullTiledata) {
 					Vec2i srcPos = Vec2i{tiledata.spriteSheetX, tiledata.spriteSheetY} * TILE_SIZE;
-					SDL_Rect src = {srcPos.x, srcPos.y, TILE_SIZE, TILE_SIZE};
-					SDL_FRect dst = {x * TILE_SIZE, y * TILE_SIZE, TILE_SIZE, TILE_SIZE};
+					Recti src = {srcPos.x, srcPos.y, TILE_SIZE, TILE_SIZE};
+					Rectf dst = {x * TILE_SIZE, y * TILE_SIZE, TILE_SIZE, TILE_SIZE};
 
 					// Perform visibility culling before rendering the tile.
 					if (isVisibleOnScreen(dst, camPos, engine_.getScreenSize() / zoom)) {
@@ -122,7 +122,7 @@ class RenderSystem final : public System {
 						float screenY = (dst.y - camPos.y) * zoom;
 						float w = dst.w * zoom;
 						float h = dst.h * zoom;
-						SDL_FRect camAdjustedDst{screenX, screenY, w, h};
+						Rectf camAdjustedDst{screenX, screenY, w, h};
 						engine_.drawSpriteFromSheet(src, camAdjustedDst, spritesheet_);
 					}
 				}
@@ -153,8 +153,8 @@ class RenderSystem final : public System {
 			auto flip = rotation == Rotation::EAST ? SDL_FLIP_NONE : SDL_FLIP_HORIZONTAL;
 			auto angle = rotation == Rotation::SOUTH || rotation == Rotation::NORTH ? 90 : 0;
 
-			SDL_Rect wepSrc = {0, 0, 64, 32};
-			SDL_Rect camAdjustedDstWep = {position.x + weaponOffset.x - camPos.x,
+			Recti wepSrc = {0, 0, 64, 32};
+			Recti camAdjustedDstWep = {position.x + weaponOffset.x - camPos.x,
 			                              position.y + weaponOffset.y - camPos.y, 16, 8};
 
 			engine_.drawSpriteFromSheet(wepSrc, camAdjustedDstWep, weaponTexture, angle, nullptr, flip);
@@ -163,7 +163,7 @@ class RenderSystem final : public System {
 
 	void renderAlertnessLevel(const Vec2i &position, const AI &ai, const Vec2f &camPos, const float &camZoom)
 	{
-		const SDL_Rect dst{(position.x - camPos.x) * camZoom, (position.y - camPos.y - TILE_SIZE) * camZoom,
+		const Recti dst{(position.x - camPos.x) * camZoom, (position.y - camPos.y - TILE_SIZE) * camZoom,
 		                   TILE_SIZE * camZoom, TILE_SIZE * camZoom};
 		std::string symbol;
 		switch (ai.state) {

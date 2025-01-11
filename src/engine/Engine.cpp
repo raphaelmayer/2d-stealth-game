@@ -1,8 +1,7 @@
 #include "Engine.hpp"
 
 Engine::Engine(const std::string title, const Vec2i screenSize, const Vec2i pixelSize, const int frameRate)
-    : title_(title), screenSize_(screenSize), pixelSize_(pixelSize), quit_(false),
-      frameRateLimiter_(frameRate)
+    : title_(title), screenSize_(screenSize), pixelSize_(pixelSize), quit_(false), frameRateLimiter_(frameRate)
 {
 	// Initialize SDL2 related components
 	if (SDL_Init(SDL_INIT_VIDEO) < 0)
@@ -39,7 +38,7 @@ void Engine::start()
 	SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, "nearest");
 	renderer_ =
 	    std::unique_ptr<SDL_Renderer, SDL_Deleter>(SDL_CreateRenderer(window_.get(), -1, SDL_RENDERER_ACCELERATED));
-	
+
 	// Set the scaling factor
 	SDL_RenderSetScale(renderer_.get(), pixelSize_.x, pixelSize_.y);
 
@@ -116,31 +115,31 @@ void Engine::clearWindow() const
 	SDL_RenderClear(renderer_.get());
 }
 
-void Engine::drawPoint(const Vec2i pos, const ColorRGBA color) const
+void Engine::drawPoint(const Vec2i &pos, const ColorRGBA &color) const
 {
 	SDL_SetRenderDrawColor(renderer_.get(), color.r, color.g, color.b, color.a);
 	SDL_RenderDrawPoint(renderer_.get(), pos.x, pos.y);
 }
 
-void Engine::drawPoint(const Vec2f pos, const ColorRGBA color) const
+void Engine::drawPoint(const Vec2f &pos, const ColorRGBA &color) const
 {
 	SDL_SetRenderDrawColor(renderer_.get(), color.r, color.g, color.b, color.a);
 	SDL_RenderDrawPointF(renderer_.get(), pos.x, pos.y);
 }
 
-void Engine::drawLine(const Vec2i start, const Vec2i end, const ColorRGBA color) const
+void Engine::drawLine(const Vec2i &start, const Vec2i &end, const ColorRGBA &color) const
 {
 	SDL_SetRenderDrawColor(renderer_.get(), color.r, color.g, color.b, color.a);
 	SDL_RenderDrawLine(renderer_.get(), start.x, start.y, end.x, end.y);
 }
 
-void Engine::drawLine(const Vec2f start, const Vec2f end, const ColorRGBA color) const
+void Engine::drawLine(const Vec2f &start, const Vec2f &end, const ColorRGBA &color) const
 {
 	SDL_SetRenderDrawColor(renderer_.get(), color.r, color.g, color.b, color.a);
 	SDL_RenderDrawLineF(renderer_.get(), start.x, start.y, end.x, end.y);
 }
 
-void Engine::fillRectangle(const Vec2i pos, const int width, const int height, const ColorRGBA color) const
+void Engine::fillRectangle(const Vec2i &pos, const int &width, const int &height, const ColorRGBA &color) const
 {
 	SDL_Rect r;
 	r.x = pos.x;
@@ -152,7 +151,7 @@ void Engine::fillRectangle(const Vec2i pos, const int width, const int height, c
 	SDL_RenderFillRect(renderer_.get(), &r);
 }
 
-void Engine::fillRectangle(const Vec2f pos, const int width, const int height, const ColorRGBA color) const
+void Engine::fillRectangle(const Vec2f &pos, const int &width, const int &height, const ColorRGBA &color) const
 {
 	SDL_FRect r;
 	r.x = pos.x;
@@ -164,7 +163,7 @@ void Engine::fillRectangle(const Vec2f pos, const int width, const int height, c
 	SDL_RenderFillRectF(renderer_.get(), &r);
 }
 
-void Engine::drawRectangle(const Vec2i pos, const int width, const int height, const ColorRGBA color) const
+void Engine::drawRectangle(const Vec2i &pos, const int &width, const int &height, const ColorRGBA &color) const
 {
 	SDL_Rect r;
 	r.x = pos.x;
@@ -176,7 +175,7 @@ void Engine::drawRectangle(const Vec2i pos, const int width, const int height, c
 	SDL_RenderDrawRect(renderer_.get(), &r);
 }
 
-void Engine::drawRectangle(const Vec2f pos, const int width, const int height, const ColorRGBA color) const
+void Engine::drawRectangle(const Vec2f &pos, const int &width, const int &height, const ColorRGBA &color) const
 {
 	SDL_FRect r;
 	r.x = pos.x;
@@ -188,7 +187,7 @@ void Engine::drawRectangle(const Vec2f pos, const int width, const int height, c
 	SDL_RenderDrawRectF(renderer_.get(), &r);
 }
 
-void Engine::fillCircle(const Vec2i pos, const int radius, const ColorRGBA color) const
+void Engine::fillCircle(const Vec2i &pos, const int &radius, const ColorRGBA &color) const
 {
 	std::vector<SDL_Point> points;
 	for (int i = -radius; i <= radius; i++) {
@@ -203,7 +202,7 @@ void Engine::fillCircle(const Vec2i pos, const int radius, const ColorRGBA color
 	SDL_RenderDrawPoints(renderer_.get(), points.data(), static_cast<int>(points.size()));
 }
 
-void Engine::fillCircle(const Vec2f pos, const int radius, const ColorRGBA color) const
+void Engine::fillCircle(const Vec2f &pos, const int &radius, const ColorRGBA &color) const
 {
 	std::vector<SDL_FPoint> points;
 	for (int i = -radius; i <= radius; i++) {
@@ -218,7 +217,7 @@ void Engine::fillCircle(const Vec2f pos, const int radius, const ColorRGBA color
 	SDL_RenderDrawPointsF(renderer_.get(), points.data(), static_cast<int>(points.size()));
 }
 
-void Engine::drawCircle(const Vec2i pos, const int radius, const ColorRGBA color) const
+void Engine::drawCircle(const Vec2i &pos, const int &radius, const ColorRGBA &color) const
 {
 	// This method utilizes the Midpoint Circle Drawing Algorithm
 	std::vector<SDL_Point> points;
@@ -248,7 +247,7 @@ void Engine::drawCircle(const Vec2i pos, const int radius, const ColorRGBA color
 	SDL_RenderDrawPoints(renderer_.get(), points.data(), static_cast<int>(points.size()));
 }
 
-void Engine::drawCircle(const Vec2f pos, const int radius, const ColorRGBA color) const
+void Engine::drawCircle(const Vec2f &pos, const int &radius, const ColorRGBA &color) const
 {
 	// This method utilizes the Midpoint Circle Drawing Algorithm
 	std::vector<SDL_FPoint> points;
@@ -293,24 +292,30 @@ void Engine::drawTexture(const std::shared_ptr<SDL_Texture> texture, const SDL_R
 	SDL_RenderCopy(renderer_.get(), texture.get(), &src, &dst);
 }
 
-void Engine::drawSpriteFromSheet(const SDL_Rect src, const SDL_Rect dst, SDL_Texture *spritesheet) const
+void Engine::drawSpriteFromSheet(const Recti &src, const Recti &dst, SDL_Texture *spritesheet) const
 {
-	SDL_RenderCopy(renderer_.get(), spritesheet, &src, &dst);
+	SDL_Rect sdlSrc = src.toSDLRect();
+	SDL_Rect sdlDst = dst.toSDLRect();
+	SDL_RenderCopy(renderer_.get(), spritesheet, &sdlSrc, &sdlDst);
 }
 
-void Engine::drawSpriteFromSheet(const SDL_Rect src, const SDL_FRect dst, SDL_Texture *spritesheet) const
+void Engine::drawSpriteFromSheet(const Recti &src, const Rectf &dst, SDL_Texture *spritesheet) const
 {
-	SDL_RenderCopyF(renderer_.get(), spritesheet, &src, &dst);
+	SDL_Rect sdlSrc = src.toSDLRect();
+	SDL_FRect sdlDst = dst.toSDLRect();
+	SDL_RenderCopyF(renderer_.get(), spritesheet, &sdlSrc, &sdlDst);
 }
 
-void Engine::drawSpriteFromSheet(const SDL_Rect src, const SDL_Rect dst, SDL_Texture *spritesheet, double angle,
+void Engine::drawSpriteFromSheet(const Recti &src, const Recti &dst, SDL_Texture *spritesheet, double angle,
                                  SDL_Point *center, SDL_RendererFlip flip) const
 {
-	SDL_RenderCopyEx(renderer_.get(), spritesheet, &src, &dst, angle, center, flip);
+	SDL_Rect sdlSrc = src.toSDLRect();
+	SDL_Rect sdlDst = dst.toSDLRect();
+	SDL_RenderCopyEx(renderer_.get(), spritesheet, &sdlSrc, &sdlDst, angle, center, flip);
 }
 
 // everything from here to EOF is Joshua's work
-SDL_Texture *Engine::loadTexture(const std::string path) const
+SDL_Texture *Engine::loadTexture(const std::string &path) const
 {
 	// Using own implementation because IMG_LoadTexture always returns NULL
 	// https://www.reddit.com/r/cpp_questions/comments/u43q2d/sdl2_img_loadtexture_problem/
@@ -329,9 +334,9 @@ SDL_Texture *Engine::loadTexture(const std::string path) const
 	return texture;
 }
 
-void Engine::drawText(SDL_Rect dst, const std::string text) const
+void Engine::drawText(const Recti &dst, const std::string &text) const
 {
-	SDL_Surface *textSurface = TTF_RenderUTF8_Solid_Wrapped(font_.get(), text.c_str(), {0, 0, 0,255}, dst.w);
+	SDL_Surface *textSurface = TTF_RenderUTF8_Solid_Wrapped(font_.get(), text.c_str(), {0, 0, 0, 255}, dst.w);
 
 	if (!textSurface) {
 		fprintf(stderr, "Error creating SDL textsurface %s\n", SDL_GetError());
@@ -353,7 +358,7 @@ void Engine::drawText(SDL_Rect dst, const std::string text) const
 	int textH = 0;
 	TTF_SizeText(font_.get(), text.c_str(), &textW, &textH);
 	if (textW < dst.w) {
-		//dstRect.h = dstRect.h / 2;
+		// dstRect.h = dstRect.h / 2;
 	}
 
 	SDL_RenderCopy(renderer_.get(), textTexture, nullptr, &dstRect);
