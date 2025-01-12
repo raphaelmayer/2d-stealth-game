@@ -120,7 +120,7 @@ class DebugSystem : public System {
 					if (i + 1 < ai.path.size())
 						engine_.drawLine(offset(ai.path[i]), offset(ai.path[i + 1]), {255, 255, 255, 255});
 				}
-				engine_.drawCircle(offset(ai.targetPosition), (TILE_SIZE / 2) * camera_.getZoom(),
+				engine_.drawCircle(offset(ai.targetPosition), (float)(TILE_SIZE / 2) * camera_.getZoom(),
 				                   {255, 255, 255, 255});
 			}
 		}
@@ -128,10 +128,10 @@ class DebugSystem : public System {
 
 	// Computes the offset to center objects within tiles and adjust for the camera's position.
 	// Ensures lines and shapes are drawn relative to the tile grid, aligned to tile centers.
-	Vec2i offset(const Vec2i &position)
+	Vec2f offset(const Vec2i &position)
 	{
-		Vec2i pos{position.x - camera_.getPosition().x, position.y - camera_.getPosition().y};
-		return (pos)*camera_.getZoom() + (TILE_SIZE / 2) * camera_.getZoom();
+		Vec2f pos{position.x - camera_.getPosition().x, position.y - camera_.getPosition().y};
+		return (pos)*camera_.getZoom() + float(TILE_SIZE / 2) * camera_.getZoom();
 	}
 
 	const Engine &engine_;

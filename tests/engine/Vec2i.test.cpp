@@ -1,7 +1,7 @@
 #include <catch2/catch.hpp>
-#include "../../src/engine/Vec2d.hpp"
+#include "../../src/engine/Vec2i.hpp"
 
-TEST_CASE("Vec2d Operations", "[Vec2d]")
+TEST_CASE("Vec2i Operations", "[Vec2i]")
 {
 	Vec2i vec1{3, 4};
 	Vec2i vec2{1, 2};
