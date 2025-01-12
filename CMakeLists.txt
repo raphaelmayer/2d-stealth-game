@@ -29,8 +29,20 @@ include(CTest)
 # add dependencies here
 FetchContent_Declare(
     SDL2
-    URL https://libsdl.org/release/SDL2-2.0.20.tar.gz
+    URL https://libsdl.org/release/SDL2-2.30.11.tar.gz
 )
+#FetchContent_Declare(
+#    SDL2
+#    GIT_REPOSITORY  https://github.com/libsdl-org/SDL
+#    GIT_TAG         release-2.30.11
+#    GIT_PROGRESS    TRUE
+#)
+
+
+set(SDL2TTF_INSTALL OFF)
+set(SDL2IMAGE_INSTALL OFF)
+set(SDL2MIXER_INSTALL OFF)
+set(BUILD_SHARED_LIBS FALSE)
 FetchContent_Declare(
     SDL2_IMAGE
     GIT_REPOSITORY  https://github.com/libsdl-org/SDL_image
@@ -65,6 +77,14 @@ set(BTCPP_EXAMPLES OFF CACHE BOOL "Disable examples" FORCE) # Optional
 set(BTCPP_UNIT_TESTS OFF CACHE BOOL "Disable unit tests" FORCE) # Optional
 # Make the library available
 FetchContent_MakeAvailable(BehaviorTreeCPP)
+
+FetchContent_Declare(
+    EASYS
+    GIT_REPOSITORY  https://github.com/raphaelmayer/easys
+    GIT_TAG         master
+    GIT_PROGRESS    TRUE
+)
+FetchContent_MakeAvailable(EASYS)
 
 # add sub-projects here
 add_subdirectory(src)

@@ -29,7 +29,7 @@ enum Rotation{NORTH, EAST, SOUTH, WEST };
 #define PLAYER_SPRITE_SHEET_Y_BLUE 808
 #define PLAYER_SPRITE_SHEET_Y_RED 896
 
-#define WALK_SPEED 50 // = PIXELS PER SECOND
+#define WALK_SPEED 32 // = PIXELS PER SECOND
 #define FPS 120
 
 // Animation

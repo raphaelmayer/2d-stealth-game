@@ -5,7 +5,7 @@
 #include "../components/AI.hpp"
 #include "../components/Vision.hpp"
 #include "../ecs/ECSManager.hpp"
-#include "../engine/Vec2d.hpp"
+#include "../engine/Vec2i.hpp"
 #include "../modules/BTManager.hpp"
 #include "../modules/MapManager.hpp"
 #include "../systems/AIPerceptionSystem.hpp"
@@ -52,21 +52,21 @@ class AISystem final : public System {
 	void updateHighLevelAIState(ECSManager &ecs, Entity entity, double deltaTime)
 	{
 		// These components are a given at this point, because we check above. Possible error down the line.
-		Vec2d &position = ecs.getComponent<Positionable>(entity).position;
+		Vec2i &position = ecs.getComponent<Positionable>(entity).position;
 		Vision &vision = ecs.getComponent<Vision>(entity);
 		AI &ai = ecs.getComponent<AI>(entity);
 
 		const AIState currentState = ai.state;
 		switch (currentState) {
 		case AIState::Unaware:
-			if (!vision.visibleEntities.empty()) {
+			if (!vision.visibleEnemies.empty()) {
 				ai.previousState = currentState;
 				ai.state = AIState::Detecting;
 			}
 			break;
 
 		case AIState::Detecting:
-			if (vision.visibleEntities.empty()) {
+			if (vision.visibleEnemies.empty()) {
 				ai.searchTime += deltaTime;
 				ai.detectionTime = 0;
 				ai.state = ai.previousState;
@@ -86,7 +86,7 @@ class AISystem final : public System {
 			break;
 
 		case AIState::Searching:
-			if (!vision.visibleEntities.empty()) {
+			if (!vision.visibleEnemies.empty()) {
 				ai.searchTime += deltaTime;
 				ai.previousState = currentState;
 				ai.state = AIState::Detecting;
@@ -101,7 +101,7 @@ class AISystem final : public System {
 
 		case AIState::Engaging:
 			ai.searchTime = 0;
-			if (vision.visibleEntities.empty()) {
+			if (vision.visibleEnemies.empty()) {
 				ai.previousState = currentState;
 				ai.state = AIState::Searching;
 			}

@@ -99,21 +99,25 @@ cmake --open xbuild
 - AudioSystem.hpp
 - InteractionSystem.hpp
 - ProgressSystem.hpp
-- engine.cpp (code for drawing text)
 
 ## TODO
+- Switch to new ECS version
+	- Load ECS dynamically from Github with CMake [x]
+	- Change `ECSManager` to `ECS` to switch to new version.
+	- Remove old files.
+- Pathfinding & Movement:
+	- If `targetPosition` is blocked or unreachable we try to recalculate a path every iteration. We need to check, if `targetPosition` is reachable. If not, we could use a couple of strategies like finding the nearest reachable tile, resetting, etc.
+- switch from TXT to TMX map files
+- need to adjust camera scrolling speed based on zoom level
+
+### Features 
+- implement actual AI state machine
+- create and switch to a new testing map 
+- Sprint feature
+- Stances? Crouch, Prone
+
+### Low priority
 - handle window resizing
 - UI rendering needs to be adjusted
-- load ECS library with CMake from github
-- basic AI implementation for roaming NPC's
-- pathfinding:
-	- If the current path becomes blocked, the affected entity waits (= runs against the other entity) until the path is free again To fix this we need to reset the path on collision.
-	- If an entity stands on a waypoint, we encounter a runtime error. Most likely because the pathfinding algorithm expects the target position to be unoccupied.
-- switch from TXT to TMX map files
-- If two entities move onto the same tile approx. at the same time, they can. To fix this we also need to check `rigidBody.endPosition` when checking collision.
 - we broke `ProgressSystem` because it relies on `interactable.isTextVisible`
 - Change CMake config for assets. Currently it is kind of cumbersome (see `src/CMakeLists.txt`)
-- Due to culling entities are not rendered correctly when on the top most tile onscreen.
-- - AI:
-	- implement actual state machine
-	- introduce `SyncActionNode` base class for specialized methods (Annoying, if we need to add a base class for others aswell (i.e. `AsyncActionNode`).

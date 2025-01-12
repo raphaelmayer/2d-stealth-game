@@ -1,6 +1,6 @@
 #pragma once
 
-#include "../engine/Vec2d.hpp"
+#include "../engine/Vec2i.hpp"
 #include <algorithm>
 #include <climits>
 #include <cmath>
@@ -8,11 +8,11 @@
 #include <vector>
 
 struct Node {
-	Node(Vec2d pos, Node *parent_) : position(pos), parent(parent_), g(INT_MAX), h(INT_MAX) {}
+	Node(Vec2i pos, Node *parent_) : position(pos), parent(parent_), g(INT_MAX), h(INT_MAX) {}
 
 	int getScore() const { return g + h; }
 
-	Vec2d position;
+	Vec2i position;
 	Node *parent;
 	int g;
 	int h;
@@ -25,16 +25,16 @@ class AStar {
 	// Finds the shortest path between two points on a 2D grid using the A* algorithm.
 	// The map is a grid of booleans, where 1 indicates a blocking tile.
 	// This implementation expects start and target to be in tile space.
-	static std::vector<Vec2d> findPath(const std::vector<std::vector<int>> &map, Vec2d start, Vec2d target)
+	static std::vector<Vec2i> findPath(const std::vector<std::vector<int>> &map, Vec2i start, Vec2i target)
 	{
 		// Check if start and target positions are within bounds
 		if (!isInBounds(map, start) || !isInBounds(map, target)) {
-			return {}; // Return empty path if out of bounds
+			return {start}; // Return empty path if out of bounds
 		}
 
 		// Check if start and target positions are blocked
 		if (map[start.y][start.x] != 0 || map[target.y][target.x] != 0) {
-			return {}; // Return empty path if start or target is blocked
+			return {start}; // Return empty path if start or target is blocked
 		}
 
 		// Priority queue with a custom comparator
@@ -54,7 +54,7 @@ class AStar {
 
 			// Check if target is reached
 			if (currentNode->position == target) {
-				std::vector<Vec2d> path = reconstructPath(currentNode);
+				std::vector<Vec2i> path = reconstructPath(currentNode);
 				cleanUpMemory(queue, visited);
 				return path;
 			}
@@ -70,11 +70,11 @@ class AStar {
 			// Directions for neighbors
 			// static const Vec2d directions[8] = {{0, -1}, {1, -1}, {1, 0}, {1, 1}, {0, 1}, {-1, 1}, {-1, 0}, {-1,
 			// -1}};
-			static const Vec2d directions[4] = {{0, -1}, {1, 0}, {0, 1}, {-1, 0}};
+			static const Vec2i directions[4] = {{0, -1}, {1, 0}, {0, 1}, {-1, 0}};
 
 			// Check neighbors
 			for (int i = 0; i < 4; ++i) {
-				Vec2d nextPosition = currentNode->position + directions[i];
+				Vec2i nextPosition = currentNode->position + directions[i];
 
 				// Check bounds
 				if (!isInBounds(map, nextPosition))
@@ -97,31 +97,31 @@ class AStar {
 		}
 
 		cleanUpMemory(queue, visited);
-		return {}; // Return empty path if no path found
+		return {start}; // Return empty path if no path found
 	}
 
   private:
-	static int heuristic(Vec2d start, Vec2d end)
+	static int heuristic(Vec2i start, Vec2i end)
 	{
 		// Euclidean distance multiplied by 10 (scaled for integer arithmetic)
-		Vec2d delta = end - start;
+		Vec2i delta = end - start;
 		return static_cast<int>(10 * std::sqrt(delta.x * delta.x + delta.y * delta.y));
 	}
 
-	static bool isInBounds(const std::vector<std::vector<int>> &map, Vec2d pos)
+	static bool isInBounds(const std::vector<std::vector<int>> &map, Vec2i pos)
 	{
 		return pos.x >= 0 && pos.y >= 0 && pos.y < map.size() && pos.x < map[0].size();
 	}
 
-	static bool isVisited(const std::vector<Node *> &visited, Vec2d position)
+	static bool isVisited(const std::vector<Node *> &visited, Vec2i position)
 	{
 		return std::any_of(visited.begin(), visited.end(),
 		                   [&position](Node *node) { return node->position == position; });
 	}
 
-	static std::vector<Vec2d> reconstructPath(Node *node)
+	static std::vector<Vec2i> reconstructPath(Node *node)
 	{
-		std::vector<Vec2d> path;
+		std::vector<Vec2i> path;
 		while (node) {
 			path.push_back(node->position);
 			node = node->parent;

@@ -9,7 +9,7 @@
 #include "../constants.hpp"
 #include "../ecs/ECSManager.hpp"
 #include "../engine/Engine.hpp"
-#include "../engine/Vec2d.hpp"
+#include "../engine/Vec2i.hpp"
 #include "../modules/MenuStack.hpp"
 #include "../modules/SaveGameManager.hpp"
 #include "ListDialog.hpp"
@@ -20,7 +20,7 @@
 class InventoryMenu final : public UIElement {
   public:
 	InventoryMenu(Engine &game, ECSManager &ecs, MenuStack &menuStack)
-	    : UIElement(game), game_(game), ecs_(ecs), menuStack_(menuStack), listMenu_(game, Vec2d{x, y}, menuWidth_, 6),
+	    : UIElement(game), game_(game), ecs_(ecs), menuStack_(menuStack), listMenu_(game, Vec2i{x, y}, menuWidth_, 6),
 	      textBox_(game, menuStack)
 	{
 		updateInventoryList();

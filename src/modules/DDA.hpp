@@ -1,21 +1,21 @@
 #pragma once
 
 #include <vector>
-#include "../engine/Vec2d.hpp"
-#include "../engine/Vf2d.hpp"
+#include "../engine/Vec2i.hpp"
+#include "../engine/Vec2f.hpp"
 #include <iostream>
 #include <cmath> // for sqrt
 
 class DDA {
   public:
-	static bool castRay(const std::vector<std::vector<int>> &map, Vec2d startTile, Vec2d endTile)
+	static bool castRay(const std::vector<std::vector<int>> &map, Vec2i startTile, Vec2i endTile)
 	{
 		// Offset the start and end to the center of tiles
-		Vf2d start = Vf2d(startTile.x + 0.5f, startTile.y + 0.5f);
-		Vf2d end = Vf2d(endTile.x + 0.5f, endTile.y + 0.5f);
+		Vec2f start = Vec2f(startTile.x + 0.5f, startTile.y + 0.5f);
+		Vec2f end = Vec2f(endTile.x + 0.5f, endTile.y + 0.5f);
 
 		// Calculate direction
-		Vf2d dir = end - start;
+		Vec2f dir = end - start;
 		float magnitude = std::sqrt(dir.x * dir.x + dir.y * dir.y);
 		if (magnitude == 0.0f) {
 			return false; // No direction, invalid ray
@@ -23,14 +23,14 @@ class DDA {
 		dir = dir / magnitude;
 
 		// Determine the step size and initial ray lengths
-		Vf2d unitStepSize = {std::sqrt(1.0f + (dir.y * dir.y) / (dir.x * dir.x)),
+		Vec2f unitStepSize = {std::sqrt(1.0f + (dir.y * dir.y) / (dir.x * dir.x)),
 		                     std::sqrt(1.0f + (dir.x * dir.x) / (dir.y * dir.y))};
 
-		Vec2d mapCoords = {(int)std::floor(start.x), (int)std::floor(start.y)};
-		Vec2d step = {(dir.x < 0) ? -1 : 1, (dir.y < 0) ? -1 : 1};
+		Vec2i mapCoords = {(int)std::floor(start.x), (int)std::floor(start.y)};
+		Vec2i step = {(dir.x < 0) ? -1 : 1, (dir.y < 0) ? -1 : 1};
 
 		// Calculate initial rayLength.x, rayLength.y to the first boundary
-		Vf2d rayLength;
+		Vec2f rayLength;
 		if (dir.x < 0) {
 			rayLength.x = (start.x - float(mapCoords.x)) * unitStepSize.x;
 		} else {
@@ -47,8 +47,8 @@ class DDA {
 		float distance = 0.0f;
 		float maxDistance = 100.0f; // Adjust as needed
 
-		std::vector<Vf2d> path;
-		path.push_back(Vf2d((float)mapCoords.x, (float)mapCoords.y));
+		std::vector<Vec2f> path;
+		path.push_back(Vec2f((float)mapCoords.x, (float)mapCoords.y));
 
 		while (!tileFound && distance < maxDistance) {
 			// Step along the ray
@@ -62,7 +62,7 @@ class DDA {
 				rayLength.y += unitStepSize.y;
 			}
 
-			path.push_back(Vf2d((float)mapCoords.x, (float)mapCoords.y));
+			path.push_back(Vec2f((float)mapCoords.x, (float)mapCoords.y));
 
 			// Check bounds before indexing
 			if (mapCoords.x >= 0 && mapCoords.x < (int)map[0].size() && mapCoords.y >= 0 && mapCoords.y < (int)map.size()) {
@@ -82,7 +82,7 @@ class DDA {
 		// std::cout << "tileFound: " << tileFound << " target:(" << end.x << "," << end.y << ")" << std::endl;
 
 		// If needed, we can compute the exact intersection point:
-		// Vf2d intersection = start + dir * distance;
+		// Vec2f intersection = start + dir * distance;
 
 		return tileFound;
 	}

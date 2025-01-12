@@ -36,25 +36,15 @@
 
 class Game : public Engine {
   public:
-	Game(const std::string title, Vec2d screenSize, Vec2d pixelSize, int frameRate)
+	Game(const std::string title, Vec2i screenSize, Vec2i pixelSize, int frameRate)
 	    : Engine(title, screenSize, pixelSize, frameRate), camera(screenSize.x, screenSize.y)
 	{
 	}
 
 	bool onStart() override
 	{
-		spritesheet = loadTexture(SPRITE_SHEET);
-		if (!spritesheet) {
-			throw std::runtime_error("Error. InputSystemUnable to open overworld spritesheet");
-		}
-		mainMenuBackground = std::shared_ptr<SDL_Texture>(loadTexture(MAINMENU_BACKGROUND), SDL_DestroyTexture);
-
 		mapManager.loadMap(0);
-
-		// saveGameManager.load(WORLD_DEFINITION_PATH);
-
 		initializeSystems();
-
 		return true;
 	}
 
@@ -63,14 +53,10 @@ class Game : public Engine {
 		switch (gameStateManager.getGameState()) {
 
 		case GameState::MAINMENU: {
-			drawTexture(mainMenuBackground);
-
 			if (menuStack.isEmpty())
 				menuStack.push(std::make_unique<MainMenu>(*this, gameStateManager, saveGameManager, menuStack));
 
 			menuStack.update();
-
-			createTestEntity();
 
 			break;
 		}
@@ -83,14 +69,19 @@ class Game : public Engine {
 				ecs.removeComponent<Controllable>(0);
 			}
 
+			if (!addedEntities) {
+				addTestEntities();
+				addedEntities = true;
+			}
+
 			inputSystem->update(ecs, deltaTime);
 			aiSystem->update(ecs, deltaTime);
 			pathfindingSystem->update(ecs, deltaTime);
 			physicsSystem->update(ecs, deltaTime);
 
-			// must happen in between update of physicsystem and rendersystem, or will result in flickering
-			camera.update(ecs.getComponent<Positionable>(PLAYER).position);
+			// camera.focus(ecs.getComponent<Positionable>(PLAYER).position);
 
+			// must happen in between update of physicsystem and rendersystem, or will result in flickering
 			renderSystem->update(ecs, deltaTime);
 
 			// Needs to happen after rendering entities to be on top but before interactionsystem,
@@ -118,30 +109,41 @@ class Game : public Engine {
   private:
 	void initializeSystems()
 	{
-		inputSystem = std::make_unique<InputSystem>(*this);
+		inputSystem = std::make_unique<InputSystem>(*this, camera);
 		aiSystem = std::make_unique<AISystem>(btManager, mapManager);
 		physicsSystem = std::make_unique<PhysicsSystem>(mapManager);
 		interactionSystem = std::make_unique<InteractionSystem>(*this, menuStack);
-		renderSystem = std::make_unique<RenderSystem>(*this, mapManager, camera, spritesheet);
+		renderSystem = std::make_unique<RenderSystem>(*this, mapManager, camera);
 		progressSystem = std::make_unique<ProgressSystem>();
 		audioSystem = std::make_unique<AudioSystem>(PLAYER);
 		debugSystem = std::make_unique<DebugSystem>(*this, mapManager, camera);
 		pathfindingSystem = std::make_unique<PathfindingSystem>(mapManager);
 	}
 
-	void createTestEntity()
+	void createTestEntity(const Vec2i &position, const std::vector<PatrolPoint> &waypoints)
 	{
-		Entity e = instantiateNPCEntity(ecs, {15, 6});
+		Entity e = instantiateNPCEntity(ecs, position);
 		ecs.addComponent<Vision>(e, Vision{});
 		ecs.addComponent<AI>(e, AI{});
-		ecs.addComponent<Patrol>(e, Patrol{{{Vec2d{15, 6} * TILE_SIZE, Rotation::SOUTH, 2},
-		                                    {Vec2d{19, 5} * TILE_SIZE, Rotation::NORTH, 2},
-		                                    {Vec2d{24, 7} * TILE_SIZE, Rotation::EAST, 2}}});
+		ecs.addComponent<Patrol>(e, Patrol{waypoints});
 		btManager.createTreeForEntity(e, "MainTree");
 	}
 
-	SDL_Texture *spritesheet;
-	std::shared_ptr<SDL_Texture> mainMenuBackground;
+	void addTestEntities()
+	{
+		createTestEntity({15, 6}, {{Vec2i{15, 6} * TILE_SIZE, Rotation::SOUTH, 2},
+		                           {Vec2i{19, 5} * TILE_SIZE, Rotation::NORTH, 2},
+		                           {Vec2i{24, 7} * TILE_SIZE, Rotation::EAST, 2}});
+		createTestEntity(
+		    {21, 7}, {{Vec2i{21, 7} * TILE_SIZE, Rotation::SOUTH, 2}, {Vec2i{21, 8} * TILE_SIZE, Rotation::NORTH, 2}});
+		createTestEntity(
+		    {14, 7}, {{Vec2i{14, 7} * TILE_SIZE, Rotation::EAST, 5}, {Vec2i{20, 7} * TILE_SIZE, Rotation::WEST, 5}});
+		createTestEntity({16, 6}, {{Vec2i{16, 6} * TILE_SIZE, Rotation::SOUTH, 0},
+		                           {Vec2i{19, 6} * TILE_SIZE, Rotation::NORTH, 0},
+		                           {Vec2i{19, 7} * TILE_SIZE, Rotation::EAST, 0},
+		                           {Vec2i{16, 7} * TILE_SIZE, Rotation::WEST, 0}});
+	}
+
 	ECSManager ecs;
 	MapManager mapManager;
 	BTManager btManager = BTManager(ecs);
@@ -149,6 +151,7 @@ class Game : public Engine {
 	GameStateManager gameStateManager;
 	MenuStack menuStack;
 	Camera camera;
+	bool addedEntities = false;
 
 	std::unique_ptr<InputSystem> inputSystem;
 	std::unique_ptr<AISystem> aiSystem;

@@ -1,4 +1,4 @@
-<root>
+<root BTCPP_format="4">
   <BehaviorTree ID="DetectTree">
     <ReactiveSequence name="detect_sequence">
       <IsEnemyVisible entity="{entity}" otherEntity="{otherEntity}" otherPosition="{otherPosition}" direction="{direction}" />

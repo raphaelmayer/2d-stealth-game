@@ -1,13 +1,14 @@
 #pragma once
 
+#include "../components/AI.hpp"
 #include "../components/Positionable.hpp"
 #include "../components/Rotatable.hpp"
 #include "../components/Vision.hpp"
 #include "../ecs/ECSManager.hpp"
 #include "../ecs/Entity.hpp"
 #include "../engine/Engine.hpp"
-#include "../engine/Vec2d.hpp"
-#include "../engine/Vf2d.hpp"
+#include "../engine/Vec2f.hpp"
+#include "../engine/Vec2i.hpp"
 #include "../modules/Camera.hpp"
 #include "../modules/MapManager.hpp"
 #include "System.hpp"
@@ -31,24 +32,22 @@ class DebugSystem : public System {
 		for (const auto &entity : ecs.getEntities()) {
 			if (ecs.hasComponent<Vision>(entity)) {
 				auto pos = ecs.getComponent<Positionable>(entity).position;
-				for (const auto &visibleEntity : ecs.getComponent<Vision>(entity).visibleEntities) {
-					auto visibleEntityPosition = ecs.getComponent<Positionable>(visibleEntity).position;
-					engine_.drawRectangle(visibleEntityPosition - camera_.getPosition(), TILE_SIZE, TILE_SIZE,
-					                      {255, 255, 255, 255});
-					engine_.drawLine(pos - camera_.getPosition(), visibleEntityPosition - camera_.getPosition(),
-					                 {255, 255, 255, 255});
-					engine_.drawLine(pos - camera_.getPosition() + Vec2d{TILE_SIZE, 0},
-					                 visibleEntityPosition - camera_.getPosition() + Vec2d{TILE_SIZE, 0},
-					                 {255, 255, 255, 255});
-					engine_.drawLine(pos - camera_.getPosition() + Vec2d{0, TILE_SIZE},
-					                 visibleEntityPosition - camera_.getPosition() + Vec2d{0, TILE_SIZE},
-					                 {255, 255, 255, 255});
-					engine_.drawLine(pos - camera_.getPosition() + Vec2d{TILE_SIZE, TILE_SIZE},
-					                 visibleEntityPosition - camera_.getPosition() + Vec2d{TILE_SIZE, TILE_SIZE},
-					                 {255, 255, 255, 255});
-				}
+				auto vision = ecs.getComponent<Vision>(entity);
+
 				drawViewCone(ecs, entity);
+				drawLinesOfSight(ecs, entity, vision.visibleAllies, {0, 255, 0, 255});
+				drawLinesOfSight(ecs, entity, vision.visibleEnemies, {255, 120, 80, 255});
 			}
+		}
+	}
+
+	void drawLinesOfSight(ECSManager &ecs, const Entity &entity, const std::vector<Entity> &others,
+	                      const ColorRGBA &color)
+	{
+		const Vec2i &pos = ecs.getComponent<Positionable>(entity).position;
+		for (const auto &visibleEntity : others) {
+			auto visibleEntityPosition = ecs.getComponent<Positionable>(visibleEntity).position;
+			engine_.drawLine(screenOffset(pos), screenOffset(visibleEntityPosition), color);
 		}
 	}
 
@@ -59,37 +58,41 @@ class DebugSystem : public System {
 		const auto &vision = ecs.getComponent<Vision>(entity);
 
 		// Map Rotation to forward direction vectors
-		Vf2d forwardDirection = rotationToVf2d(rot);
+		Vec2f forwardDirection = rotationToVec2f(rot);
 
 		// Calculate the left and right edges of the cone
-		float halfAngleRad = (vision.angle / 2.0f) * (M_PI / 180.0f);
-		Vf2d leftEdge = rotateVector(forwardDirection, halfAngleRad);
-		Vf2d rightEdge = rotateVector(forwardDirection, -halfAngleRad);
+		float halfAngleRad = (vision.angle / 2.0f) * ((float)M_PI / 180.0f);
+		Vec2f leftEdge = rotateVector(forwardDirection, halfAngleRad);
+		Vec2f rightEdge = rotateVector(forwardDirection, -halfAngleRad);
+		float quarterAngleRad = (vision.angle / 2.0f / 2.0f) * ((float)M_PI / 180.0f);
+		Vec2f leftQEdge = rotateVector(forwardDirection, quarterAngleRad);
+		Vec2f rightQEdge = rotateVector(forwardDirection, -quarterAngleRad);
 
 		// Scale the edges by the vision range
 		leftEdge = leftEdge * vision.range;
 		rightEdge = rightEdge * vision.range;
+		leftQEdge = leftQEdge * vision.range;
+		rightQEdge = rightQEdge * vision.range;
 
 		// Draw the cone edges
-		engine_.drawLine(pos - camera_.getPosition() + TILE_SIZE / 2,
-		                 (pos + leftEdge.toVec2d()) - camera_.getPosition() + TILE_SIZE / 2, {0, 255, 0, 255});
-		engine_.drawLine(pos - camera_.getPosition() + TILE_SIZE / 2,
-		                 (pos + rightEdge.toVec2d()) - camera_.getPosition() + TILE_SIZE / 2, {0, 255, 0, 255});
-		engine_.drawLine(pos - camera_.getPosition() + TILE_SIZE / 2,
-		                 (pos + forwardDirection.toVec2d() * vision.range) - camera_.getPosition() + TILE_SIZE / 2,
-		                 {0, 255, 0, 255});
+		engine_.drawLine(screenOffset(pos), screenOffset((pos + leftEdge.toVec2d())), {80, 255, 255, 255});
+		engine_.drawLine(screenOffset(pos), screenOffset((pos + rightEdge.toVec2d())), {80, 255, 255, 255});
+		engine_.drawLine(screenOffset(pos), screenOffset((pos + leftQEdge.toVec2d())), {80, 255, 255, 255});
+		engine_.drawLine(screenOffset(pos), screenOffset((pos + rightQEdge.toVec2d())), {80, 255, 255, 255});
+		engine_.drawLine(screenOffset(pos), screenOffset((pos + forwardDirection.toVec2d() * vision.range)),
+		                 {80, 255, 255, 255});
 
 		// TODO: draw the arc of the cone
 	}
 
-	Vf2d rotateVector(const Vf2d &vec, float angleRad) const
+	Vec2f rotateVector(const Vec2f &vec, float angleRad) const
 	{
 		float cosAngle = std::cos(angleRad);
 		float sinAngle = std::sin(angleRad);
 		return {vec.x * cosAngle - vec.y * sinAngle, vec.x * sinAngle + vec.y * cosAngle};
 	}
 
-	Vf2d rotationToVf2d(Rotation rotation) const
+	Vec2f rotationToVec2f(Rotation rotation) const
 	{
 
 		switch (rotation) {
@@ -116,12 +119,20 @@ class DebugSystem : public System {
 				const auto &ai = ecs.getComponent<AI>(entity);
 				for (size_t i = ai.pathIndex; i < ai.path.size(); i++) {
 					if (i + 1 < ai.path.size())
-						engine_.drawLine(ai.path[i] - camera_.getPosition() + TILE_SIZE / 2,
-						                 ai.path[i + 1] - camera_.getPosition() + TILE_SIZE / 2, {255, 255, 255, 255});
+						engine_.drawLine(screenOffset(ai.path[i]), screenOffset(ai.path[i + 1]), {255, 255, 255, 255});
 				}
-				engine_.drawCircle(ai.targetPosition - camera_.getPosition() + TILE_SIZE/2, TILE_SIZE / 2, {255, 255, 255, 255});
+				engine_.drawCircle(screenOffset(ai.targetPosition), (TILE_SIZE / 2) * camera_.getZoom(),
+				                   {255, 255, 255, 255});
 			}
 		}
+	}
+
+	// Computes the offset to center objects within tiles and adjust for the camera's position.
+	// Ensures lines and shapes are drawn relative to the tile grid, aligned to tile centers.
+	Vec2f screenOffset(const Vec2i &position)
+	{
+		Vec2f pos{position.x - camera_.getPosition().x, position.y - camera_.getPosition().y};
+		return (pos)*camera_.getZoom() + float(TILE_SIZE / 2) * camera_.getZoom();
 	}
 
 	const Engine &engine_;
