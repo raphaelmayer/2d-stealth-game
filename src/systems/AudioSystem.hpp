@@ -18,7 +18,7 @@ class AudioSystem final : public System {
 			}
 		}
 		// Change background music depending on the players position
-		Vec2d playerPosition = ecs.getComponent<Positionable>(player_).position;
+		Vec2i playerPosition = ecs.getComponent<Positionable>(player_).position;
 		switch (currentLevel) {
 		case 1:
 			if (playerPosition.x > LEVEL_2_WEST_BORDER * TILE_SIZE) {

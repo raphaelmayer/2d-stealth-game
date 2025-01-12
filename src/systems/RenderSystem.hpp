@@ -18,15 +18,15 @@
 // It performs visibility culling using the camera's position to avoid unnecessary rendering.
 class RenderSystem final : public System {
   public:
-	RenderSystem(const Engine &engine, const MapManager &mapManager, const Camera &camera, SDL_Texture *spritesheet)
-	    : engine_(engine), mapManager_(mapManager), camera_(camera), spritesheet_(spritesheet)
+	RenderSystem(const Engine &engine, const MapManager &mapManager, const Camera &camera)
+	    : engine_(engine), mapManager_(mapManager), camera_(camera), spritesheet_(engine_.loadTexture(SPRITE_SHEET)),
+	      weaponTexture(engine_.loadTexture(M4A1))
 	{
-		weaponTexture = engine_.loadTexture(M4A1);
 	}
 
 	void update(ECSManager &ecs, const double deltaTime) override
 	{
-		Vf2d camPos = camera_.getPosition();
+		Vec2f camPos = camera_.getPosition();
 		float camZoom = camera_.getZoom();
 
 		drawMap(camPos, camZoom);
@@ -37,8 +37,8 @@ class RenderSystem final : public System {
 				auto &position = ecs.getComponent<Positionable>(entity).position;
 				auto &renderable = ecs.getComponent<Renderable>(entity);
 
-				Vec2d spriteSrc = renderable.spriteSrc;
-				Vec2d size = renderable.size;
+				Vec2i spriteSrc = renderable.spriteSrc;
+				Vec2i size = renderable.size;
 				int offset_y = renderable.offset_y;
 
 				if (ecs.hasComponent<Rotatable>(entity)) {
@@ -54,13 +54,13 @@ class RenderSystem final : public System {
 					handleAnimation(ecs, entity, animatable, spriteSrc.y);
 				}
 
-				SDL_Rect src = {spriteSrc.x, spriteSrc.y, size.x, size.y};
-				SDL_FRect dst = {position.x, position.y + offset_y, size.x, size.y};
+				Recti src = {spriteSrc.x, spriteSrc.y, size.x, size.y};
+				Rectf dst = {position.x, position.y + offset_y, size.x, size.y};
 				// Perform visibility culling before rendering the entity.
 				if (isVisibleOnScreen(dst, camPos, engine_.getScreenSize() / camZoom)) {
-					SDL_FRect camAdjustedDst = {(dst.x - camPos.x) * camZoom, (dst.y - camPos.y) * camZoom,
-					                           dst.w * camZoom, dst.h * camZoom};
-					engine_.drawSpriteFromSheet(src, camAdjustedDst, spritesheet_);
+					Rectf camAdjustedDst = {(dst.x - camPos.x) * camZoom, (dst.y - camPos.y) * camZoom, dst.w * camZoom,
+					                        dst.h * camZoom};
+					engine_.drawTexture(spritesheet_, src, camAdjustedDst);
 
 					// Currently testing: rendering weapons
 					// Render the weapon if applicable
@@ -90,47 +90,44 @@ class RenderSystem final : public System {
 		spriteSrcY = animatable.animationAdresses[animatable.currentAnimation];
 	}
 
-	bool isVisibleOnScreen(SDL_FRect dst, Vf2d cameraPosition, Vec2d screenSize)
+	bool isVisibleOnScreen(Rectf dst, Vec2f cameraPosition, Vec2i screenSize)
 	{
 		return dst.x >= (cameraPosition.x - TILE_SIZE) && dst.x < (cameraPosition.x + screenSize.x)
 		       && dst.y >= (cameraPosition.y - TILE_SIZE) && dst.y < (cameraPosition.y + screenSize.y);
 	}
 
-	void drawMap(const Vf2d &camPos, const float &zoom)
+	void drawMap(const Vec2f &camPos, const float &zoom)
 	{
 		const LevelMap &map = mapManager_.getLevelMap();
 
 		// Calculate the range of visible tiles to render based on the camera's position.
-		Vec2d visibleArea = engine_.getScreenSize() / zoom;
+		Vec2i visibleArea = engine_.getScreenSize() / zoom;
 		int startX = std::max(0, static_cast<int>(camPos.x / TILE_SIZE));
 		int startY = std::max(0, static_cast<int>(camPos.y / TILE_SIZE));
 		int endX = std::min(map.getWidth(), static_cast<int>((camPos.x + visibleArea.x) / TILE_SIZE) + 1);
 		int endY = std::min(map.getHeight(), static_cast<int>((camPos.y + visibleArea.y) / TILE_SIZE) + 1);
 
-
 		for (int y = startY; y < endY; y++) {
 			for (int x = startX; x < endX; x++) {
 				const std::vector<TileMetadata> fullTiledata = mapManager_.getTileData(x, y);
 				for (const TileMetadata &tiledata : fullTiledata) {
-					Vec2d srcPos = Vec2d{tiledata.spriteSheetX, tiledata.spriteSheetY} * TILE_SIZE;
-					SDL_Rect src = {srcPos.x, srcPos.y, TILE_SIZE, TILE_SIZE};
-					SDL_FRect dst = {x * TILE_SIZE, y * TILE_SIZE, TILE_SIZE, TILE_SIZE};
+					Vec2i srcPos = Vec2i{tiledata.spriteSheetX, tiledata.spriteSheetY} * TILE_SIZE;
+					Recti src = {srcPos.x, srcPos.y, TILE_SIZE, TILE_SIZE};
+					Rectf dst = {x * TILE_SIZE, y * TILE_SIZE, TILE_SIZE, TILE_SIZE};
 
 					// Perform visibility culling before rendering the tile.
 					if (isVisibleOnScreen(dst, camPos, engine_.getScreenSize() / zoom)) {
-						float screenX = (dst.x - camPos.x) * zoom;
-						float screenY = (dst.y - camPos.y) * zoom;
-						float w = dst.w * zoom;
-						float h = dst.h * zoom;
-						SDL_FRect camAdjustedDst{screenX, screenY, w, h};
-						engine_.drawSpriteFromSheet(src, camAdjustedDst, spritesheet_);
+						Vec2f screenPos = (Vec2f{dst.x, dst.y} - camPos) * zoom;
+						Vec2f size = Vec2f{dst.w, dst.h} * zoom;
+						Rectf camAdjustedDst{screenPos.x, screenPos.y, size.x, size.y};
+						engine_.drawTexture(spritesheet_, src, camAdjustedDst);
 					}
 				}
 			}
 		}
 	}
 
-	Vec2d CalculateWeaponOffset(const Rotation &rotation)
+	Vec2i CalculateWeaponOffset(const Rotation &rotation)
 	{
 		if (rotation == Rotation::EAST)
 			return {2, 6}; // EAST
@@ -144,27 +141,27 @@ class RenderSystem final : public System {
 		return {0, 0};
 	}
 
-	void renderWeapon(ECSManager &ecs, const Entity &entity, const Vec2d &position, const Vec2d &camPos)
+	void renderWeapon(ECSManager &ecs, const Entity &entity, const Vec2i &position, const Vec2i &camPos)
 	{
 		if (ecs.hasComponent<Rotatable>(entity)) {
 			const auto &rotation = ecs.getComponent<Rotatable>(entity).rotation;
-			Vec2d weaponOffset = CalculateWeaponOffset(rotation);
+			Vec2i weaponOffset = CalculateWeaponOffset(rotation);
 
-			auto flip = rotation == Rotation::EAST ? SDL_FLIP_NONE : SDL_FLIP_HORIZONTAL;
+			auto flip = rotation == Rotation::EAST ? TextureFlip::NONE : TextureFlip::HORIZONTAL;
 			auto angle = rotation == Rotation::SOUTH || rotation == Rotation::NORTH ? 90 : 0;
 
-			SDL_Rect wepSrc = {0, 0, 64, 32};
-			SDL_Rect camAdjustedDstWep = {position.x + weaponOffset.x - camPos.x,
-			                              position.y + weaponOffset.y - camPos.y, 16, 8};
+			Recti wepSrc = {0, 0, 64, 32};
+			Recti camAdjustedDstWep = {position.x + weaponOffset.x - camPos.x, position.y + weaponOffset.y - camPos.y,
+			                           16, 8};
 
-			engine_.drawSpriteFromSheet(wepSrc, camAdjustedDstWep, weaponTexture, angle, nullptr, flip);
+			engine_.drawTexture(weaponTexture, wepSrc, camAdjustedDstWep, angle, {8, 4}, flip);
 		}
 	}
 
-	void renderAlertnessLevel(const Vec2d &position, const AI &ai, const Vf2d &camPos, const float &camZoom)
+	void renderAlertnessLevel(const Vec2i &position, const AI &ai, const Vec2f &camPos, const float &camZoom)
 	{
-		const SDL_Rect dst{(position.x - camPos.x) * camZoom, (position.y - camPos.y - TILE_SIZE) * camZoom,
-		                   TILE_SIZE * camZoom, TILE_SIZE * camZoom};
+		const Recti dst{(position.x - camPos.x) * camZoom, (position.y - camPos.y - TILE_SIZE) * camZoom,
+		                TILE_SIZE * camZoom, TILE_SIZE * camZoom};
 		std::string symbol;
 		switch (ai.state) {
 		case AIState::Unaware:
@@ -195,6 +192,6 @@ class RenderSystem final : public System {
 	const Engine &engine_;
 	const MapManager &mapManager_;
 	const Camera &camera_;
-	SDL_Texture *spritesheet_;
-	SDL_Texture *weaponTexture;
+	const Texture spritesheet_;
+	const Texture weaponTexture;
 };

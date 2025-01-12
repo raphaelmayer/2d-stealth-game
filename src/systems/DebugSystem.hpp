@@ -7,8 +7,8 @@
 #include "../ecs/ECSManager.hpp"
 #include "../ecs/Entity.hpp"
 #include "../engine/Engine.hpp"
-#include "../engine/Vec2d.hpp"
-#include "../engine/Vf2d.hpp"
+#include "../engine/Vec2i.hpp"
+#include "../engine/Vec2f.hpp"
 #include "../modules/Camera.hpp"
 #include "../modules/MapManager.hpp"
 #include "System.hpp"
@@ -44,7 +44,7 @@ class DebugSystem : public System {
 	void drawLinesOfSight(ECSManager &ecs, const Entity &entity, const std::vector<Entity> &others,
 	                      const ColorRGBA &color)
 	{
-		const Vec2d &pos = ecs.getComponent<Positionable>(entity).position;
+		const Vec2i &pos = ecs.getComponent<Positionable>(entity).position;
 		for (const auto &visibleEntity : others) {
 			auto visibleEntityPosition = ecs.getComponent<Positionable>(visibleEntity).position;
 			engine_.drawLine(offset(pos), offset(visibleEntityPosition), color);
@@ -58,15 +58,15 @@ class DebugSystem : public System {
 		const auto &vision = ecs.getComponent<Vision>(entity);
 
 		// Map Rotation to forward direction vectors
-		Vf2d forwardDirection = rotationToVf2d(rot);
+		Vec2f forwardDirection = rotationToVec2f(rot);
 
 		// Calculate the left and right edges of the cone
 		float halfAngleRad = (vision.angle / 2.0f) * (M_PI / 180.0f);
-		Vf2d leftEdge = rotateVector(forwardDirection, halfAngleRad);
-		Vf2d rightEdge = rotateVector(forwardDirection, -halfAngleRad);
+		Vec2f leftEdge = rotateVector(forwardDirection, halfAngleRad);
+		Vec2f rightEdge = rotateVector(forwardDirection, -halfAngleRad);
 		float quarterAngleRad = (vision.angle / 2.0f / 2.0f) * (M_PI / 180.0f);
-		Vf2d leftQEdge = rotateVector(forwardDirection, quarterAngleRad);
-		Vf2d rightQEdge = rotateVector(forwardDirection, -quarterAngleRad);
+		Vec2f leftQEdge = rotateVector(forwardDirection, quarterAngleRad);
+		Vec2f rightQEdge = rotateVector(forwardDirection, -quarterAngleRad);
 
 		// Scale the edges by the vision range
 		leftEdge = leftEdge * vision.range;
@@ -84,14 +84,14 @@ class DebugSystem : public System {
 		// TODO: draw the arc of the cone
 	}
 
-	Vf2d rotateVector(const Vf2d &vec, float angleRad) const
+	Vec2f rotateVector(const Vec2f &vec, float angleRad) const
 	{
 		float cosAngle = std::cos(angleRad);
 		float sinAngle = std::sin(angleRad);
 		return {vec.x * cosAngle - vec.y * sinAngle, vec.x * sinAngle + vec.y * cosAngle};
 	}
 
-	Vf2d rotationToVf2d(Rotation rotation) const
+	Vec2f rotationToVec2f(Rotation rotation) const
 	{
 
 		switch (rotation) {
@@ -128,9 +128,9 @@ class DebugSystem : public System {
 
 	// Computes the offset to center objects within tiles and adjust for the camera's position.
 	// Ensures lines and shapes are drawn relative to the tile grid, aligned to tile centers.
-	Vec2d offset(const Vec2d &position)
+	Vec2i offset(const Vec2i &position)
 	{
-		Vec2d pos{position.x - camera_.getPosition().x, position.y - camera_.getPosition().y};
+		Vec2i pos{position.x - camera_.getPosition().x, position.y - camera_.getPosition().y};
 		return (pos)*camera_.getZoom() + (TILE_SIZE / 2) * camera_.getZoom();
 	}
 

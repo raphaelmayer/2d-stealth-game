@@ -5,7 +5,7 @@
 #include "../components/Rotatable.hpp"
 #include "../components/Vision.hpp"
 #include "../ecs/ECSManager.hpp"
-#include "../engine/Vec2d.hpp"
+#include "../engine/Vec2i.hpp"
 #include "../modules/DDA.hpp"
 #include "../modules/MapManager.hpp"
 #include "../modules/TileRegistry.hpp" // TileMetadata struct
@@ -57,21 +57,21 @@ class AIPerceptionSystem : public System {
 
   private:
 
-	int calculateDistance(Vec2d start, Vec2d end)
+	int calculateDistance(Vec2i start, Vec2i end)
 	{
-		Vec2d dirVector = end - start;
+		Vec2i dirVector = end - start;
 		return sqrt(dirVector.x * dirVector.x + dirVector.y * dirVector.y);
 	}
 
 	// Function to calculate whether an entity is within the view cone
-	bool isWithinViewCone(const Vec2d &sourcePos, const Vec2d &targetPos, Rotation rotation, float visionRange,
+	bool isWithinViewCone(const Vec2i &sourcePos, const Vec2i &targetPos, Rotation rotation, float visionRange,
 	                      float visionAngle) const
 	{
 		// Map Rotation to forward direction vectors
-		Vf2d forwardDirection = rotationToVf2d(rotation);
+		Vec2f forwardDirection = rotationToVec2f(rotation);
 
 		// Calculate vector to the target
-		Vf2d toEntity = {(float)(targetPos.x - sourcePos.x), (float)(targetPos.y - sourcePos.y)};
+		Vec2f toEntity = {(float)(targetPos.x - sourcePos.x), (float)(targetPos.y - sourcePos.y)};
 		float distance = std::sqrt(toEntity.x * toEntity.x + toEntity.y * toEntity.y);
 
 		// Check distance
@@ -90,7 +90,7 @@ class AIPerceptionSystem : public System {
 		return angleToEntity <= (visionAngle / 2);
 	}
 
-	Vf2d rotationToVf2d(Rotation rotation) const
+	Vec2f rotationToVec2f(Rotation rotation) const
 	{
 
 		switch (rotation) {

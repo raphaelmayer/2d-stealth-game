@@ -3,7 +3,7 @@
 #include "../constants.hpp"
 #include "../ecs/ECSManager.hpp"
 #include "../engine/Engine.hpp"
-#include "../engine/Vec2d.hpp"
+#include "../engine/Vec2i.hpp"
 #include "../modules/MenuStack.hpp"
 #include <string>
 
@@ -22,7 +22,7 @@ class StatsMenu final : public UIElement {
 
 	void render() override
 	{
-		renderContainer(Vec2d{0, 0}, menuWidth_, 200);
+		renderContainer(Vec2i{0, 0}, menuWidth_, 200);
 		
 		game_.setRenderScale({1, 1});
 

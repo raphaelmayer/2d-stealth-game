@@ -1,7 +1,7 @@
 #pragma once
 
 #include "KeyState.hpp"
-#include "Vec2d.hpp"
+#include "Vec2i.hpp"
 #include <SDL.h>
 #include <array>
 
@@ -16,10 +16,10 @@ class Mouse {
 	}
 
 	// Returns the current mouse position.
-	const Vec2d &getPosition() const { return position_; }
+	const Vec2i &getPosition() const { return position_; }
 
 	// Returns the mouse wheel delta since the last frame.
-	const Vec2d &getWheelDelta() const { return wheelDelta_; }
+	const Vec2i &getWheelDelta() const { return wheelDelta_; }
 
 	// Updates the mouse state based on the SDL event.
 	void update(const SDL_Event &event)
@@ -62,6 +62,6 @@ class Mouse {
 
   private:
 	std::array<KeyState, 5> buttonStates_{}; // Supports up to 5 mouse buttons.
-	Vec2d position_{0, 0};               // Current mouse position.
-	Vec2d wheelDelta_{0, 0};             // Mouse wheel delta since last frame.
+	Vec2i position_{0, 0};               // Current mouse position.
+	Vec2i wheelDelta_{0, 0};             // Mouse wheel delta since last frame.
 };

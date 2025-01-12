@@ -1,7 +1,7 @@
 #pragma once
 
-#include "../engine/Vec2d.hpp"
-#include "../engine/Vf2d.hpp"
+#include "../engine/Vec2i.hpp"
+#include "../engine/Vec2f.hpp"
 #include <vector>
 
 enum class CamDirection { UP = 0, RIGHT, DOWN, LEFT };
@@ -18,26 +18,26 @@ class Camera {
   public:
 	Camera(int width, int height) { screenSize = {(float)width, (float)height}; }
 	
-	void focus(Vec2d focusPoint) { 
-		Vf2d p{focusPoint.x, focusPoint.y};
+	void focus(Vec2i focusPoint) { 
+		Vec2f p{focusPoint.x, focusPoint.y};
 		focus(p);
 	}
 
-	void focus(Vf2d focusPoint)
+	void focus(Vec2f focusPoint)
 	{
-		Vf2d visibleArea = screenSize / zoom;
+		Vec2f visibleArea = screenSize / zoom;
 		position = focusPoint - visibleArea / 2;
 	}
 
-	Vf2d getPosition() const { return position; }
+	Vec2f getPosition() const { return position; }
 
 	float getZoom() const { return zoom; }
 
 	void zoomIn()
 	{
-		Vf2d visibleAreaBefore = screenSize / zoom;
+		Vec2f visibleAreaBefore = screenSize / zoom;
 		zoom += zoomStep;
-		Vf2d visibleAreaAfter = screenSize / zoom;
+		Vec2f visibleAreaAfter = screenSize / zoom;
 
 		// Adjust position to keep the center consistent
 		position += (visibleAreaBefore - visibleAreaAfter) / 2;
@@ -45,9 +45,9 @@ class Camera {
 
 	void zoomOut()
 	{
-		Vf2d visibleAreaBefore = screenSize / zoom;
+		Vec2f visibleAreaBefore = screenSize / zoom;
 		zoom -= zoomStep;
-		Vf2d visibleAreaAfter = screenSize / zoom;
+		Vec2f visibleAreaAfter = screenSize / zoom;
 
 		// Adjust position to keep the center consistent
 		position += (visibleAreaBefore - visibleAreaAfter) / 2;
@@ -59,9 +59,9 @@ class Camera {
 	}
 
   private:
-	Vf2d screenSize;
-	Vf2d position = {0.0f, 0.0f};
+	Vec2f screenSize;
+	Vec2f position = {0.0f, 0.0f};
 	float zoom = 1.0f;
 	float zoomStep = 0.02f;
-	std::vector<Vf2d> dirv = {{0, -4}, {4, 0}, {0, 4}, {-4, 0}}; // aligns with CamDirection enum
+	std::vector<Vec2f> dirv = {{0, -4}, {4, 0}, {0, 4}, {-4, 0}}; // aligns with CamDirection enum
 };

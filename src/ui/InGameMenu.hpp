@@ -4,7 +4,7 @@
 #include "../constants.hpp"
 #include "../ecs/ECSManager.hpp"
 #include "../engine/Engine.hpp"
-#include "../engine/Vec2d.hpp"
+#include "../engine/Vec2i.hpp"
 #include "../modules/MenuStack.hpp"
 #include "../modules/SaveGameManager.hpp"
 #include "ConfirmationMenu.hpp"
@@ -17,7 +17,7 @@ class InGameMenu final : public ListDialog {
   public:
 	InGameMenu(Engine &game, ECSManager &ecs, GameStateManager &gameStateManager, SaveGameManager &saveGameManager,
 	           MenuStack &menuStack)
-	    : ListDialog(game, Vec2d{x, y}, menuWidth_), game_(game), ecs_(ecs), menuStack_(menuStack),
+	    : ListDialog(game, Vec2i{x, y}, menuWidth_), game_(game), ecs_(ecs), menuStack_(menuStack),
 	      gameStateManager_(gameStateManager), saveGameManager_(saveGameManager)
 	{
 		setItems({{"ITEMS", [this, &game]() { pushMenu<InventoryMenu>(game); }},

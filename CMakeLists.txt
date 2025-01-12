@@ -29,8 +29,20 @@ include(CTest)
 # add dependencies here
 FetchContent_Declare(
     SDL2
-    URL https://libsdl.org/release/SDL2-2.0.20.tar.gz
+    URL https://libsdl.org/release/SDL2-2.30.11.tar.gz
 )
+#FetchContent_Declare(
+#    SDL2
+#    GIT_REPOSITORY  https://github.com/libsdl-org/SDL
+#    GIT_TAG         release-2.30.11
+#    GIT_PROGRESS    TRUE
+#)
+
+
+set(SDL2TTF_INSTALL OFF)
+set(SDL2IMAGE_INSTALL OFF)
+set(SDL2MIXER_INSTALL OFF)
+set(BUILD_SHARED_LIBS FALSE)
 FetchContent_Declare(
     SDL2_IMAGE
     GIT_REPOSITORY  https://github.com/libsdl-org/SDL_image

@@ -36,25 +36,15 @@
 
 class Game : public Engine {
   public:
-	Game(const std::string title, Vec2d screenSize, Vec2d pixelSize, int frameRate)
+	Game(const std::string title, Vec2i screenSize, Vec2i pixelSize, int frameRate)
 	    : Engine(title, screenSize, pixelSize, frameRate), camera(screenSize.x, screenSize.y)
 	{
 	}
 
 	bool onStart() override
 	{
-		spritesheet = loadTexture(SPRITE_SHEET);
-		if (!spritesheet) {
-			throw std::runtime_error("Error. InputSystemUnable to open overworld spritesheet");
-		}
-		mainMenuBackground = std::shared_ptr<SDL_Texture>(loadTexture(MAINMENU_BACKGROUND), SDL_DestroyTexture);
-
 		mapManager.loadMap(0);
-
-		// saveGameManager.load(WORLD_DEFINITION_PATH);
-
 		initializeSystems();
-
 		return true;
 	}
 
@@ -63,24 +53,10 @@ class Game : public Engine {
 		switch (gameStateManager.getGameState()) {
 
 		case GameState::MAINMENU: {
-			drawTexture(mainMenuBackground);
-
 			if (menuStack.isEmpty())
 				menuStack.push(std::make_unique<MainMenu>(*this, gameStateManager, saveGameManager, menuStack));
 
 			menuStack.update();
-
-			createTestEntity({15, 6}, {{Vec2d{15, 6} * TILE_SIZE, Rotation::SOUTH, 2},
-			                           {Vec2d{19, 5} * TILE_SIZE, Rotation::NORTH, 2},
-			                           {Vec2d{24, 7} * TILE_SIZE, Rotation::EAST, 2}});
-			createTestEntity({21, 7}, {{Vec2d{21, 7} * TILE_SIZE, Rotation::SOUTH, 2},
-			                           {Vec2d{21, 8} * TILE_SIZE, Rotation::NORTH, 2}});
-			createTestEntity({14, 7}, {{Vec2d{14, 7} * TILE_SIZE, Rotation::EAST, 5},
-			                           {Vec2d{20, 7} * TILE_SIZE, Rotation::WEST, 5}});
-			createTestEntity({16, 6}, {{Vec2d{16, 6} * TILE_SIZE, Rotation::SOUTH, 0},
-			                           {Vec2d{19, 6} * TILE_SIZE, Rotation::NORTH, 0},
-			                           {Vec2d{19, 7} * TILE_SIZE, Rotation::EAST, 0},
-			                           {Vec2d{16, 7} * TILE_SIZE, Rotation::WEST, 0}});
 
 			break;
 		}
@@ -91,6 +67,11 @@ class Game : public Engine {
 					menuStack.reset();
 				menuStack.push(std::make_unique<InGameMenu>(*this, ecs, gameStateManager, saveGameManager, menuStack));
 				ecs.removeComponent<Controllable>(0);
+			}
+
+			if (!addedEntities) {
+				addTestEntities();
+				addedEntities = true;
 			}
 
 			inputSystem->update(ecs, deltaTime);
@@ -132,14 +113,14 @@ class Game : public Engine {
 		aiSystem = std::make_unique<AISystem>(btManager, mapManager);
 		physicsSystem = std::make_unique<PhysicsSystem>(mapManager);
 		interactionSystem = std::make_unique<InteractionSystem>(*this, menuStack);
-		renderSystem = std::make_unique<RenderSystem>(*this, mapManager, camera, spritesheet);
+		renderSystem = std::make_unique<RenderSystem>(*this, mapManager, camera);
 		progressSystem = std::make_unique<ProgressSystem>();
 		audioSystem = std::make_unique<AudioSystem>(PLAYER);
 		debugSystem = std::make_unique<DebugSystem>(*this, mapManager, camera);
 		pathfindingSystem = std::make_unique<PathfindingSystem>(mapManager);
 	}
 
-	void createTestEntity(const Vec2d &position, const std::vector<PatrolPoint> &waypoints)
+	void createTestEntity(const Vec2i &position, const std::vector<PatrolPoint> &waypoints)
 	{
 		Entity e = instantiateNPCEntity(ecs, position);
 		ecs.addComponent<Vision>(e, Vision{});
@@ -148,8 +129,21 @@ class Game : public Engine {
 		btManager.createTreeForEntity(e, "MainTree");
 	}
 
-	SDL_Texture *spritesheet;
-	std::shared_ptr<SDL_Texture> mainMenuBackground;
+	void addTestEntities()
+	{
+		createTestEntity({15, 6}, {{Vec2i{15, 6} * TILE_SIZE, Rotation::SOUTH, 2},
+		                           {Vec2i{19, 5} * TILE_SIZE, Rotation::NORTH, 2},
+		                           {Vec2i{24, 7} * TILE_SIZE, Rotation::EAST, 2}});
+		createTestEntity(
+		    {21, 7}, {{Vec2i{21, 7} * TILE_SIZE, Rotation::SOUTH, 2}, {Vec2i{21, 8} * TILE_SIZE, Rotation::NORTH, 2}});
+		createTestEntity(
+		    {14, 7}, {{Vec2i{14, 7} * TILE_SIZE, Rotation::EAST, 5}, {Vec2i{20, 7} * TILE_SIZE, Rotation::WEST, 5}});
+		createTestEntity({16, 6}, {{Vec2i{16, 6} * TILE_SIZE, Rotation::SOUTH, 0},
+		                           {Vec2i{19, 6} * TILE_SIZE, Rotation::NORTH, 0},
+		                           {Vec2i{19, 7} * TILE_SIZE, Rotation::EAST, 0},
+		                           {Vec2i{16, 7} * TILE_SIZE, Rotation::WEST, 0}});
+	}
+
 	ECSManager ecs;
 	MapManager mapManager;
 	BTManager btManager = BTManager(ecs);
@@ -157,6 +151,7 @@ class Game : public Engine {
 	GameStateManager gameStateManager;
 	MenuStack menuStack;
 	Camera camera;
+	bool addedEntities = false;
 
 	std::unique_ptr<InputSystem> inputSystem;
 	std::unique_ptr<AISystem> aiSystem;

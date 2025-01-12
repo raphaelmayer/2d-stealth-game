@@ -17,8 +17,8 @@ class InputSystem final : public System {
 	{
 		const std::set<Entity> &entities = {PLAYER}; // no need to iterate over all entities
 		std::array<KeyState, SDL_NUM_SCANCODES> keyState = engine_.getKeyStates();
-		Vec2d mouseWheelDelta = engine_.getMouseWheelDelta();
-		Vec2d mousePos = engine_.getMousePosition();
+		Vec2i mouseWheelDelta = engine_.getMouseWheelDelta();
+		Vec2i mousePos = engine_.getMousePosition();
 
 		for (const Entity &entity : entities) {
 			if (ecs.hasComponent<Controllable>(entity) && ecs.hasComponent<RigidBody>(entity)) {
@@ -57,7 +57,7 @@ class InputSystem final : public System {
 		if (ecs.hasComponent<Positionable>(entity)) {
 			auto &positionable = ecs.getComponent<Positionable>(entity);
 			auto &rigidBody = ecs.getComponent<RigidBody>(entity); // existance check happens earlier
-			Vec2d velocity{0, 0};
+			Vec2i velocity{0, 0};
 
 			if (keyState[SDL_GetScancodeFromKey(SDLK_w)].held) {
 				velocity.y = -1;
@@ -80,8 +80,8 @@ class InputSystem final : public System {
 		}
 	}
 
-	void handleCamera(const std::array<KeyState, SDL_NUM_SCANCODES> &keyState, Vec2d mouseWheelDelta,
-	                  Vec2d mousePosition)
+	void handleCamera(const std::array<KeyState, SDL_NUM_SCANCODES> &keyState, Vec2i mouseWheelDelta,
+	                  Vec2i mousePosition)
 	{
 		if (mouseWheelDelta.y > 0)
 			camera_.zoomIn();

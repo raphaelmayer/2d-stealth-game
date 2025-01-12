@@ -49,7 +49,7 @@ class PhysicsSystem final : public System {
 	}
 
   private:
-	void resetCurrentMovementParams(const Vec2d &position, RigidBody &rigidBody)
+	void resetCurrentMovementParams(const Vec2i &position, RigidBody &rigidBody)
 	{
 		rigidBody.isMoving = false;
 		rigidBody.progress = 0;
@@ -61,7 +61,7 @@ class PhysicsSystem final : public System {
 
 	bool checkCollisions(ECSManager &ecs, Entity entity, RigidBody &rigidBody)
 	{
-		const Vec2d tileSizedEndPos = rigidBody.endPosition.toTileSize();
+		const Vec2i tileSizedEndPos = rigidBody.endPosition.toTileSize();
 		const Tile endTile = mapManager_.getTile(tileSizedEndPos.x, tileSizedEndPos.y);
 
 		if (ecs.hasComponent<Collider>(entity)) {
@@ -92,13 +92,13 @@ class PhysicsSystem final : public System {
 		return false;
 	}
 
-	void applyMovement(Vec2d &position, RigidBody &rigidBody, double deltaTime)
+	void applyMovement(Vec2i &position, RigidBody &rigidBody, double deltaTime)
 	{
 		const double movementAmount = WALK_SPEED * deltaTime;
 		rigidBody.accumulator += movementAmount;
 		rigidBody.progress += movementAmount;
 
-		const Vec2d direction = (rigidBody.endPosition - position).sign();
+		const Vec2i direction = (rigidBody.endPosition - position).sign();
 
 		// This is not optimal and can result in jittery movements, when the framerate is low.
 		// This is due to float calculations.
@@ -108,9 +108,9 @@ class PhysicsSystem final : public System {
 		}
 	}
 
-	void applyRotation(Vec2d &position, RigidBody &rigidBody, Rotatable &rotatable)
+	void applyRotation(Vec2i &position, RigidBody &rigidBody, Rotatable &rotatable)
 	{
-		const Vec2d direction = (rigidBody.endPosition - position).sign();
+		const Vec2i direction = (rigidBody.endPosition - position).sign();
 
 		if (direction.y == -1) {
 			rotatable.rotation = Rotation::NORTH;

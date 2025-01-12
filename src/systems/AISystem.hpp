@@ -5,7 +5,7 @@
 #include "../components/AI.hpp"
 #include "../components/Vision.hpp"
 #include "../ecs/ECSManager.hpp"
-#include "../engine/Vec2d.hpp"
+#include "../engine/Vec2i.hpp"
 #include "../modules/BTManager.hpp"
 #include "../modules/MapManager.hpp"
 #include "../systems/AIPerceptionSystem.hpp"
@@ -52,7 +52,7 @@ class AISystem final : public System {
 	void updateHighLevelAIState(ECSManager &ecs, Entity entity, double deltaTime)
 	{
 		// These components are a given at this point, because we check above. Possible error down the line.
-		Vec2d &position = ecs.getComponent<Positionable>(entity).position;
+		Vec2i &position = ecs.getComponent<Positionable>(entity).position;
 		Vision &vision = ecs.getComponent<Vision>(entity);
 		AI &ai = ecs.getComponent<AI>(entity);
 

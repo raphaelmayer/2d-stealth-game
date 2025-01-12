@@ -6,7 +6,7 @@
 #include "../modules/SaveGameManager.hpp"
 #include "../ecs/ECSManager.hpp"
 #include "../engine/Engine.hpp"
-#include "../engine/Vec2d.hpp"
+#include "../engine/Vec2i.hpp"
 #include "ListDialog.hpp"
 #include "TextDialog.hpp"
 #include "UIElement.hpp"
@@ -19,11 +19,11 @@ class ConfirmationMenu final : public UIElement {
 	    : UIElement(game), game_(game), menuStack_(menuStack), textBox(game, menuStack, text), listMenu(game,
 	                                                                    {{"YES",
 	                                                                      [&menuStack, action]() {
+		                                                                      auto deadMenu = menuStack.pop();
 		                                                                      action();
-		                                                                      menuStack.pop();
 	                                                                      }},
 	                                                                     {"NO", [&menuStack]() { menuStack.pop(); }}},
-	                                                                    Vec2d{x, y}, menuWidth_)
+	                                                                    Vec2i{x, y}, menuWidth_)
 
 	{
 	}

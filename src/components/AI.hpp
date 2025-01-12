@@ -4,13 +4,13 @@
 #include "../ai/AIState.hpp"
 #include "../ai/Blackboard.hpp"
 #include "../behaviortree/BehaviorTree.hpp"
-#include "../engine/Vec2d.hpp"
+#include "../engine/Vec2i.hpp"
 #include "behaviortree_cpp/bt_factory.h"
 #include <memory>
 #include <vector>
 
 struct AI {
-	Vec2d originalPosition; // The fallback position for AI to return to
+	Vec2i originalPosition; // The fallback position for AI to return to
 
 	// AIRole role = AIRole::Neutral;
 	AIState state = AIState::Unaware;
@@ -19,8 +19,8 @@ struct AI {
 	double detectionTime = 0; // for state transitions
 	double searchTime = 0;    // for state transitions
 
-	Vec2d targetPosition{-1, -1}; // Current target
-	std::vector<Vec2d> path = {}; // Current path to the target
+	Vec2i targetPosition{-1, -1}; // Current target
+	std::vector<Vec2i> path = {}; // Current path to the target
 	int pathIndex = 0;
 
 	// TODO: handle serialization, when the time comes
