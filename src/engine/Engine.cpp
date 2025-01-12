@@ -277,61 +277,81 @@ void Engine::drawCircle(const Vec2f &pos, const int &radius, const ColorRGBA &co
 	SDL_RenderDrawPointsF(renderer_.get(), points.data(), static_cast<int>(points.size()));
 }
 
-void Engine::drawTexture(const std::shared_ptr<SDL_Texture> texture) const
+void Engine::drawTexture(const Texture &texture) const
 {
-	SDL_RenderCopy(renderer_.get(), texture.get(), NULL, NULL);
+	SDL_RenderCopy(renderer_.get(), texture.getSDLTexture(), nullptr, nullptr);
 }
 
-void Engine::drawTexture(const std::shared_ptr<SDL_Texture> texture, const SDL_Rect dst) const
+void Engine::drawTexture(const Texture &texture, const Recti &dst) const
 {
-	SDL_RenderCopy(renderer_.get(), texture.get(), NULL, &dst);
+	SDL_Rect sdlDst = dst.toSDLRect();
+	SDL_RenderCopy(renderer_.get(), texture.getSDLTexture(), nullptr, &sdlDst);
 }
 
-void Engine::drawTexture(const std::shared_ptr<SDL_Texture> texture, const SDL_Rect src, const SDL_Rect dst) const
+void Engine::drawTexture(const Texture &texture, const Rectf &dst) const
 {
-	SDL_RenderCopy(renderer_.get(), texture.get(), &src, &dst);
+	SDL_FRect sdlDst = dst.toSDLRect();
+	SDL_RenderCopyF(renderer_.get(), texture.getSDLTexture(), nullptr, &sdlDst);
 }
 
-void Engine::drawSpriteFromSheet(const Recti &src, const Recti &dst, SDL_Texture *spritesheet) const
+void Engine::drawTexture(const Texture &texture, const Recti &src, const Recti &dst) const
 {
 	SDL_Rect sdlSrc = src.toSDLRect();
 	SDL_Rect sdlDst = dst.toSDLRect();
-	SDL_RenderCopy(renderer_.get(), spritesheet, &sdlSrc, &sdlDst);
+	SDL_RenderCopy(renderer_.get(), texture.getSDLTexture(), &sdlSrc, &sdlDst);
 }
 
-void Engine::drawSpriteFromSheet(const Recti &src, const Rectf &dst, SDL_Texture *spritesheet) const
+void Engine::drawTexture(const Texture &texture, const Recti &src, const Rectf &dst) const
 {
 	SDL_Rect sdlSrc = src.toSDLRect();
 	SDL_FRect sdlDst = dst.toSDLRect();
-	SDL_RenderCopyF(renderer_.get(), spritesheet, &sdlSrc, &sdlDst);
+	SDL_RenderCopyF(renderer_.get(), texture.getSDLTexture(), &sdlSrc, &sdlDst);
 }
 
-void Engine::drawSpriteFromSheet(const Recti &src, const Recti &dst, SDL_Texture *spritesheet, double angle,
-                                 SDL_Point *center, SDL_RendererFlip flip) const
+void Engine::drawTexture(const Texture &texture, const Recti &src, const Recti &dst, const double &angle,
+                         const Vec2i &center, const TextureFlip &flip) const
 {
 	SDL_Rect sdlSrc = src.toSDLRect();
 	SDL_Rect sdlDst = dst.toSDLRect();
-	SDL_RenderCopyEx(renderer_.get(), spritesheet, &sdlSrc, &sdlDst, angle, center, flip);
+	SDL_Point sdlCenter = {center.x, center.y};
+	SDL_RenderCopyEx(renderer_.get(), texture.getSDLTexture(), &sdlSrc, &sdlDst, angle, &sdlCenter,
+	                 static_cast<SDL_RendererFlip>(flip));
 }
 
-// everything from here to EOF is Joshua's work
-SDL_Texture *Engine::loadTexture(const std::string &path) const
+void Engine::drawTexture(const Texture &texture, const Recti &src, const Rectf &dst, const double &angle,
+                         const Vec2f &center, const TextureFlip &flip) const
 {
-	// Using own implementation because IMG_LoadTexture always returns NULL
-	// https://www.reddit.com/r/cpp_questions/comments/u43q2d/sdl2_img_loadtexture_problem/
-	// SDL_Texture *texture = IMG_LoadTexture(renderer_.get(), path.c_str());
+	SDL_Rect sdlSrc = src.toSDLRect();
+	SDL_FRect sdlDst = dst.toSDLRect();
+	SDL_FPoint sdlCenter = {center.x, center.y};
+	SDL_RenderCopyExF(renderer_.get(), texture.getSDLTexture(), &sdlSrc, &sdlDst, angle, &sdlCenter,
+	                  static_cast<SDL_RendererFlip>(flip));
+}
 
-	SDL_Texture *texture = NULL;
+SDL_Texture *Engine::loadSDLTexture(const std::string &path) const
+{
+	// Load the surface from the specified path
 	SDL_Surface *surface = IMG_Load(path.c_str());
-	if (surface) {
-		texture = SDL_CreateTextureFromSurface(renderer_.get(), surface);
-		// SDL_FreeSurface(surface);
+	if (!surface) {
+		throw std::runtime_error("Error loading image at '" + path + "': " + IMG_GetError());
 	}
+
+	// Create a texture from the loaded surface
+	SDL_Texture *texture = SDL_CreateTextureFromSurface(renderer_.get(), surface);
+	// TODO: Currently the next line throws an exception when freeing.
+	// SDL_FreeSurface(surface); // Free the surface as it's no longer needed
+
 	if (!texture) {
-		throw std::runtime_error("Error. Unable to open " + path);
+		throw std::runtime_error("Error creating texture from surface for '" + path + "': " + SDL_GetError());
 	}
 
 	return texture;
+}
+
+Texture Engine::loadTexture(const std::string &path) const
+{
+	Texture t = Texture(loadSDLTexture(path));
+	return t;
 }
 
 void Engine::drawText(const Recti &dst, const std::string &text) const

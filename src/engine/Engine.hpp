@@ -13,6 +13,8 @@
 #include "Rectf.hpp"
 #include "Recti.hpp"
 #include "SDL_Deleter.hpp"
+#include "Texture.hpp"
+#include "TextureFlip.hpp"
 #include "Vec2f.hpp"
 #include "Vec2i.hpp"
 #include <SDL.h>
@@ -57,14 +59,17 @@ class Engine {
 	void fillCircle(const Vec2f &pos, const int &radius, const ColorRGBA &color) const;
 	void drawCircle(const Vec2i &pos, const int &radius, const ColorRGBA &color) const;
 	void drawCircle(const Vec2f &pos, const int &radius, const ColorRGBA &color) const;
-	void drawTexture(const std::shared_ptr<SDL_Texture> texture) const;
-	void drawTexture(const std::shared_ptr<SDL_Texture> texture, const SDL_Rect dst) const;
-	void drawTexture(const std::shared_ptr<SDL_Texture> texture, const SDL_Rect src, const SDL_Rect dst) const;
-	void drawSpriteFromSheet(const Recti &src, const Recti &dst, SDL_Texture *spritesheet) const;
-	void drawSpriteFromSheet(const Recti &src, const Rectf &dst, SDL_Texture *spritesheet) const;
-	void drawSpriteFromSheet(const Recti &src, const Recti &dst, SDL_Texture *spritesheet, double angle,
-	                         SDL_Point *center, SDL_RendererFlip flip) const;
-	SDL_Texture *loadTexture(const std::string &path) const;
+	void drawTexture(const Texture &texture) const;
+	void drawTexture(const Texture &texture, const Recti &dst) const;
+	void drawTexture(const Texture &texture, const Rectf &dst) const;
+	void drawTexture(const Texture &texture, const Recti &src, const Recti &dst) const;
+	void drawTexture(const Texture &texture, const Recti &src, const Rectf &dst) const;
+	void drawTexture(const Texture &texture, const Recti &src, const Recti &dst, const double &angle,
+	                 const Vec2i &center, const TextureFlip &flip) const;
+	void drawTexture(const Texture &texture, const Recti &src, const Rectf &dst, const double &angle,
+	                 const Vec2f &center, const TextureFlip &flip) const;
+	SDL_Texture *loadSDLTexture(const std::string &path) const;
+	Texture loadTexture(const std::string &path) const;
 	void drawText(const Recti &dst, const std::string &text) const;
 
 	// Get the state of all keys

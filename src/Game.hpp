@@ -43,18 +43,8 @@ class Game : public Engine {
 
 	bool onStart() override
 	{
-		spritesheet = loadTexture(SPRITE_SHEET);
-		if (!spritesheet) {
-			throw std::runtime_error("Error. InputSystemUnable to open overworld spritesheet");
-		}
-		mainMenuBackground = std::shared_ptr<SDL_Texture>(loadTexture(MAINMENU_BACKGROUND), SDL_DestroyTexture);
-
 		mapManager.loadMap(0);
-
-		// saveGameManager.load(WORLD_DEFINITION_PATH);
-
 		initializeSystems();
-
 		return true;
 	}
 
@@ -63,8 +53,6 @@ class Game : public Engine {
 		switch (gameStateManager.getGameState()) {
 
 		case GameState::MAINMENU: {
-			drawTexture(mainMenuBackground);
-
 			if (menuStack.isEmpty())
 				menuStack.push(std::make_unique<MainMenu>(*this, gameStateManager, saveGameManager, menuStack));
 
@@ -132,7 +120,7 @@ class Game : public Engine {
 		aiSystem = std::make_unique<AISystem>(btManager, mapManager);
 		physicsSystem = std::make_unique<PhysicsSystem>(mapManager);
 		interactionSystem = std::make_unique<InteractionSystem>(*this, menuStack);
-		renderSystem = std::make_unique<RenderSystem>(*this, mapManager, camera, spritesheet);
+		renderSystem = std::make_unique<RenderSystem>(*this, mapManager, camera);
 		progressSystem = std::make_unique<ProgressSystem>();
 		audioSystem = std::make_unique<AudioSystem>(PLAYER);
 		debugSystem = std::make_unique<DebugSystem>(*this, mapManager, camera);
@@ -148,8 +136,6 @@ class Game : public Engine {
 		btManager.createTreeForEntity(e, "MainTree");
 	}
 
-	SDL_Texture *spritesheet;
-	std::shared_ptr<SDL_Texture> mainMenuBackground;
 	ECSManager ecs;
 	MapManager mapManager;
 	BTManager btManager = BTManager(ecs);

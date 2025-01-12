@@ -18,10 +18,10 @@
 // It performs visibility culling using the camera's position to avoid unnecessary rendering.
 class RenderSystem final : public System {
   public:
-	RenderSystem(const Engine &engine, const MapManager &mapManager, const Camera &camera, SDL_Texture *spritesheet)
-	    : engine_(engine), mapManager_(mapManager), camera_(camera), spritesheet_(spritesheet)
+	RenderSystem(const Engine &engine, const MapManager &mapManager, const Camera &camera)
+	    : engine_(engine), mapManager_(mapManager), camera_(camera), spritesheet_(engine_.loadTexture(SPRITE_SHEET)),
+	      weaponTexture(engine_.loadTexture(M4A1))
 	{
-		weaponTexture = engine_.loadTexture(M4A1);
 	}
 
 	void update(ECSManager &ecs, const double deltaTime) override
@@ -58,9 +58,9 @@ class RenderSystem final : public System {
 				Rectf dst = {position.x, position.y + offset_y, size.x, size.y};
 				// Perform visibility culling before rendering the entity.
 				if (isVisibleOnScreen(dst, camPos, engine_.getScreenSize() / camZoom)) {
-					Rectf camAdjustedDst = {(dst.x - camPos.x) * camZoom, (dst.y - camPos.y) * camZoom,
-					                           dst.w * camZoom, dst.h * camZoom};
-					engine_.drawSpriteFromSheet(src, camAdjustedDst, spritesheet_);
+					Rectf camAdjustedDst = {(dst.x - camPos.x) * camZoom, (dst.y - camPos.y) * camZoom, dst.w * camZoom,
+					                        dst.h * camZoom};
+					engine_.drawTexture(spritesheet_, src, camAdjustedDst);
 
 					// Currently testing: rendering weapons
 					// Render the weapon if applicable
@@ -107,7 +107,6 @@ class RenderSystem final : public System {
 		int endX = std::min(map.getWidth(), static_cast<int>((camPos.x + visibleArea.x) / TILE_SIZE) + 1);
 		int endY = std::min(map.getHeight(), static_cast<int>((camPos.y + visibleArea.y) / TILE_SIZE) + 1);
 
-
 		for (int y = startY; y < endY; y++) {
 			for (int x = startX; x < endX; x++) {
 				const std::vector<TileMetadata> fullTiledata = mapManager_.getTileData(x, y);
@@ -118,12 +117,10 @@ class RenderSystem final : public System {
 
 					// Perform visibility culling before rendering the tile.
 					if (isVisibleOnScreen(dst, camPos, engine_.getScreenSize() / zoom)) {
-						float screenX = (dst.x - camPos.x) * zoom;
-						float screenY = (dst.y - camPos.y) * zoom;
-						float w = dst.w * zoom;
-						float h = dst.h * zoom;
-						Rectf camAdjustedDst{screenX, screenY, w, h};
-						engine_.drawSpriteFromSheet(src, camAdjustedDst, spritesheet_);
+						Vec2f screenPos = (Vec2f{dst.x, dst.y} - camPos) * zoom;
+						Vec2f size = Vec2f{dst.w, dst.h} * zoom;
+						Rectf camAdjustedDst{screenPos.x, screenPos.y, size.x, size.y};
+						engine_.drawTexture(spritesheet_, src, camAdjustedDst);
 					}
 				}
 			}
@@ -150,21 +147,21 @@ class RenderSystem final : public System {
 			const auto &rotation = ecs.getComponent<Rotatable>(entity).rotation;
 			Vec2i weaponOffset = CalculateWeaponOffset(rotation);
 
-			auto flip = rotation == Rotation::EAST ? SDL_FLIP_NONE : SDL_FLIP_HORIZONTAL;
+			auto flip = rotation == Rotation::EAST ? TextureFlip::NONE : TextureFlip::HORIZONTAL;
 			auto angle = rotation == Rotation::SOUTH || rotation == Rotation::NORTH ? 90 : 0;
 
 			Recti wepSrc = {0, 0, 64, 32};
-			Recti camAdjustedDstWep = {position.x + weaponOffset.x - camPos.x,
-			                              position.y + weaponOffset.y - camPos.y, 16, 8};
+			Recti camAdjustedDstWep = {position.x + weaponOffset.x - camPos.x, position.y + weaponOffset.y - camPos.y,
+			                           16, 8};
 
-			engine_.drawSpriteFromSheet(wepSrc, camAdjustedDstWep, weaponTexture, angle, nullptr, flip);
+			engine_.drawTexture(weaponTexture, wepSrc, camAdjustedDstWep, angle, {8, 4}, flip);
 		}
 	}
 
 	void renderAlertnessLevel(const Vec2i &position, const AI &ai, const Vec2f &camPos, const float &camZoom)
 	{
 		const Recti dst{(position.x - camPos.x) * camZoom, (position.y - camPos.y - TILE_SIZE) * camZoom,
-		                   TILE_SIZE * camZoom, TILE_SIZE * camZoom};
+		                TILE_SIZE * camZoom, TILE_SIZE * camZoom};
 		std::string symbol;
 		switch (ai.state) {
 		case AIState::Unaware:
@@ -195,6 +192,6 @@ class RenderSystem final : public System {
 	const Engine &engine_;
 	const MapManager &mapManager_;
 	const Camera &camera_;
-	SDL_Texture *spritesheet_;
-	SDL_Texture *weaponTexture;
+	const Texture spritesheet_;
+	const Texture weaponTexture;
 };
