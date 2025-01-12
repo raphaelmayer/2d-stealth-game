@@ -58,18 +58,6 @@ class Game : public Engine {
 
 			menuStack.update();
 
-			createTestEntity({15, 6}, {{Vec2i{15, 6} * TILE_SIZE, Rotation::SOUTH, 2},
-			                           {Vec2i{19, 5} * TILE_SIZE, Rotation::NORTH, 2},
-			                           {Vec2i{24, 7} * TILE_SIZE, Rotation::EAST, 2}});
-			createTestEntity({21, 7}, {{Vec2i{21, 7} * TILE_SIZE, Rotation::SOUTH, 2},
-			                           {Vec2i{21, 8} * TILE_SIZE, Rotation::NORTH, 2}});
-			createTestEntity({14, 7}, {{Vec2i{14, 7} * TILE_SIZE, Rotation::EAST, 5},
-			                           {Vec2i{20, 7} * TILE_SIZE, Rotation::WEST, 5}});
-			createTestEntity({16, 6}, {{Vec2i{16, 6} * TILE_SIZE, Rotation::SOUTH, 0},
-			                           {Vec2i{19, 6} * TILE_SIZE, Rotation::NORTH, 0},
-			                           {Vec2i{19, 7} * TILE_SIZE, Rotation::EAST, 0},
-			                           {Vec2i{16, 7} * TILE_SIZE, Rotation::WEST, 0}});
-
 			break;
 		}
 
@@ -79,6 +67,11 @@ class Game : public Engine {
 					menuStack.reset();
 				menuStack.push(std::make_unique<InGameMenu>(*this, ecs, gameStateManager, saveGameManager, menuStack));
 				ecs.removeComponent<Controllable>(0);
+			}
+
+			if (!addedEntities) {
+				addTestEntities();
+				addedEntities = true;
 			}
 
 			inputSystem->update(ecs, deltaTime);
@@ -136,6 +129,21 @@ class Game : public Engine {
 		btManager.createTreeForEntity(e, "MainTree");
 	}
 
+	void addTestEntities()
+	{
+		createTestEntity({15, 6}, {{Vec2i{15, 6} * TILE_SIZE, Rotation::SOUTH, 2},
+		                           {Vec2i{19, 5} * TILE_SIZE, Rotation::NORTH, 2},
+		                           {Vec2i{24, 7} * TILE_SIZE, Rotation::EAST, 2}});
+		createTestEntity(
+		    {21, 7}, {{Vec2i{21, 7} * TILE_SIZE, Rotation::SOUTH, 2}, {Vec2i{21, 8} * TILE_SIZE, Rotation::NORTH, 2}});
+		createTestEntity(
+		    {14, 7}, {{Vec2i{14, 7} * TILE_SIZE, Rotation::EAST, 5}, {Vec2i{20, 7} * TILE_SIZE, Rotation::WEST, 5}});
+		createTestEntity({16, 6}, {{Vec2i{16, 6} * TILE_SIZE, Rotation::SOUTH, 0},
+		                           {Vec2i{19, 6} * TILE_SIZE, Rotation::NORTH, 0},
+		                           {Vec2i{19, 7} * TILE_SIZE, Rotation::EAST, 0},
+		                           {Vec2i{16, 7} * TILE_SIZE, Rotation::WEST, 0}});
+	}
+
 	ECSManager ecs;
 	MapManager mapManager;
 	BTManager btManager = BTManager(ecs);
@@ -143,6 +151,7 @@ class Game : public Engine {
 	GameStateManager gameStateManager;
 	MenuStack menuStack;
 	Camera camera;
+	bool addedEntities = false;
 
 	std::unique_ptr<InputSystem> inputSystem;
 	std::unique_ptr<AISystem> aiSystem;

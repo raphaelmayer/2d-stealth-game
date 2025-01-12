@@ -19,8 +19,8 @@ class ConfirmationMenu final : public UIElement {
 	    : UIElement(game), game_(game), menuStack_(menuStack), textBox(game, menuStack, text), listMenu(game,
 	                                                                    {{"YES",
 	                                                                      [&menuStack, action]() {
+		                                                                      auto deadMenu = menuStack.pop();
 		                                                                      action();
-		                                                                      menuStack.pop();
 	                                                                      }},
 	                                                                     {"NO", [&menuStack]() { menuStack.pop(); }}},
 	                                                                    Vec2i{x, y}, menuWidth_)

@@ -330,19 +330,16 @@ void Engine::drawTexture(const Texture &texture, const Recti &src, const Rectf &
 
 SDL_Texture *Engine::loadSDLTexture(const std::string &path) const
 {
-	// Load the surface from the specified path
 	SDL_Surface *surface = IMG_Load(path.c_str());
 	if (!surface) {
-		throw std::runtime_error("Error loading image at '" + path + "': " + IMG_GetError());
+		throw std::runtime_error(std::string("Error loading image at '") + path + "': " + IMG_GetError());
 	}
 
-	// Create a texture from the loaded surface
 	SDL_Texture *texture = SDL_CreateTextureFromSurface(renderer_.get(), surface);
-	// TODO: Currently the next line throws an exception when freeing.
-	// SDL_FreeSurface(surface); // Free the surface as it's no longer needed
+	SDL_FreeSurface(surface);
 
 	if (!texture) {
-		throw std::runtime_error("Error creating texture from surface for '" + path + "': " + SDL_GetError());
+		throw std::runtime_error(std::string("Error creating texture from surface for '") + path + "': " + SDL_GetError());
 	}
 
 	return texture;
@@ -356,38 +353,51 @@ Texture Engine::loadTexture(const std::string &path) const
 
 void Engine::drawText(const Recti &dst, const std::string &text) const
 {
-	SDL_Surface *textSurface = TTF_RenderUTF8_Solid_Wrapped(font_.get(), text.c_str(), {0, 0, 0, 255}, dst.w);
+	// OPTIONAL: Set the font style or outline
+	// TTF_SetFontStyle(font_.get(), TTF_STYLE_BOLD);
+	// TTF_SetFontOutline(font_.get(), 1);
 
+	SDL_Color textColor = {0, 0, 0, 255};
+
+	SDL_Surface *textSurface = TTF_RenderUTF8_Solid_Wrapped(font_.get(), text.c_str(), textColor, dst.w);
 	if (!textSurface) {
-		fprintf(stderr, "Error creating SDL textsurface %s\n", SDL_GetError());
+		throw std::runtime_error(std::string("Error creating text surface: ") + SDL_GetError());
 	}
+
 	SDL_Texture *textTexture = SDL_CreateTextureFromSurface(renderer_.get(), textSurface);
-
 	if (!textTexture) {
-		fprintf(stderr, "Error creating SDL textTexture %s\n", SDL_GetError());
+		SDL_FreeSurface(textSurface);
+		throw std::runtime_error(std::string("Error creating text texture: ") + SDL_GetError());
 	}
 
-	// Use the width of the textSurface here to avoid the text getting stretched horizontally
-	// and multiply for better letter spacing
-	SDL_Rect dstRect = {dst.x, dst.y, textSurface->w * 2, dst.h};
-
-	// Test weather the text is too short to be wrapped onto two lines
-	// If so, reduce the height of dstRect to avoid that the text is stretched vertically
-	// Note: This is not used anymore but it might be useful to provide a method to check the size of a string
 	int textW = 0;
 	int textH = 0;
-	TTF_SizeText(font_.get(), text.c_str(), &textW, &textH);
-	if (textW < dst.w) {
-		// dstRect.h = dstRect.h / 2;
+	if (TTF_SizeText(font_.get(), text.c_str(), &textW, &textH) != 0) {
+		SDL_DestroyTexture(textTexture);
+		SDL_FreeSurface(textSurface);
+		throw std::runtime_error(std::string("Error measuring text size: ") + SDL_GetError());
 	}
 
-	SDL_RenderCopy(renderer_.get(), textTexture, nullptr, &dstRect);
+	float verticalScale = 1.0f;
+	if (textH > 0) {
+		verticalScale = static_cast<float>(dst.h) / static_cast<float>(textH);
+	}
 
+	const float horizontalSpacingFactor = 1.5f;
+
+	SDL_Rect dstRect;
+	dstRect.x = dst.x;
+	dstRect.y = dst.y;
+	dstRect.h = dst.h;
+	dstRect.w = static_cast<int>(textW * verticalScale * horizontalSpacingFactor);
+
+	if (SDL_RenderCopy(renderer_.get(), textTexture, nullptr, &dstRect) != 0) {
+		SDL_DestroyTexture(textTexture);
+		SDL_FreeSurface(textSurface);
+		throw std::runtime_error(std::string("Error rendering text: ") + SDL_GetError());
+	}
+
+	// Clean up
 	SDL_DestroyTexture(textTexture);
-
-	// Using SDL_FreeSurface here causes a crash, but not freeing the surface creates a memory leak.
-	// The crash however actually happens when TTF_RenderUTF8_Solid_Wrapped() is called, but only after
-	// SDL_FreeSurface was called once.
-	// So The crash happens on the very next iteration after the text was successfully drawn.
-	// SDL_FreeSurface(textSurface);
+	SDL_FreeSurface(textSurface);
 }

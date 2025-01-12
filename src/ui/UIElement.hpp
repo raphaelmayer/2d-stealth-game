@@ -10,6 +10,7 @@
 class UIElement {
   public:
 	UIElement(Engine &game) : game_(game) {}
+	virtual ~UIElement() = default;
 
 	virtual void handleInput() = 0;
 	virtual void render() = 0;
