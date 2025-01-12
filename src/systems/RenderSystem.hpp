@@ -55,11 +55,11 @@ class RenderSystem final : public System {
 				}
 
 				Recti src = {spriteSrc.x, spriteSrc.y, size.x, size.y};
-				Rectf dst = {position.x, position.y + offset_y, size.x, size.y};
+				Recti dst = {position.x, position.y + offset_y, size.x, size.y};
+
 				// Perform visibility culling before rendering the entity.
 				if (isVisibleOnScreen(dst, camPos, engine_.getScreenSize() / camZoom)) {
-					Vec2f screenPos = (Vec2f{dst.x, dst.y} - camPos) * camZoom;
-					Rectf camAdjustedDst = {screenPos.x, screenPos.y, dst.w * camZoom, dst.h * camZoom};
+					Rectf camAdjustedDst = camera_.rectToScreen(dst);
 					engine_.drawTexture(spritesheet_, src, camAdjustedDst);
 
 					// Currently testing: rendering weapons
@@ -90,7 +90,7 @@ class RenderSystem final : public System {
 		spriteSrcY = animatable.animationAdresses[animatable.currentAnimation];
 	}
 
-	bool isVisibleOnScreen(const Rectf &dst, const Vec2f &cameraPosition, const Vec2i &screenSize)
+	bool isVisibleOnScreen(const Recti &dst, const Vec2f &cameraPosition, const Vec2i &screenSize)
 	{
 		return dst.x >= (cameraPosition.x - TILE_SIZE) && dst.x < (cameraPosition.x + screenSize.x)
 		       && dst.y >= (cameraPosition.y - TILE_SIZE) && dst.y < (cameraPosition.y + screenSize.y);
@@ -113,13 +113,11 @@ class RenderSystem final : public System {
 				for (const TileMetadata &tiledata : fullTiledata) {
 					Vec2i srcPos = Vec2i{tiledata.spriteSheetX, tiledata.spriteSheetY} * TILE_SIZE;
 					Recti src = {srcPos.x, srcPos.y, TILE_SIZE, TILE_SIZE};
-					Rectf dst = {x * TILE_SIZE, y * TILE_SIZE, TILE_SIZE, TILE_SIZE};
+					Recti dst = {x * TILE_SIZE, y * TILE_SIZE, TILE_SIZE, TILE_SIZE};
 
 					// Perform visibility culling before rendering the tile.
 					if (isVisibleOnScreen(dst, camPos, engine_.getScreenSize() / zoom)) {
-						Vec2f screenPos = (Vec2f{dst.x, dst.y} - camPos) * zoom;
-						Vec2f size = Vec2f{dst.w, dst.h} * zoom;
-						Rectf camAdjustedDst{screenPos.x, screenPos.y, size.x, size.y};
+						Rectf camAdjustedDst = camera_.rectToScreen(dst);
 						engine_.drawTexture(spritesheet_, src, camAdjustedDst);
 					}
 				}
@@ -160,8 +158,8 @@ class RenderSystem final : public System {
 
 	void renderAlertnessLevel(const Vec2i &position, const AI &ai, const Vec2f &camPos, const float &camZoom)
 	{
-		const Recti dst{(position.x - camPos.x) * camZoom, (position.y - camPos.y - TILE_SIZE) * camZoom,
-		                TILE_SIZE * camZoom, TILE_SIZE * camZoom};
+		const Recti dst = {position.x, position.y - TILE_SIZE, TILE_SIZE, TILE_SIZE};
+		Rectf camAdjustedDst = camera_.rectToScreen(dst);
 		std::string symbol;
 		switch (ai.state) {
 		case AIState::Unaware:
@@ -185,7 +183,7 @@ class RenderSystem final : public System {
 		}
 
 		if (ai.state >= AIState::Detecting) {
-			engine_.drawText(dst, symbol);
+			engine_.drawText(camAdjustedDst, symbol);
 		}
 	}
 

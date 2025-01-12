@@ -16,7 +16,10 @@
 // This system is a subsystem of AISystem. This means it is contained and run within the AISystem class.
 class AIPerceptionSystem : public System {
   public:
-	AIPerceptionSystem(const MapManager &mapManager) : mapManager_(mapManager) { visionMap = mapManager.getWalkableMapView(); }
+	AIPerceptionSystem(const MapManager &mapManager) : mapManager_(mapManager)
+	{
+		visionMap = mapManager.getWalkableMapView();
+	}
 
 	void update(ECSManager &ecs, const double deltaTime)
 	{
@@ -36,7 +39,7 @@ class AIPerceptionSystem : public System {
 
 					const auto &otherPos = ecs.getComponent<Positionable>(otherEntity).position;
 
-					if (isWithinViewCone(pos, otherPos, rot, vision.range, vision.angle)) {
+					if (isWithinViewCone(pos, otherPos, rot, (float)vision.range, (float)vision.angle)) {
 						// Perform obstacle check
 						bool didCollide = DDA::castRay(visionMap, pos.toTileSize(), otherPos.toTileSize());
 						if (!didCollide) {
@@ -56,11 +59,10 @@ class AIPerceptionSystem : public System {
 	}
 
   private:
-
 	int calculateDistance(Vec2i start, Vec2i end)
 	{
 		Vec2i dirVector = end - start;
-		return sqrt(dirVector.x * dirVector.x + dirVector.y * dirVector.y);
+		return static_cast<int>(sqrt(dirVector.x * dirVector.x + dirVector.y * dirVector.y));
 	}
 
 	// Function to calculate whether an entity is within the view cone
@@ -84,7 +86,7 @@ class AIPerceptionSystem : public System {
 
 		// Calculate angle using dot product
 		float dotProduct = forwardDirection.x * toEntity.x + forwardDirection.y * toEntity.y;
-		float angleToEntity = std::acos(dotProduct) * (180.0f / M_PI); // Convert to degrees
+		float angleToEntity = std::acos(dotProduct) * (180.0f / (float)M_PI); // Convert to degrees
 
 		// Check if within vision angle
 		return angleToEntity <= (visionAngle / 2);

@@ -94,7 +94,7 @@ class PhysicsSystem final : public System {
 
 	void applyMovement(Vec2i &position, RigidBody &rigidBody, double deltaTime)
 	{
-		const double movementAmount = WALK_SPEED * deltaTime;
+		const float movementAmount = WALK_SPEED * (float)deltaTime;
 		rigidBody.accumulator += movementAmount;
 		rigidBody.progress += movementAmount;
 

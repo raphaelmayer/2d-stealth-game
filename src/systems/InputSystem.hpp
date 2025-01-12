@@ -87,7 +87,7 @@ class InputSystem final : public System {
 			camera_.zoomIn();
 		if (mouseWheelDelta.y < 0)
 			camera_.zoomOut();
-
+		
 		if (mousePosition.x < 10)
 			camera_.move(CamDirection::LEFT);
 		if (mousePosition.x > engine_.getWindowSize().x - 10)

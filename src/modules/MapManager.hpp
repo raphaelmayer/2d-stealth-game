@@ -32,8 +32,8 @@ class MapManager {
 			objects.push_back(objRow);
 		}
 		// TOOD: read height and width from map file
-		int sizeY = background.size();
-		int sizeX = background[0].size();
+		// int sizeY = static_cast<int>(background.size());
+		// int sizeX = static_cast<int>(background[0].size());
 		levelMap = LevelMap(MAP_SIZE_X, MAP_SIZE_Y);
 
 		for (int y = 0; y < MAP_SIZE_Y; ++y) {
@@ -49,7 +49,7 @@ class MapManager {
 
 	const LevelMap &getLevelMap() const { return levelMap; }
 	const TileRegistry &getTileRegistry() const { return tileRegistry; }
-	const Tile &getTile(int x, int y) const { return levelMap.getTile(x, y); }
+	const Tile getTile(int x, int y) const { return levelMap.getTile(x, y); }
 
 	const std::vector<TileMetadata> getTileData(Tile tile) const
 	{

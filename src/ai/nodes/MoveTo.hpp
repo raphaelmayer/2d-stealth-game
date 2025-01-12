@@ -44,9 +44,7 @@ class MoveTo : public BT::StatefulActionNode {
 			return BT::NodeStatus::FAILURE;
 
 		auto &ai = ecs.getComponent<AI>(entity.value());
-		auto &rigidBody = ecs.getComponent<RigidBody>(entity.value());
 		const Vec2i &position = ecs.getComponent<Positionable>(entity.value()).position;
-
 		ai.targetPosition = pos.value();
 
 		if (position == ai.targetPosition)

@@ -61,10 +61,10 @@ class DebugSystem : public System {
 		Vec2f forwardDirection = rotationToVec2f(rot);
 
 		// Calculate the left and right edges of the cone
-		float halfAngleRad = (vision.angle / 2.0f) * (M_PI / 180.0f);
+		float halfAngleRad = (vision.angle / 2.0f) * ((float)M_PI / 180.0f);
 		Vec2f leftEdge = rotateVector(forwardDirection, halfAngleRad);
 		Vec2f rightEdge = rotateVector(forwardDirection, -halfAngleRad);
-		float quarterAngleRad = (vision.angle / 2.0f / 2.0f) * (M_PI / 180.0f);
+		float quarterAngleRad = (vision.angle / 2.0f / 2.0f) * ((float)M_PI / 180.0f);
 		Vec2f leftQEdge = rotateVector(forwardDirection, quarterAngleRad);
 		Vec2f rightQEdge = rotateVector(forwardDirection, -quarterAngleRad);
 
@@ -121,7 +121,7 @@ class DebugSystem : public System {
 					if (i + 1 < ai.path.size())
 						engine_.drawLine(screenOffset(ai.path[i]), screenOffset(ai.path[i + 1]), {255, 255, 255, 255});
 				}
-				engine_.drawCircle(screenOffset(ai.targetPosition), (float)(TILE_SIZE / 2) * camera_.getZoom(),
+				engine_.drawCircle(screenOffset(ai.targetPosition), (TILE_SIZE / 2) * camera_.getZoom(),
 				                   {255, 255, 255, 255});
 			}
 		}

@@ -1,25 +1,24 @@
 #pragma once
 
-#include "../engine/Vec2i.hpp"
 #include "../engine/Vec2f.hpp"
+#include "../engine/Vec2i.hpp"
 #include <vector>
 
 enum class CamDirection { UP = 0, RIGHT, DOWN, LEFT };
 
 /*
- * A simple top-down camera designed for 2D games.
- * This camera keeps a specified focus point (e.g., the player) at the center of the view at all times.
- * The camera's position represents the top-left corner of the visible area in world coordinates.
- * The visible area is determined by the screen size, which is specified during initialization.
- * 
- * TODO: This comment is not true anymore. This camera can do a lot more, most notably zoom and move independently.
+ * A flexible 2D camera for top-down games.
+ * This camera centers a focus point (e.g., the player) in the visible area while supporting smooth zooming, directional
+ * movement, and screen-to-world coordinate transformations. The visible area is determined by the screen size and zoom
+ * level, and the camera's position corresponds to the top-left corner of the view in world coordinates.
  */
 class Camera {
   public:
-	Camera(int width, int height) { screenSize = {(float)width, (float)height}; }
-	
-	void focus(Vec2i focusPoint) { 
-		Vec2f p{focusPoint.x, focusPoint.y};
+	Camera(int width, int height) { screenSize = {static_cast<float>(width), static_cast<float>(height)}; }
+
+	void focus(Vec2i focusPoint)
+	{
+		Vec2f p{static_cast<float>(focusPoint.x), static_cast<float>(focusPoint.y)};
 		focus(p);
 	}
 
@@ -53,9 +52,21 @@ class Camera {
 		position += (visibleAreaBefore - visibleAreaAfter) / 2;
 	}
 
-	void move(const CamDirection &direction)
+	void move(const CamDirection &direction) { position += dirv[static_cast<int>(direction)]; }
+
+	Rectf rectToScreen(const Recti &rect) const
 	{
-		position += dirv[static_cast<int>(direction)];
+		const Rectf dst = {static_cast<float>(rect.x), static_cast<float>(rect.y), static_cast<float>(rect.w),
+		                   static_cast<float>(rect.h)};
+		return rectToScreen(dst);
+	}
+
+	Rectf rectToScreen(const Rectf &rect) const
+	{
+		Vec2f screenPos = (Vec2f{rect.x, rect.y} - position) * zoom;
+		Vec2f size = Vec2f{rect.w, rect.h} * zoom;
+		Rectf camAdjustedDst{screenPos.x, screenPos.y, size.x, size.y};
+		return camAdjustedDst;
 	}
 
   private:
