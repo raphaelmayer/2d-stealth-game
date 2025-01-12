@@ -119,7 +119,7 @@ class ListDialog : public UIElement {
 
 		for (size_t i = 0; i < maxVisibleItems_ && top_ + i < items_.size(); ++i) {
 			Vec2i pos = {itemX + PADDING, itemHeight_ * static_cast<int>(i) + PADDING * 2 + position_.y};
-			game_.drawText({pos.x, pos.y, itemWidth_, FONT_SIZE}, items_[top_ + i].name);
+			game_.drawText(Recti{pos.x, pos.y, itemWidth_, FONT_SIZE}, items_[top_ + i].name);
 		}
 
 		game_.setRenderScale({PIXEL_SIZE, PIXEL_SIZE});

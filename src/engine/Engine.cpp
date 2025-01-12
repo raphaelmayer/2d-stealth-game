@@ -339,7 +339,8 @@ SDL_Texture *Engine::loadSDLTexture(const std::string &path) const
 	SDL_FreeSurface(surface);
 
 	if (!texture) {
-		throw std::runtime_error(std::string("Error creating texture from surface for '") + path + "': " + SDL_GetError());
+		throw std::runtime_error(std::string("Error creating texture from surface for '") + path
+		                         + "': " + SDL_GetError());
 	}
 
 	return texture;
@@ -352,6 +353,13 @@ Texture Engine::loadTexture(const std::string &path) const
 }
 
 void Engine::drawText(const Recti &dst, const std::string &text) const
+{
+	const Rectf floatDst = Rectf{static_cast<float>(dst.x), static_cast<float>(dst.y), static_cast<float>(dst.w),
+	                             static_cast<float>(dst.h)};
+	drawText(floatDst, text);
+}
+
+void Engine::drawText(const Rectf &dst, const std::string &text) const
 {
 	// OPTIONAL: Set the font style or outline
 	// TTF_SetFontStyle(font_.get(), TTF_STYLE_BOLD);
@@ -385,19 +393,18 @@ void Engine::drawText(const Recti &dst, const std::string &text) const
 
 	const float horizontalSpacingFactor = 1.5f;
 
-	SDL_Rect dstRect;
+	SDL_FRect dstRect;
 	dstRect.x = dst.x;
 	dstRect.y = dst.y;
 	dstRect.h = dst.h;
-	dstRect.w = static_cast<int>(textW * verticalScale * horizontalSpacingFactor);
+	dstRect.w = textW * verticalScale * horizontalSpacingFactor;
 
-	if (SDL_RenderCopy(renderer_.get(), textTexture, nullptr, &dstRect) != 0) {
+	if (SDL_RenderCopyF(renderer_.get(), textTexture, nullptr, &dstRect) != 0) {
 		SDL_DestroyTexture(textTexture);
 		SDL_FreeSurface(textSurface);
 		throw std::runtime_error(std::string("Error rendering text: ") + SDL_GetError());
 	}
 
-	// Clean up
 	SDL_DestroyTexture(textTexture);
 	SDL_FreeSurface(textSurface);
 }

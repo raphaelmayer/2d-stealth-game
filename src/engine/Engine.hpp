@@ -71,6 +71,7 @@ class Engine {
 	SDL_Texture *loadSDLTexture(const std::string &path) const;
 	Texture loadTexture(const std::string &path) const;
 	void drawText(const Recti &dst, const std::string &text) const;
+	void drawText(const Rectf &dst, const std::string &text) const;
 
 	// Get the state of all keys
 	const std::array<KeyState, SDL_NUM_SCANCODES> &getKeyStates() const { return keyboard_.getKeyStates(); }

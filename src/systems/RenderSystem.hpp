@@ -58,8 +58,8 @@ class RenderSystem final : public System {
 				Rectf dst = {position.x, position.y + offset_y, size.x, size.y};
 				// Perform visibility culling before rendering the entity.
 				if (isVisibleOnScreen(dst, camPos, engine_.getScreenSize() / camZoom)) {
-					Rectf camAdjustedDst = {(dst.x - camPos.x) * camZoom, (dst.y - camPos.y) * camZoom, dst.w * camZoom,
-					                        dst.h * camZoom};
+					Vec2f screenPos = (Vec2f{dst.x, dst.y} - camPos) * camZoom;
+					Rectf camAdjustedDst = {screenPos.x, screenPos.y, dst.w * camZoom, dst.h * camZoom};
 					engine_.drawTexture(spritesheet_, src, camAdjustedDst);
 
 					// Currently testing: rendering weapons
@@ -90,7 +90,7 @@ class RenderSystem final : public System {
 		spriteSrcY = animatable.animationAdresses[animatable.currentAnimation];
 	}
 
-	bool isVisibleOnScreen(Rectf dst, Vec2f cameraPosition, Vec2i screenSize)
+	bool isVisibleOnScreen(const Rectf &dst, const Vec2f &cameraPosition, const Vec2i &screenSize)
 	{
 		return dst.x >= (cameraPosition.x - TILE_SIZE) && dst.x < (cameraPosition.x + screenSize.x)
 		       && dst.y >= (cameraPosition.y - TILE_SIZE) && dst.y < (cameraPosition.y + screenSize.y);

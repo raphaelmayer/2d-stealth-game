@@ -7,8 +7,8 @@
 #include "../ecs/ECSManager.hpp"
 #include "../ecs/Entity.hpp"
 #include "../engine/Engine.hpp"
-#include "../engine/Vec2i.hpp"
 #include "../engine/Vec2f.hpp"
+#include "../engine/Vec2i.hpp"
 #include "../modules/Camera.hpp"
 #include "../modules/MapManager.hpp"
 #include "System.hpp"
@@ -47,7 +47,7 @@ class DebugSystem : public System {
 		const Vec2i &pos = ecs.getComponent<Positionable>(entity).position;
 		for (const auto &visibleEntity : others) {
 			auto visibleEntityPosition = ecs.getComponent<Positionable>(visibleEntity).position;
-			engine_.drawLine(offset(pos), offset(visibleEntityPosition), color);
+			engine_.drawLine(screenOffset(pos), screenOffset(visibleEntityPosition), color);
 		}
 	}
 
@@ -75,11 +75,12 @@ class DebugSystem : public System {
 		rightQEdge = rightQEdge * vision.range;
 
 		// Draw the cone edges
-		engine_.drawLine(offset(pos), offset((pos + leftEdge.toVec2d())), {80, 255, 255, 255});
-		engine_.drawLine(offset(pos), offset((pos + rightEdge.toVec2d())), {80, 255, 255, 255});
-		engine_.drawLine(offset(pos), offset((pos + leftQEdge.toVec2d())), {80, 255, 255, 255});
-		engine_.drawLine(offset(pos), offset((pos + rightQEdge.toVec2d())), {80, 255, 255, 255});
-		engine_.drawLine(offset(pos), offset((pos + forwardDirection.toVec2d() * vision.range)), {80, 255, 255, 255});
+		engine_.drawLine(screenOffset(pos), screenOffset((pos + leftEdge.toVec2d())), {80, 255, 255, 255});
+		engine_.drawLine(screenOffset(pos), screenOffset((pos + rightEdge.toVec2d())), {80, 255, 255, 255});
+		engine_.drawLine(screenOffset(pos), screenOffset((pos + leftQEdge.toVec2d())), {80, 255, 255, 255});
+		engine_.drawLine(screenOffset(pos), screenOffset((pos + rightQEdge.toVec2d())), {80, 255, 255, 255});
+		engine_.drawLine(screenOffset(pos), screenOffset((pos + forwardDirection.toVec2d() * vision.range)),
+		                 {80, 255, 255, 255});
 
 		// TODO: draw the arc of the cone
 	}
@@ -118,9 +119,9 @@ class DebugSystem : public System {
 				const auto &ai = ecs.getComponent<AI>(entity);
 				for (size_t i = ai.pathIndex; i < ai.path.size(); i++) {
 					if (i + 1 < ai.path.size())
-						engine_.drawLine(offset(ai.path[i]), offset(ai.path[i + 1]), {255, 255, 255, 255});
+						engine_.drawLine(screenOffset(ai.path[i]), screenOffset(ai.path[i + 1]), {255, 255, 255, 255});
 				}
-				engine_.drawCircle(offset(ai.targetPosition), (float)(TILE_SIZE / 2) * camera_.getZoom(),
+				engine_.drawCircle(screenOffset(ai.targetPosition), (float)(TILE_SIZE / 2) * camera_.getZoom(),
 				                   {255, 255, 255, 255});
 			}
 		}
@@ -128,7 +129,7 @@ class DebugSystem : public System {
 
 	// Computes the offset to center objects within tiles and adjust for the camera's position.
 	// Ensures lines and shapes are drawn relative to the tile grid, aligned to tile centers.
-	Vec2f offset(const Vec2i &position)
+	Vec2f screenOffset(const Vec2i &position)
 	{
 		Vec2f pos{position.x - camera_.getPosition().x, position.y - camera_.getPosition().y};
 		return (pos)*camera_.getZoom() + float(TILE_SIZE / 2) * camera_.getZoom();
