@@ -66,7 +66,9 @@ class RenderSystem final : public System {
 					// Render the weapon if applicable
 					// renderWeapon(ecs, entity, position, camPos);
 					if (ecs.hasComponent<AI>(entity)) {
-						renderAlertnessLevel(position, ecs.getComponent<AI>(entity), camPos, camZoom);
+						const AI &ai = ecs.getComponent<AI>(entity);
+						renderAlertnessLevel(position, ai, camPos, camZoom);
+						// renderDetectionVisual(position, ai);
 					}
 				}
 			}
@@ -158,7 +160,7 @@ class RenderSystem final : public System {
 
 	void renderAlertnessLevel(const Vec2i &position, const AI &ai, const Vec2f &camPos, const float &camZoom)
 	{
-		const Recti dst = {position.x, position.y - TILE_SIZE, TILE_SIZE, TILE_SIZE};
+		const Recti dst = {position.x + (TILE_SIZE / 4), position.y - TILE_SIZE, TILE_SIZE, TILE_SIZE};
 		Rectf camAdjustedDst = camera_.rectToScreen(dst);
 		std::string symbol;
 		switch (ai.state) {
@@ -166,25 +168,50 @@ class RenderSystem final : public System {
 			symbol = ""; // Symbol for unaware state
 			break;
 		case AIState::Detecting:
-			symbol = "?"; // Symbol for detecting state
+			symbol = "";                         // Symbol for detecting state
+			renderDetectionVisual(position, ai); // No symbol, render bar instead
 			break;
 		case AIState::Searching:
-			symbol = "o.o"; // Symbol for searching state
+			symbol = "?"; // Symbol for searching state
 			break;
 		case AIState::Engaging:
 			symbol = "!"; // Symbol for engaging state
 			break;
 		case AIState::Fleeing:
-			symbol = "-!-"; // Symbol for fleeing state
+			symbol = "@"; // Symbol for fleeing state
 			break;
 		default:
 			symbol = "#"; // Fallback symbol for undefined states
 			break;
 		}
 
-		if (ai.state >= AIState::Detecting) {
+		if (ai.state > AIState::Detecting) {
 			engine_.drawText(camAdjustedDst, symbol);
 		}
+	}
+
+	void renderDetectionVisual(const Vec2i &position, const AI &ai)
+	{
+		float maxTime = 2.0f; // TODO: read from component, where detection time is do
+		float fillPercent = ai.detectionTime / maxTime;
+		Rectf dstBorder;
+		dstBorder.x = static_cast<float>(position.x);
+		dstBorder.y = static_cast<float>(position.y);
+		dstBorder.w = static_cast<float>(TILE_SIZE);
+		dstBorder.h = static_cast<float>(4);
+
+		Rectf dst = dstBorder;
+		float borderThickness = 1.0f;
+		dst.x = dst.x + borderThickness;
+		dst.y = dst.y + borderThickness;
+		dst.w = (dst.w + -2 * borderThickness) * fillPercent;
+		dst.h = dst.h + -2 * borderThickness;
+
+		dstBorder = camera_.rectToScreen(dstBorder);
+		dst = camera_.rectToScreen(dst);
+
+		engine_.drawRectangle(Vec2f{dstBorder.x, dstBorder.y}, dstBorder.w, dstBorder.h, {255, 255, 255, 255});
+		engine_.fillRectangle(Vec2f{dst.x, dst.y}, dst.w, dst.h, {50, 168, 82, 255});
 	}
 
 	const Engine &engine_;

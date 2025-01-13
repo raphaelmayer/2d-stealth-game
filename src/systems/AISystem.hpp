@@ -73,7 +73,7 @@ class AISystem final : public System {
 				ai.previousState = currentState;
 			} else {
 				ai.detectionTime += deltaTime;
-				if (ai.detectionTime >= detectionThreshold) {
+				if (ai.detectionTime >= ai.detectionThreshold) {
 					ai.detectionTime = 0;
 					ai.originalPosition = (ai.previousState == AIState::Unaware)
 					                          ? position
@@ -90,7 +90,7 @@ class AISystem final : public System {
 				ai.searchTime += deltaTime;
 				ai.previousState = currentState;
 				ai.state = AIState::Detecting;
-			} else if (ai.searchTime >= searchTimeout) {
+			} else if (ai.searchTime >= ai.searchTimeout) {
 				ai.searchTime = 0;
 				ai.previousState = currentState;
 				ai.state = AIState::Unaware;
@@ -118,9 +118,4 @@ class AISystem final : public System {
 	// AIStateMachine stateMachine;
 
 	BTManager &btManager;
-
-	// TODO: Temporary variables
-	const double detectionThreshold = 2.0; // Time to transition to searching
-	const double searchTimeout = 5.0;      // Timeout for searching
-	const double engageTimeout = 5.0;      // Timeout for engaging (when no enemy is detected)
 };

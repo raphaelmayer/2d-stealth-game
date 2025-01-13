@@ -124,7 +124,7 @@ class Game : public Engine {
 	{
 		Entity e = instantiateNPCEntity(ecs, position);
 		ecs.addComponent<Vision>(e, Vision{});
-		ecs.addComponent<AI>(e, AI{});
+		ecs.addComponent<AI>(e, AI{position});
 		ecs.addComponent<Patrol>(e, Patrol{waypoints});
 		btManager.createTreeForEntity(e, "MainTree");
 	}
