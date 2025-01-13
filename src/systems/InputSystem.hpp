@@ -28,7 +28,7 @@ class InputSystem final : public System {
 				handleCamera(keyState, mouseWheelDelta, mousePos);
 
 				// only allow input if player is not currently moving
-				if (!rigidBody.isMoving) {
+				if (!rigidBody.isMoving || true) {
 					// if (rigidBody.endPosition == position) {
 					//  allow movement or starting an interaction, if player is not in an interaction
 					if (controllable.isInInteractionWith == 0) {
@@ -62,13 +62,16 @@ class InputSystem final : public System {
 			if (keyState[SDL_GetScancodeFromKey(SDLK_w)].held) {
 				velocity.y = -1;
 				// rigidBody.isMoving = true;
-			} else if (keyState[SDL_GetScancodeFromKey(SDLK_d)].held) {
+			}
+			if (keyState[SDL_GetScancodeFromKey(SDLK_d)].held) {
 				velocity.x = 1;
 				// rigidBody.isMoving = true;
-			} else if (keyState[SDL_GetScancodeFromKey(SDLK_s)].held) {
+			}
+			if (keyState[SDL_GetScancodeFromKey(SDLK_s)].held) {
 				velocity.y = 1;
 				// rigidBody.isMoving = true;
-			} else if (keyState[SDL_GetScancodeFromKey(SDLK_a)].held) {
+			}
+			if (keyState[SDL_GetScancodeFromKey(SDLK_a)].held) {
 				velocity.x = -1;
 				// rigidBody.isMoving = true;
 			}
@@ -87,7 +90,7 @@ class InputSystem final : public System {
 			camera_.zoomIn();
 		if (mouseWheelDelta.y < 0)
 			camera_.zoomOut();
-		
+
 		if (mousePosition.x < 10)
 			camera_.move(CamDirection::LEFT);
 		if (mousePosition.x > engine_.getWindowSize().x - 10)

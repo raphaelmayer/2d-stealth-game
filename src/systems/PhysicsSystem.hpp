@@ -38,7 +38,7 @@ class PhysicsSystem final : public System {
 							resetCurrentMovementParams(position, rigidBody);
 					} else {
 						// we might slightly overshoot endPos, thus we clamp position back to the grid
-						position = rigidBody.endPosition;
+						// position = rigidBody.endPosition;
 						resetCurrentMovementParams(position, rigidBody);
 					}
 				} else {
@@ -97,14 +97,15 @@ class PhysicsSystem final : public System {
 		const float movementAmount = WALK_SPEED * (float)deltaTime;
 		rigidBody.accumulator += movementAmount;
 		rigidBody.progress += movementAmount;
-
+		
 		const Vec2i direction = (rigidBody.endPosition - position).sign();
 
 		// This is not optimal and can result in jittery movements, when the framerate is low.
 		// This is due to float calculations.
 		if (rigidBody.accumulator >= 1.0) {
 			position += direction * rigidBody.accumulator;
-			rigidBody.accumulator -= static_cast<int>(rigidBody.accumulator);
+			rigidBody.accumulator = 0;
+			//-= static_cast<int>(rigidBody.accumulator);
 		}
 	}
 
