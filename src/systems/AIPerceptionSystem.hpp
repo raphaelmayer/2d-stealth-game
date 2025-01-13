@@ -5,7 +5,7 @@
 #include "../components/Rotatable.hpp"
 #include "../components/Vision.hpp"
 #include "../ecs/ECSManager.hpp"
-#include "../engine/Vec2i.hpp"
+#include "../engine/types/Vec2i.hpp"
 #include "../modules/DDA.hpp"
 #include "../modules/MapManager.hpp"
 #include "../modules/TileRegistry.hpp" // TileMetadata struct

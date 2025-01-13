@@ -3,7 +3,7 @@
 #include "../constants.hpp"
 #include "../ecs/ECSManager.hpp"
 #include "../engine/Engine.hpp"
-#include "../engine/Vec2i.hpp"
+#include "../engine/types/Vec2i.hpp"
 #include "../modules/MenuStack.hpp"
 #include <string>
 

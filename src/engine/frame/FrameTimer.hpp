@@ -1,4 +1,6 @@
-#include <chrono>
+#pragma once
+
+#include<chrono>
 
 class FrameTimer {
   public:

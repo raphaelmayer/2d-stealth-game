@@ -5,7 +5,7 @@
 #include "../../components/Positionable.hpp"
 #include "../../constants.hpp"
 #include "../../ecs/ECSManager.hpp"
-#include "../../engine/Vec2i.hpp"
+#include "../../engine/types/Vec2i.hpp"
 #include "../../modules/AStar.hpp"
 #include "behaviortree_cpp/action_node.h"
 #include "behaviortree_cpp/basic_types.h" // ports etc

@@ -1,6 +1,6 @@
 #pragma once
 
-#include "../engine/Vec2i.hpp"
+#include "../engine/types/Vec2i.hpp"
 
 // This component is used for movement. An end position is set by some other system (e.g. InputSystem)
 // and the PhysicsSystem will then move the entity accordingly.

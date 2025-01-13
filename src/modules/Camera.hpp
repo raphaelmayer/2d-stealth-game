@@ -1,7 +1,7 @@
 #pragma once
 
-#include "../engine/Vec2f.hpp"
-#include "../engine/Vec2i.hpp"
+#include "../engine/types/Vec2f.hpp"
+#include "../engine/types/Vec2i.hpp"
 #include <vector>
 
 enum class CamDirection { UP = 0, RIGHT, DOWN, LEFT };

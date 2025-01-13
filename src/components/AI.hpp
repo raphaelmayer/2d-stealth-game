@@ -4,7 +4,7 @@
 #include "../ai/AIState.hpp"
 #include "../ai/Blackboard.hpp"
 #include "../behaviortree/BehaviorTree.hpp"
-#include "../engine/Vec2i.hpp"
+#include "../engine/types/Vec2i.hpp"
 #include "behaviortree_cpp/bt_factory.h"
 #include <memory>
 #include <vector>

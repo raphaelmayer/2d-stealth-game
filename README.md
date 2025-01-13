@@ -111,13 +111,21 @@ cmake --open xbuild
 - need to adjust camera scrolling speed based on zoom level
 
 ### Features 
+- Implement dedicated sound engine wrapping sdl as part of our engine.
 - implement actual AI state machine
 - create and switch to a new testing map 
 - Sprint feature
 - Stances? Crouch, Prone
+- design and implement a dedicated `AnimationSystem`
 
 ### Low priority
 - handle window resizing
 - UI rendering needs to be adjusted
 - we broke `ProgressSystem` because it relies on `interactable.isTextVisible`
 - Change CMake config for assets. Currently it is kind of cumbersome (see `src/CMakeLists.txt`)
+- The font should not be owned by engine, at least not hardcoded as it is right now.
+- Reevaluate rendering functions API regarding rect or vector as arguments (especially draw/fillRectangle).
+
+## Ideas for sound engine
+- add SoundLibrary class to hold all sound chunks (in game context)
+- 

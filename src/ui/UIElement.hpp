@@ -2,7 +2,7 @@
 
 #include "../constants.hpp"
 #include "../engine/Engine.hpp"
-#include "../engine/Vec2i.hpp"
+#include "../engine/types/Vec2i.hpp"
 #include <vector>
 
 // UIElement is a base class for text-based UI elements like menus and dialog boxes.

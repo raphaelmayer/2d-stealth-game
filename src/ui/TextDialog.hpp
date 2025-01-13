@@ -2,7 +2,7 @@
 
 #include "../constants.hpp"
 #include "../engine/Engine.hpp"
-#include "../engine/Vec2i.hpp"
+#include "../engine/types/Vec2i.hpp"
 #include "../modules/MenuStack.hpp"
 #include "UIElement.hpp"
 #include <string>

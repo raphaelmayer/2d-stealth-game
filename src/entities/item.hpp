@@ -12,7 +12,7 @@
 #include "../components/RigidBody.hpp"
 #include "../constants.hpp"
 #include "../ecs/ECSManager.hpp"
-#include "../engine/Vec2i.hpp"
+#include "../engine/types/Vec2i.hpp"
 
 #define ITEMS_SPRITESHEET_Y 1000
 #define SPRITE_SIZE TILE_SIZE
@@ -23,7 +23,7 @@ struct CollectableItem {
 	Collectable collectable;
 };
 
-struct InteractableItem{
+struct InteractableItem {
 	Vec2i spriteSheetPos;
 	Interactable interactable;
 };

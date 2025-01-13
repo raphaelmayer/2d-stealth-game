@@ -11,7 +11,7 @@
 #include "../components/Rotatable.hpp"
 #include "../constants.hpp"
 #include "../ecs/ECSManager.hpp"
-#include "../engine/Vec2i.hpp"
+#include "../engine/types/Vec2i.hpp"
 
 // for playerSpriteSheetY use one of the constants PLAYER_{RED|BLUE|WHITE}_SPRITE_SHEET_Y
 Entity instantiatePlayerEntity(ECSManager &ecs, Vec2i positionInTiles, Rotation rotation = SOUTH,

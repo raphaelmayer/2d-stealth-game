@@ -40,7 +40,7 @@ void Engine::start()
 	    std::unique_ptr<SDL_Renderer, SDL_Deleter>(SDL_CreateRenderer(window_.get(), -1, SDL_RENDERER_ACCELERATED));
 
 	// Set the scaling factor
-	SDL_RenderSetScale(renderer_.get(), pixelSize_.x, pixelSize_.y);
+	SDL_RenderSetScale(renderer_.get(), static_cast<float>(pixelSize_.x), static_cast<float>(pixelSize_.y));
 
 	// Call the user's start method
 	onStart();
@@ -98,7 +98,7 @@ void Engine::setScreenSize(Vec2i screenSize)
 void Engine::setRenderScale(Vec2i pixelSize)
 {
 	pixelSize_ = pixelSize;
-	SDL_RenderSetScale(renderer_.get(), pixelSize_.x, pixelSize_.y);
+	SDL_RenderSetScale(renderer_.get(), static_cast<float>(pixelSize_.x), static_cast<float>(pixelSize_.y));
 }
 Vec2i Engine::getRenderScale() const
 {
@@ -151,7 +151,7 @@ void Engine::fillRectangle(const Vec2i &pos, const int &width, const int &height
 	SDL_RenderFillRect(renderer_.get(), &r);
 }
 
-void Engine::fillRectangle(const Vec2f &pos, const int &width, const int &height, const ColorRGBA &color) const
+void Engine::fillRectangle(const Vec2f &pos, const float &width, const float &height, const ColorRGBA &color) const
 {
 	SDL_FRect r;
 	r.x = pos.x;
@@ -175,7 +175,7 @@ void Engine::drawRectangle(const Vec2i &pos, const int &width, const int &height
 	SDL_RenderDrawRect(renderer_.get(), &r);
 }
 
-void Engine::drawRectangle(const Vec2f &pos, const int &width, const int &height, const ColorRGBA &color) const
+void Engine::drawRectangle(const Vec2f &pos, const float &width, const float &height, const ColorRGBA &color) const
 {
 	SDL_FRect r;
 	r.x = pos.x;

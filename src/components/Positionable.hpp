@@ -1,6 +1,6 @@
 #pragma once
 
-#include "../engine/Vec2i.hpp"
+#include "../engine/types/Vec2i.hpp"
 
 // Represents the position on the map in pixels
 struct Positionable {

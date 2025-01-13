@@ -1,6 +1,6 @@
 #pragma once
 
-#include "../engine/Vec2i.hpp"
+#include "../engine/types/Vec2i.hpp"
 #include <algorithm>
 #include <climits>
 #include <cmath>

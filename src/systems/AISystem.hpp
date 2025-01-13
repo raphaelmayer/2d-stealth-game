@@ -5,7 +5,7 @@
 #include "../components/AI.hpp"
 #include "../components/Vision.hpp"
 #include "../ecs/ECSManager.hpp"
-#include "../engine/Vec2i.hpp"
+#include "../engine/types/Vec2i.hpp"
 #include "../modules/BTManager.hpp"
 #include "../modules/MapManager.hpp"
 #include "../systems/AIPerceptionSystem.hpp"

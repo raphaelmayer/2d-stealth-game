@@ -1,7 +1,7 @@
 #pragma once
 
 #include "../constants.hpp"
-#include "../engine/Vec2i.hpp"
+#include "../engine/types/Vec2i.hpp"
 #include <vector>
 
 struct PatrolPoint {

@@ -3,20 +3,13 @@
 #define SDL_MAIN_HANDLED
 
 #include "../constants.hpp"
-#include "ColorRGBA.hpp"
-#include "FPSCounter.hpp"
-#include "FrameRateLimiter.hpp"
-#include "FrameTimer.hpp"
-#include "KeyState.hpp"
-#include "Keyboard.hpp"
-#include "Mouse.hpp"
-#include "Rectf.hpp"
-#include "Recti.hpp"
 #include "SDL_Deleter.hpp"
-#include "Texture.hpp"
-#include "TextureFlip.hpp"
-#include "Vec2f.hpp"
-#include "Vec2i.hpp"
+#include "frame/FPSCounter.hpp"
+#include "frame/FrameRateLimiter.hpp"
+#include "frame/FrameTimer.hpp"
+#include "input/Keyboard.hpp"
+#include "input/Mouse.hpp"
+#include "types.hpp"
 #include <SDL.h>
 #include <SDL_image.h>
 #include <SDL_mixer.h>
@@ -52,9 +45,9 @@ class Engine {
 	void drawLine(const Vec2i &start, const Vec2i &end, const ColorRGBA &color) const;
 	void drawLine(const Vec2f &start, const Vec2f &end, const ColorRGBA &color) const;
 	void fillRectangle(const Vec2i &pos, const int &width, const int &height, const ColorRGBA &color) const;
-	void fillRectangle(const Vec2f &pos, const int &width, const int &height, const ColorRGBA &color) const;
+	void fillRectangle(const Vec2f &pos, const float &width, const float &height, const ColorRGBA &color) const;
 	void drawRectangle(const Vec2i &pos, const int &width, const int &height, const ColorRGBA &color) const;
-	void drawRectangle(const Vec2f &pos, const int &width, const int &height, const ColorRGBA &color) const;
+	void drawRectangle(const Vec2f &pos, const float &width, const float &height, const ColorRGBA &color) const;
 	void fillCircle(const Vec2i &pos, const int &radius, const ColorRGBA &color) const;
 	void fillCircle(const Vec2f &pos, const int &radius, const ColorRGBA &color) const;
 	void drawCircle(const Vec2i &pos, const int &radius, const ColorRGBA &color) const;
@@ -89,8 +82,6 @@ class Engine {
 	virtual bool onStart() = 0;
 	virtual bool onUpdate(double deltaTime) = 0;
 	virtual bool onDestroy() = 0;
-
-	SDL_Rect viewport = {0, 0, WINDOW_WIDTH, WINDOW_HEIGHT};
 
   private:
 	std::unique_ptr<SDL_Window, SDL_Deleter> window_;

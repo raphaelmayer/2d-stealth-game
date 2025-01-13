@@ -10,12 +10,13 @@
 #include "../components/Rotatable.hpp"
 #include "../constants.hpp"
 #include "../ecs/ECSManager.hpp"
-#include "../engine/Vec2i.hpp"
+#include "../engine/types/Vec2i.hpp"
 #include <string>
 
 // for playerSpriteSheetY use one of the constants PLAYER_{RED|BLUE|WHITE}_SPRITE_SHEET_Y
 Entity instantiateNPCEntity(ECSManager &ecs, Vec2i positionInTiles, Rotation rotation = SOUTH,
-                            int playerSpriteSheetY = PLAYER_SPRITE_SHEET_Y_RED, const std::string &text = "PLACEHOLDER TEXT")
+                            int playerSpriteSheetY = PLAYER_SPRITE_SHEET_Y_RED,
+                            const std::string &text = "PLACEHOLDER TEXT")
 {
 	Entity npc = ecs.addEntity();
 

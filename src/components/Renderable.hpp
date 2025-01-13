@@ -1,6 +1,6 @@
 #pragma once
 
-#include "../engine/Vec2i.hpp"
+#include "../engine/types/Vec2i.hpp"
 
 // This component is used to connect entities to a sprite. An entity needs a Renderable component
 // and a Transform component for the RenderSystem to be able to be render them correctly.

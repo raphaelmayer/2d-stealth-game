@@ -1,7 +1,7 @@
 #pragma once
 
 #include "KeyState.hpp"
-#include "Vec2i.hpp"
+#include "../types/Vec2i.hpp"
 #include <SDL.h>
 #include <array>
 
@@ -62,6 +62,6 @@ class Mouse {
 
   private:
 	std::array<KeyState, 5> buttonStates_{}; // Supports up to 5 mouse buttons.
-	Vec2i position_{0, 0};               // Current mouse position.
-	Vec2i wheelDelta_{0, 0};             // Mouse wheel delta since last frame.
+	Vec2i position_{0, 0};                   // Current mouse position.
+	Vec2i wheelDelta_{0, 0};                 // Mouse wheel delta since last frame.
 };
