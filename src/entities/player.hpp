@@ -11,15 +11,16 @@
 #include "../components/Rotatable.hpp"
 #include "../constants.hpp"
 #include "../ecs/ECSManager.hpp"
-#include "../engine/types/Vec2i.hpp"
+#include "../engine/types/Vec2f.hpp"
 
 // for playerSpriteSheetY use one of the constants PLAYER_{RED|BLUE|WHITE}_SPRITE_SHEET_Y
-Entity instantiatePlayerEntity(ECSManager &ecs, Vec2i positionInTiles, Rotation rotation = SOUTH,
+Entity instantiatePlayerEntity(ECSManager &ecs, Vec2f positionInTiles, Rotation rotation = SOUTH,
                                int playerSpriteSheetY = PLAYER_SPRITE_SHEET_Y_RED)
 {
 	Entity player = ecs.addEntity();
 
-	ecs.addComponent(player, Positionable{{positionInTiles.x * TILE_SIZE, positionInTiles.y * TILE_SIZE}});
+	ecs.addComponent(player,
+	                 Positionable{{(float)(positionInTiles.x * TILE_SIZE), (float)(positionInTiles.y * TILE_SIZE)}});
 	ecs.addComponent(player, Rotatable{rotation});
 	ecs.addComponent(player, RigidBody{false, positionInTiles, positionInTiles, 0, 0});
 	ecs.addComponent(player, Animatable{PLAYER_STANDING_ANIMATION_NUMBER,

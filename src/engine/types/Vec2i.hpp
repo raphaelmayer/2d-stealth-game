@@ -1,9 +1,8 @@
 #pragma once
 
-#include "../constants.hpp"
+#include "../../constants.hpp"
 #include <cassert>
 #include <cmath>
-//#include "Vec2f.hpp"
 
 struct Vec2i {
 	int x;
@@ -101,13 +100,6 @@ struct Vec2i {
 
 	// Sign function
 	Vec2i sign() const { return {(x > 0) - (x < 0), (y > 0) - (y < 0)}; }
-
-	// Convert to Vec2f (float version of the vector)
-	//Vec2f toVf2d() const { return Vec2f{static_cast<float>(x), static_cast<float>(y)}; }
-
-	// convert vector from pixel domain to tile domain. e.g.: (32,32).toTileSize() == (2,2)
-	// also rounds the result.
-	Vec2i toTileSize() const { return operator/(TILE_SIZE); }
 
 	template <class Archive>
 	void serialize(Archive &archive)

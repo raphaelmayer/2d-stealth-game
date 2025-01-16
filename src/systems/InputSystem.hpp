@@ -61,22 +61,16 @@ class InputSystem final : public System {
 
 			if (keyState[SDL_GetScancodeFromKey(SDLK_w)].held) {
 				velocity.y = -1;
-				// rigidBody.isMoving = true;
 			} else if (keyState[SDL_GetScancodeFromKey(SDLK_d)].held) {
 				velocity.x = 1;
-				// rigidBody.isMoving = true;
 			} else if (keyState[SDL_GetScancodeFromKey(SDLK_s)].held) {
 				velocity.y = 1;
-				// rigidBody.isMoving = true;
 			} else if (keyState[SDL_GetScancodeFromKey(SDLK_a)].held) {
 				velocity.x = -1;
-				// rigidBody.isMoving = true;
 			}
-			// TODO: change comment, if we don't set isMoving here anymore. Right now, if endPosition differs from
-			// position, we move and PhysicsSystem sets isMoving.
-			// Movement mechanism: if isMoving && endPosition => move
-			rigidBody.endPosition = {positionable.position.x + velocity.x * TILE_SIZE,
-			                         positionable.position.y + velocity.y * TILE_SIZE};
+
+			// Movement mechanism: if endPosition != position => move
+			rigidBody.endPosition = {Utils::toFloat(Utils::toInt(positionable.position) + velocity * TILE_SIZE)};
 		}
 	}
 
@@ -87,7 +81,7 @@ class InputSystem final : public System {
 			camera_.zoomIn();
 		if (mouseWheelDelta.y < 0)
 			camera_.zoomOut();
-		
+
 		if (mousePosition.x < 10)
 			camera_.move(CamDirection::LEFT);
 		if (mousePosition.x > engine_.getWindowSize().x - 10)

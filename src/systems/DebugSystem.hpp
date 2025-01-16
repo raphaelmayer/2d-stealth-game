@@ -8,7 +8,6 @@
 #include "../ecs/Entity.hpp"
 #include "../engine/Engine.hpp"
 #include "../engine/types/Vec2f.hpp"
-#include "../engine/types/Vec2i.hpp"
 #include "../modules/Camera.hpp"
 #include "../modules/MapManager.hpp"
 #include "System.hpp"
@@ -44,7 +43,7 @@ class DebugSystem : public System {
 	void drawLinesOfSight(ECSManager &ecs, const Entity &entity, const std::vector<Entity> &others,
 	                      const ColorRGBA &color)
 	{
-		const Vec2i &pos = ecs.getComponent<Positionable>(entity).position;
+		const Vec2f &pos = ecs.getComponent<Positionable>(entity).position;
 		for (const auto &visibleEntity : others) {
 			auto visibleEntityPosition = ecs.getComponent<Positionable>(visibleEntity).position;
 			engine_.drawLine(screenOffset(pos), screenOffset(visibleEntityPosition), color);
@@ -75,12 +74,11 @@ class DebugSystem : public System {
 		rightQEdge = rightQEdge * vision.range;
 
 		// Draw the cone edges
-		engine_.drawLine(screenOffset(pos), screenOffset((pos + leftEdge.toVec2d())), {80, 255, 255, 255});
-		engine_.drawLine(screenOffset(pos), screenOffset((pos + rightEdge.toVec2d())), {80, 255, 255, 255});
-		engine_.drawLine(screenOffset(pos), screenOffset((pos + leftQEdge.toVec2d())), {80, 255, 255, 255});
-		engine_.drawLine(screenOffset(pos), screenOffset((pos + rightQEdge.toVec2d())), {80, 255, 255, 255});
-		engine_.drawLine(screenOffset(pos), screenOffset((pos + forwardDirection.toVec2d() * vision.range)),
-		                 {80, 255, 255, 255});
+		engine_.drawLine(screenOffset(pos), screenOffset(pos + leftEdge), {80, 255, 255, 255});
+		engine_.drawLine(screenOffset(pos), screenOffset(pos + rightEdge), {80, 255, 255, 255});
+		engine_.drawLine(screenOffset(pos), screenOffset(pos + leftQEdge), {80, 255, 255, 255});
+		engine_.drawLine(screenOffset(pos), screenOffset(pos + rightQEdge), {80, 255, 255, 255});
+		engine_.drawLine(screenOffset(pos), screenOffset(pos + forwardDirection * vision.range), {80, 255, 255, 255});
 
 		// TODO: draw the arc of the cone
 	}
@@ -129,7 +127,7 @@ class DebugSystem : public System {
 
 	// Computes the offset to center objects within tiles and adjust for the camera's position.
 	// Ensures lines and shapes are drawn relative to the tile grid, aligned to tile centers.
-	Vec2f screenOffset(const Vec2i &position)
+	Vec2f screenOffset(const Vec2f &position)
 	{
 		Vec2f pos{position.x - camera_.getPosition().x, position.y - camera_.getPosition().y};
 		return (pos)*camera_.getZoom() + float(TILE_SIZE / 2) * camera_.getZoom();

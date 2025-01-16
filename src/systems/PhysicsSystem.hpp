@@ -21,7 +21,7 @@ class PhysicsSystem final : public System {
 				auto &rigidBody = ecs.getComponent<RigidBody>(entity);
 
 				// if (rigidBody.isMoving) {
-				if (rigidBody.endPosition != position) {
+				if (Utils::toInt(rigidBody.endPosition) != Utils::toInt(position)) {
 					rigidBody.isMoving = true;
 					if (ecs.hasComponent<Rotatable>(entity))
 						applyRotation(position, rigidBody, ecs.getComponent<Rotatable>(entity));
@@ -34,11 +34,11 @@ class PhysicsSystem final : public System {
 					// while progress is smaller than TILE_SIZE, we move WALKSPEED pixels per second in this direction
 					if (rigidBody.progress < TILE_SIZE) {
 						applyMovement(position, rigidBody, deltaTime);
-						if (position == rigidBody.endPosition)
+						if (Utils::toInt(position) == Utils::toInt(rigidBody.endPosition))
 							resetCurrentMovementParams(position, rigidBody);
 					} else {
 						// we might slightly overshoot endPos, thus we clamp position back to the grid
-						position = rigidBody.endPosition;
+						//position = rigidBody.endPosition;
 						resetCurrentMovementParams(position, rigidBody);
 					}
 				} else {
@@ -49,19 +49,19 @@ class PhysicsSystem final : public System {
 	}
 
   private:
-	void resetCurrentMovementParams(const Vec2i &position, RigidBody &rigidBody)
+	void resetCurrentMovementParams(const Vec2f &position, RigidBody &rigidBody)
 	{
 		rigidBody.isMoving = false;
 		rigidBody.progress = 0;
 
 		// the following operations only a safety net for grid clamping, if something were to go wrong.
-		rigidBody.startPosition = position.toTileSize() * TILE_SIZE;
-		rigidBody.endPosition = position.toTileSize() * TILE_SIZE;
+		rigidBody.startPosition = Utils::toFloat(Utils::toGrid(position));
+		rigidBody.endPosition = Utils::toFloat(Utils::toGrid(position));
 	}
 
 	bool checkCollisions(ECSManager &ecs, Entity entity, RigidBody &rigidBody)
 	{
-		const Vec2i tileSizedEndPos = rigidBody.endPosition.toTileSize();
+		const Vec2i tileSizedEndPos = Utils::toTileSize(rigidBody.endPosition);
 		const Tile endTile = mapManager_.getTile(tileSizedEndPos.x, tileSizedEndPos.y);
 
 		if (ecs.hasComponent<Collider>(entity)) {
@@ -69,6 +69,8 @@ class PhysicsSystem final : public System {
 			for (const Entity &other : ecs.getEntities()) {
 				if (entity != other && ecs.hasComponent<Collider>(other) && ecs.hasComponent<Positionable>(other)) {
 					const auto &otherPosition = ecs.getComponent<Positionable>(other).position;
+					std::cout << rigidBody.endPosition.x << ", " << rigidBody.endPosition.y << '\n';
+					std::cout << otherPosition.x << ", " << otherPosition.y << '\n';
 					if (otherPosition == rigidBody.endPosition) {
 						return true;
 					}
@@ -92,25 +94,28 @@ class PhysicsSystem final : public System {
 		return false;
 	}
 
-	void applyMovement(Vec2i &position, RigidBody &rigidBody, double deltaTime)
+	void applyMovement(Vec2f &position, RigidBody &rigidBody, double deltaTime)
 	{
 		const float movementAmount = WALK_SPEED * (float)deltaTime;
 		rigidBody.accumulator += movementAmount;
 		rigidBody.progress += movementAmount;
 
-		const Vec2i direction = (rigidBody.endPosition - position).sign();
+		const Vec2i direction = (Utils::toTileSize(rigidBody.endPosition) - Utils::toTileSize(position)).sign();
+
+		position += Utils::toFloat(direction) * movementAmount;
+		return;
 
 		// This is not optimal and can result in jittery movements, when the framerate is low.
 		// This is due to float calculations.
 		if (rigidBody.accumulator >= 1.0) {
-			position += direction * rigidBody.accumulator;
+			position += Utils::toFloat(direction) * rigidBody.accumulator;
 			rigidBody.accumulator -= static_cast<int>(rigidBody.accumulator);
 		}
 	}
 
-	void applyRotation(Vec2i &position, RigidBody &rigidBody, Rotatable &rotatable)
+	void applyRotation(Vec2f &position, RigidBody &rigidBody, Rotatable &rotatable)
 	{
-		const Vec2i direction = (rigidBody.endPosition - position).sign();
+		const Vec2i direction = (Utils::toTileSize(rigidBody.endPosition) - Utils::toTileSize(position)).sign();
 
 		if (direction.y == -1) {
 			rotatable.rotation = Rotation::NORTH;

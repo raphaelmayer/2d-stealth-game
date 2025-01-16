@@ -9,6 +9,7 @@
 #include "../modules/DDA.hpp"
 #include "../modules/MapManager.hpp"
 #include "../modules/TileRegistry.hpp" // TileMetadata struct
+#include "../modules/Utils.hpp"
 #include "../systems/System.hpp"
 #include <cmath>
 #include <iostream>
@@ -41,7 +42,7 @@ class AIPerceptionSystem : public System {
 
 					if (isWithinViewCone(pos, otherPos, rot, (float)vision.range, (float)vision.angle)) {
 						// Perform obstacle check
-						bool didCollide = DDA::castRay(visionMap, pos.toTileSize(), otherPos.toTileSize());
+						bool didCollide = DDA::castRay(visionMap, Utils::toTileSize(pos), Utils::toTileSize(otherPos));
 						if (!didCollide) {
 							if (otherEntity == PLAYER) // Currently only player can be enemy. No notion of factions etc.
 								vision.visibleEnemies.push_back(otherEntity);
@@ -59,14 +60,14 @@ class AIPerceptionSystem : public System {
 	}
 
   private:
-	int calculateDistance(Vec2i start, Vec2i end)
+	int calculateDistance(Vec2f start, Vec2f end)
 	{
-		Vec2i dirVector = end - start;
+		Vec2f dirVector = end - start;
 		return static_cast<int>(sqrt(dirVector.x * dirVector.x + dirVector.y * dirVector.y));
 	}
 
 	// Function to calculate whether an entity is within the view cone
-	bool isWithinViewCone(const Vec2i &sourcePos, const Vec2i &targetPos, Rotation rotation, float visionRange,
+	bool isWithinViewCone(const Vec2f &sourcePos, const Vec2f &targetPos, Rotation rotation, float visionRange,
 	                      float visionAngle) const
 	{
 		// Map Rotation to forward direction vectors

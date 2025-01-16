@@ -141,7 +141,7 @@ class RenderSystem final : public System {
 		return {0, 0};
 	}
 
-	void renderWeapon(ECSManager &ecs, const Entity &entity, const Vec2i &position, const Vec2i &camPos)
+	void renderWeapon(ECSManager &ecs, const Entity &entity, const Vec2f &position, const Vec2f &camPos)
 	{
 		if (ecs.hasComponent<Rotatable>(entity)) {
 			const auto &rotation = ecs.getComponent<Rotatable>(entity).rotation;
@@ -158,7 +158,7 @@ class RenderSystem final : public System {
 		}
 	}
 
-	void renderAlertnessLevel(const Vec2i &position, const AI &ai, const Vec2f &camPos, const float &camZoom)
+	void renderAlertnessLevel(const Vec2f &position, const AI &ai, const Vec2f &camPos, const float &camZoom)
 	{
 		const Recti dst = {position.x + (TILE_SIZE / 4), position.y - TILE_SIZE, TILE_SIZE, TILE_SIZE};
 		Rectf camAdjustedDst = camera_.rectToScreen(dst);
@@ -190,7 +190,7 @@ class RenderSystem final : public System {
 		}
 	}
 
-	void renderDetectionVisual(const Vec2i &position, const AI &ai)
+	void renderDetectionVisual(const Vec2f &position, const AI &ai)
 	{
 		float maxTime = 2.0f; // TODO: read from component, where detection time is do
 		float fillPercent = ai.detectionTime / maxTime;
