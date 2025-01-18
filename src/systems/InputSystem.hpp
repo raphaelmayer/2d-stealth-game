@@ -29,7 +29,6 @@ class InputSystem final : public System {
 
 				// only allow input if player is not currently moving
 				if (!rigidBody.isMoving) {
-					// if (rigidBody.endPosition == position) {
 					//  allow movement or starting an interaction, if player is not in an interaction
 					if (controllable.isInInteractionWith == 0) {
 						if (keyState[SDL_SCANCODE_RETURN].pressed) {
@@ -37,8 +36,8 @@ class InputSystem final : public System {
 						} else {
 							handleMovement(ecs, entity, keyState);
 						}
-						// allow ending an interaction, if player is in an interaction
 					} else {
+						// allow ending an interaction, if player is in an interaction
 						if (keyState[SDL_SCANCODE_RETURN].pressed) {
 							controllable.isTryingToEndInteraction = true;
 						}
@@ -56,7 +55,7 @@ class InputSystem final : public System {
 	{
 		if (ecs.hasComponent<Positionable>(entity)) {
 			auto &positionable = ecs.getComponent<Positionable>(entity);
-			auto &rigidBody = ecs.getComponent<RigidBody>(entity); // existance check happens earlier
+			auto &rigidBody = ecs.getComponent<RigidBody>(entity); // existence check happens earlier
 			Vec2i velocity{0, 0};
 
 			if (keyState[SDL_GetScancodeFromKey(SDLK_w)].held) {
@@ -74,8 +73,8 @@ class InputSystem final : public System {
 		}
 	}
 
-	void handleCamera(const std::array<KeyState, SDL_NUM_SCANCODES> &keyState, Vec2i mouseWheelDelta,
-	                  Vec2i mousePosition)
+	void handleCamera(const std::array<KeyState, SDL_NUM_SCANCODES> &keyState, const Vec2i &mouseWheelDelta,
+	                  const Vec2i &mousePosition)
 	{
 		if (mouseWheelDelta.y > 0)
 			camera_.zoomIn();

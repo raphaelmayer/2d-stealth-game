@@ -108,6 +108,8 @@ struct Vec2f {
 		return {x / magnitude, y / magnitude};
 	}
 
+	float length() { return std::sqrt(x * x + y * y); }
+
 	template <class Archive>
 	void serialize(Archive &archive)
 	{

@@ -4,7 +4,7 @@
 
 // Represents the position on the map in pixels
 struct Positionable {
-	Vec2f position;
+	Vec2f position; // in pixel space
 
 	template <class Archive>
 	void serialize(Archive &archive)

@@ -9,8 +9,9 @@
 // If the entity is moving, end position equals the immediate next tile.
 struct RigidBody {
 	bool isMoving = false;
-	Vec2i startPosition;
-	Vec2i endPosition;
+	Vec2i startPosition; // in pixel space. unused as of now, but might be handy in the future
+	Vec2i endPosition;   // in pixel space
+	// TODO: Remove progress and accumulator as they are no longer used.
 	float progress = 0;
 	float accumulator = 0; // accumulates movement increments smaller than 1 pixel
 

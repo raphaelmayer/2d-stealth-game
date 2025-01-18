@@ -11,58 +11,83 @@ class PhysicsSystem final : public System {
   public:
 	PhysicsSystem(const MapManager &mapManager) : mapManager_(mapManager) {}
 
-	void update(ECSManager &ecs, const double deltaTime) override
+	void update(ECSManager &ecs, double deltaTime) override
 	{
 		const std::set<Entity> &entities = ecs.getEntities();
 
 		for (const Entity &entity : entities) {
-			if (ecs.hasComponent<RigidBody>(entity) && ecs.hasComponent<Positionable>(entity)) {
-				auto &position = ecs.getComponent<Positionable>(entity).position;
-				auto &rigidBody = ecs.getComponent<RigidBody>(entity);
+			if (!ecs.hasComponent<RigidBody>(entity) || !ecs.hasComponent<Positionable>(entity)) {
+				continue;
+			}
 
-				if (entity == PLAYER)
-					Utils::print(position);
+			auto &rigidBody = ecs.getComponent<RigidBody>(entity);
+			auto &currentPosition = ecs.getComponent<Positionable>(entity).position; // in pixels (float)
 
-				// if (rigidBody.isMoving) {
-				if (Utils::toFloat(rigidBody.endPosition) != position) {
-					rigidBody.isMoving = true;
-					if (ecs.hasComponent<Rotatable>(entity))
-						applyRotation(position, rigidBody, ecs.getComponent<Rotatable>(entity));
-					if (checkCollisions(ecs, entity, rigidBody)) {
-						resetCurrentMovementParams(position, rigidBody);
-						// If path becomes blocked, we need to recalculate.
-						if (ecs.hasComponent<AI>(entity))
-							ecs.getComponent<AI>(entity).path.clear();
-					}
-					// while progress is smaller than TILE_SIZE, we move WALKSPEED pixels per second in this direction
-					if (rigidBody.progress < TILE_SIZE) {
-						applyMovement(position, rigidBody, deltaTime);
-					} else {
-						// we might slightly overshoot endPos, thus we clamp position back to the grid
-						// position = rigidBody.endPosition;
-						position = Utils::round(position);
-						resetCurrentMovementParams(position, rigidBody);
-					}
-				} else {
-					position = Utils::round(position);
-					resetCurrentMovementParams(position, rigidBody);
+			// If this entity is not trying to move anywhere, skip.
+			// if (!rigidBody.isMoving) {
+			if (Utils::toFloat(rigidBody.endPosition) == currentPosition) {
+				continue;
+			}
+
+			rigidBody.isMoving = true; // set flag for other systems
+			Vec2f endPosPx = Utils::toFloat(rigidBody.endPosition);
+			Vec2f startPosPx = Utils::toFloat(rigidBody.startPosition);
+			Vec2f toTarget = endPosPx - currentPosition;
+			float distToTarget = toTarget.length();
+
+			// If we are "close enough" to the target, just clamp and reset.
+			// if (distToTarget < 0.01f) {
+			//	currentPosition = endPosPx;
+			//	resetCurrentMovementParams(rigidBody, currentPosition);
+			//	continue;
+			//}
+
+			Vec2f direction = toTarget.norm();
+			float maxMoveThisFrame = WALK_SPEED * static_cast<float>(deltaTime);
+			// If the required distance is less than what we plan to move, clamp so that we land exactly on the tile.
+			float moveDist = std::min(distToTarget, maxMoveThisFrame);
+			Vec2f newPosition = currentPosition + direction * moveDist; // Tentatively compute new position
+
+			// TODO?: We currently do a next tile check with endPosition. We might want to switch to a bounding box
+			// approach, where we use newPosition to check, if the move is valid and only then apply it.
+			if (wouldCollide(ecs, entity, rigidBody)) {
+				// Clear path if AI, or do something else:
+				if (ecs.hasComponent<AI>(entity)) {
+					ecs.getComponent<AI>(entity).path.clear();
 				}
+				resetCurrentMovementParams(rigidBody, currentPosition);
+				continue;
+			}
+
+			currentPosition = newPosition; // Update actual position if valid.
+
+			if (ecs.hasComponent<Rotatable>(entity)) {
+				applyRotation(direction, ecs.getComponent<Rotatable>(entity));
+			}
+
+			// If we’ve reached the end tile, finalize. Currently redundant check?
+			distToTarget = (endPosPx - currentPosition).length();
+			if (distToTarget < 0.01f) {
+				currentPosition = endPosPx;
+				resetCurrentMovementParams(rigidBody, currentPosition);
 			}
 		}
 	}
 
   private:
-	void resetCurrentMovementParams(const Vec2f &position, RigidBody &rigidBody)
+	void resetCurrentMovementParams(RigidBody &rigidBody, const Vec2f &currentPosPx)
 	{
 		rigidBody.isMoving = false;
-		rigidBody.progress = 0.f;
 
-		// the following operations only a safety net for grid clamping, if something were to go wrong.
-		rigidBody.startPosition = Utils::toInt(Utils::round(position));
-		rigidBody.endPosition = Utils::toInt(Utils::round(position));
+		// Snap tile coords to whatever tile the entity ended up on:
+		Vec2i tileCoord = Vec2i(static_cast<int>(std::round(currentPosPx.x / TILE_SIZE)),
+		                        static_cast<int>(std::round(currentPosPx.y / TILE_SIZE)));
+
+		rigidBody.startPosition = tileCoord;
+		rigidBody.endPosition = tileCoord;
 	}
 
-	bool checkCollisions(ECSManager &ecs, Entity entity, RigidBody &rigidBody)
+	bool wouldCollide(ECSManager &ecs, Entity entity, RigidBody &rigidBody)
 	{
 		const Vec2i tileSizedEndPos = Utils::toTileSize(rigidBody.endPosition);
 		const Tile endTile = mapManager_.getTile(tileSizedEndPos.x, tileSizedEndPos.y);
@@ -95,30 +120,27 @@ class PhysicsSystem final : public System {
 		return false;
 	}
 
-	void applyMovement(Vec2f &position, RigidBody &rigidBody, double deltaTime)
+	void applyRotation(const Vec2f &moveDir, Rotatable &rotatable) const
 	{
-		const float movementAmount = WALK_SPEED * (float)deltaTime;
-		rigidBody.progress += movementAmount;
-
-		//const Vec2f direction = (Utils::toFloat(rigidBody.endPosition) - Utils::round(position)).sign();
-		const Vec2f direction = Utils::discreteDirection4_signBased(Utils::toFloat(rigidBody.endPosition) - position);
-		position += direction * movementAmount;
-	}
-
-	void applyRotation(Vec2f &position, RigidBody &rigidBody, Rotatable &rotatable)
-	{
-		const Vec2f direction = Utils::discreteDirection4_signBased(Utils::toFloat(rigidBody.endPosition) - position);
-
-		if (direction.y == -1) {
-			rotatable.rotation = Rotation::NORTH;
-		} else if (direction.x == 1) {
-			rotatable.rotation = Rotation::EAST;
-		} else if (direction.y == 1) {
-			rotatable.rotation = Rotation::SOUTH;
-		} else if (direction.x == -1) {
-			rotatable.rotation = Rotation::WEST;
+		// Because we used "toTarget.norm()" it could have any angle,
+		// but we only handle 4 directions, so pick the largest axis.
+		if (std::fabs(moveDir.x) > std::fabs(moveDir.y)) {
+			// Horizontal movement
+			if (moveDir.x > 0.f) {
+				rotatable.rotation = Rotation::EAST;
+			} else {
+				rotatable.rotation = Rotation::WEST;
+			}
+		} else {
+			// Vertical movement
+			if (moveDir.y > 0.f) {
+				rotatable.rotation = Rotation::SOUTH;
+			} else {
+				rotatable.rotation = Rotation::NORTH;
+			}
 		}
 	}
 
+  private:
 	const MapManager &mapManager_;
 };
