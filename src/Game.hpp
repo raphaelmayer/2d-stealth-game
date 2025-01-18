@@ -75,11 +75,14 @@ class Game : public Engine {
 			}
 
 			inputSystem->update(ecs, deltaTime);
+			physicsSystem->update(ecs, deltaTime);
+			// TODO: Not sure how i feel about doing AI updates AFTER the physics update. These are inputs (for the AI)
+			// and should happen before doing any calculations (or at the very least at the "same time" as the player
+			// giving inputs. The issue is that as of now physics system might reset the rotation of AI NPC's.
 			aiSystem->update(ecs, deltaTime);
 			pathfindingSystem->update(ecs, deltaTime);
-			physicsSystem->update(ecs, deltaTime);
 
-			// camera.focus(ecs.getComponent<Positionable>(PLAYER).position);
+			camera.focus(ecs.getComponent<Positionable>(PLAYER).position); // overwrite camera position for testing
 
 			// must happen in between update of physicsystem and rendersystem, or will result in flickering
 			renderSystem->update(ecs, deltaTime);
