@@ -70,7 +70,7 @@ class InputSystem final : public System {
 			}
 
 			// Movement mechanism: if endPosition != position => move
-			rigidBody.endPosition = {Utils::toFloat(Utils::toInt(positionable.position) + velocity * TILE_SIZE)};
+			rigidBody.endPosition = Utils::toGrid(positionable.position) + velocity * TILE_SIZE;
 		}
 	}
 

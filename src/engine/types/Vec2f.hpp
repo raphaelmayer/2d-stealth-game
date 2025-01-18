@@ -11,7 +11,7 @@ struct Vec2f {
 
 	bool operator==(const Vec2f &v) const
 	{
-		constexpr float epsilon = 1e-5f; // Tolerance value for comparison
+		constexpr float epsilon = 1e-2f; // Tolerance value for comparison
 		return (std::abs(x - v.x) < epsilon) && (std::abs(y - v.y) < epsilon);
 	}
 	bool operator!=(const Vec2f &v) const { return !operator==(v); }

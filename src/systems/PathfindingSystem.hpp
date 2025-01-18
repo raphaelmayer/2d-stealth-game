@@ -37,22 +37,23 @@ class PathfindingSystem final : public System {
   private:
 	void handleAIPathfinding(Vec2f &position, RigidBody &rigidBody, AI &ai, auto walkableView)
 	{
-		if (ai.targetPosition != Vec2f{-1, -1} && Utils::toInt(ai.targetPosition) != Utils::toInt(position)) {
+		if (ai.targetPosition != Vec2i{-1, -1} && ai.targetPosition != Utils::toInt(position)) {
 			// TODO: We need to check, if targetPosition is reachable. If not, we could use a couple of strategies like
 			// finding the nearest reachable tile.
 
 			// If path does not point to target position, calculate a new one
 			if (ai.path.empty() || ai.targetPosition != ai.path[ai.path.size() - 1]) {
 				std::cout << "Recalculating path. pathIndex=" << ai.pathIndex << "\n";
-				auto intpath = AStar::findPath(walkableView, Utils::toTileSize(position), Utils::toTileSize(ai.targetPosition));
+				auto intpath =
+				    AStar::findPath(walkableView, Utils::toTileSize(position), Utils::toTileSize(ai.targetPosition));
 				ai.path = {};
 				for (auto &waypoint : intpath) // A* works in tile space, so we transform back to pixel space.
-					ai.path.push_back(Utils::toFloat(waypoint * TILE_SIZE));
+					ai.path.push_back(waypoint * TILE_SIZE);
 				ai.pathIndex = 0;
 			}
 
 			// If we reach an intermediate position on our path, increment to next path position.
-			if (Utils::toInt(ai.path[ai.pathIndex]) == Utils::toInt(position)) {
+			if (ai.path[ai.pathIndex] == Utils::toInt(position)) {
 				if (ai.pathIndex < ai.path.size() - 1) {
 					ai.pathIndex += 1;
 					rigidBody.endPosition = ai.path[ai.pathIndex];

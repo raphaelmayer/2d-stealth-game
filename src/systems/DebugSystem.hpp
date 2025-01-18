@@ -117,9 +117,10 @@ class DebugSystem : public System {
 				const auto &ai = ecs.getComponent<AI>(entity);
 				for (size_t i = ai.pathIndex; i < ai.path.size(); i++) {
 					if (i + 1 < ai.path.size())
-						engine_.drawLine(screenOffset(ai.path[i]), screenOffset(ai.path[i + 1]), {255, 255, 255, 255});
+						engine_.drawLine(screenOffset(Utils::toFloat(ai.path[i])),
+						                 screenOffset(Utils::toFloat(ai.path[i + 1])), {255, 255, 255, 255});
 				}
-				engine_.drawCircle(screenOffset(ai.targetPosition), (TILE_SIZE / 2) * camera_.getZoom(),
+				engine_.drawCircle(screenOffset(Utils::toFloat(ai.targetPosition)), (TILE_SIZE / 2) * camera_.getZoom(),
 				                   {255, 255, 255, 255});
 			}
 		}

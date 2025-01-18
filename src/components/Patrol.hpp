@@ -5,7 +5,7 @@
 #include <vector>
 
 struct PatrolPoint {
-	Vec2f position;
+	Vec2i position;
 	Rotation rotation;
 	double duration;
 

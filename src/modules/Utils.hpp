@@ -2,6 +2,8 @@
 
 #include "../constants.hpp"
 #include "../engine/types.hpp"
+#include <cmath>
+#include <iostream>
 
 namespace Utils {
 
@@ -13,6 +15,11 @@ Vec2i toInt(const Vec2f &vec)
 Vec2f toFloat(const Vec2i &vec)
 {
 	return Vec2f{static_cast<float>(vec.x), static_cast<float>(vec.y)};
+}
+
+Vec2f round(const Vec2f &vec)
+{
+	return {std::round(vec.x), std::round(vec.y)};
 }
 
 Recti toInt(const Rectf &rect)
@@ -45,6 +52,35 @@ Vec2i toGrid(const Vec2i &vec, const int tileSize = TILE_SIZE)
 Vec2i toGrid(const Vec2f &vec, const int tileSize = TILE_SIZE)
 {
 	return toTileSize(vec) * TILE_SIZE;
+}
+
+Vec2f discreteDirection4_signBased(const Vec2f &vec)
+{
+	float absX = std::fabs(vec.x);
+	float absY = std::fabs(vec.y);
+
+	// If the vector is basically zero:
+	if (absX < 1e-6f && absY < 1e-6f) {
+		return Vec2f(0.f, 0.f);
+	}
+
+	// If |x| > |y|, we choose horizontal axis; otherwise vertical.
+	if (absX >= absY) {
+		return Vec2f((vec.x >= 0.f) ? 1.f : -1.f, 0.f);
+	} else {
+		return Vec2f(0.f, (vec.y >= 0.f) ? 1.f : -1.f);
+	}
+}
+
+
+void print(const Vec2f &vec)
+{
+	std::cout << vec.x << ", " << vec.y << '\n';
+}
+
+void print(const Vec2i &vec)
+{
+	std::cout << vec.x << ", " << vec.y << '\n';
 }
 
 } // namespace Utils

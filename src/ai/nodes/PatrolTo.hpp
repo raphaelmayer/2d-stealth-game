@@ -47,13 +47,13 @@ class PatrolTo : public BT::SyncActionNode {
 		const PatrolPoint &currentPatrolPoint = patrol.waypoints[patrol.patrolIndex];
 
 		// Reached patrol point, set next one.
-		if (position == ai.targetPosition && ai.targetPosition == currentPatrolPoint.position
-		    || ai.targetPosition == Vec2f{-1.0f, -1.0f}) {
+		if (Utils::toInt(position) == ai.targetPosition && ai.targetPosition == currentPatrolPoint.position
+		    || ai.targetPosition == Vec2i{-1, -1}) {
 
 			patrol.patrolIndex = (patrol.patrolIndex + 1) % patrol.waypoints.size();
 			const PatrolPoint newPatrolPoint = patrol.waypoints[patrol.patrolIndex];
 
-			setOutput<Vec2f>("targetPosition", newPatrolPoint.position);
+			setOutput<Vec2f>("targetPosition", Utils::toFloat(newPatrolPoint.position));
 			setOutput<Rotation>("direction", newPatrolPoint.rotation);
 			setOutput<double>("duration", newPatrolPoint.duration);
 		}

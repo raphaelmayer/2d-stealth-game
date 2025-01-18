@@ -76,7 +76,7 @@ class AISystem final : public System {
 				if (ai.detectionTime >= ai.detectionThreshold) {
 					ai.detectionTime = 0;
 					ai.originalPosition = (ai.previousState == AIState::Unaware)
-					                          ? position
+					                          ? Utils::toInt(position)
 					                          : ai.originalPosition; // TODO: Should only happen on first detect, bc we
 					                                                 // want to save the position of the idle state
 					ai.previousState = currentState;
