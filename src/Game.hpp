@@ -79,7 +79,7 @@ class Game : public Engine {
 			pathfindingSystem->update(ecs, deltaTime);
 			physicsSystem->update(ecs, deltaTime);
 
-			// camera.focus(ecs.getComponent<Positionable>(PLAYER).position);
+			camera.focus(ecs.getComponent<Positionable>(PLAYER).position);
 
 			// must happen in between update of physicsystem and rendersystem, or will result in flickering
 			renderSystem->update(ecs, deltaTime);

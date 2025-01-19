@@ -44,10 +44,10 @@ class MoveTo : public BT::StatefulActionNode {
 			return BT::NodeStatus::FAILURE;
 
 		auto &ai = ecs.getComponent<AI>(entity.value());
-		const Vec2f &position = ecs.getComponent<Positionable>(entity.value()).position;
 		ai.targetPosition = Utils::toInt(pos.value());
 
-		if (Utils::toInt(position) == ai.targetPosition)
+		const Vec2f &position = ecs.getComponent<Positionable>(entity.value()).position;
+		if (position == Utils::toFloat(ai.targetPosition))
 			return BT::NodeStatus::SUCCESS;
 
 		return BT::NodeStatus::RUNNING;

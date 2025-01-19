@@ -33,7 +33,7 @@ class DebugSystem : public System {
 				auto pos = ecs.getComponent<Positionable>(entity).position;
 				auto vision = ecs.getComponent<Vision>(entity);
 
-				drawViewCone(ecs, entity);
+				// drawViewCone(ecs, entity);
 				drawLinesOfSight(ecs, entity, vision.visibleAllies, {0, 255, 0, 255});
 				drawLinesOfSight(ecs, entity, vision.visibleEnemies, {255, 120, 80, 255});
 			}

@@ -36,11 +36,11 @@ class PhysicsSystem final : public System {
 			float distToTarget = toTarget.length();
 
 			// If we are "close enough" to the target, just clamp and reset.
-			// if (distToTarget < 0.01f) {
-			//	currentPosition = endPosPx;
-			//	resetCurrentMovementParams(rigidBody, currentPosition);
-			//	continue;
-			//}
+			if (distToTarget < 0.01f) {
+				currentPosition = endPosPx;
+				resetCurrentMovementParams(rigidBody, currentPosition);
+				continue;
+			}
 
 			Vec2f direction = toTarget.norm();
 			float maxMoveThisFrame = WALK_SPEED * static_cast<float>(deltaTime);
@@ -79,14 +79,13 @@ class PhysicsSystem final : public System {
 	{
 		rigidBody.isMoving = false;
 
-		// Snap tile coords to whatever tile the entity ended up on:
-		Vec2i tileCoord = Vec2i(static_cast<int>(std::round(currentPosPx.x / TILE_SIZE)),
-		                        static_cast<int>(std::round(currentPosPx.y / TILE_SIZE)));
+		Vec2i newPosition = Utils::toInt(Utils::round(currentPosPx / TILE_SIZE)) * TILE_SIZE;
 
-		rigidBody.startPosition = tileCoord;
-		rigidBody.endPosition = tileCoord;
+		rigidBody.startPosition = newPosition;
+		rigidBody.endPosition = newPosition;
 	}
 
+	// TODO: reduce potential O(N²) collision checks
 	bool wouldCollide(ECSManager &ecs, Entity entity, RigidBody &rigidBody)
 	{
 		const Vec2i tileSizedEndPos = Utils::toTileSize(rigidBody.endPosition);
@@ -97,7 +96,7 @@ class PhysicsSystem final : public System {
 			for (const Entity &other : ecs.getEntities()) {
 				if (entity != other && ecs.hasComponent<Collider>(other) && ecs.hasComponent<Positionable>(other)) {
 					const auto &otherPosition = ecs.getComponent<Positionable>(other).position;
-					if (Utils::toInt(otherPosition) == rigidBody.endPosition) {
+					if (Utils::toInt(Utils::round(otherPosition)) == rigidBody.endPosition) {
 						return true;
 					}
 					// Entities might move onto the same tile at the same time.

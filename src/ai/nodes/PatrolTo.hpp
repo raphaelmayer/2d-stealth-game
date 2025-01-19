@@ -47,7 +47,7 @@ class PatrolTo : public BT::SyncActionNode {
 		const PatrolPoint &currentPatrolPoint = patrol.waypoints[patrol.patrolIndex];
 
 		// Reached patrol point, set next one.
-		if (Utils::toInt(position) == ai.targetPosition && ai.targetPosition == currentPatrolPoint.position
+		if (position == Utils::toFloat(ai.targetPosition) && ai.targetPosition == currentPatrolPoint.position
 		    || ai.targetPosition == Vec2i{-1, -1}) {
 
 			patrol.patrolIndex = (patrol.patrolIndex + 1) % patrol.waypoints.size();
