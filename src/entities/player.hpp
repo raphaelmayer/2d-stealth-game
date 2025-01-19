@@ -19,7 +19,8 @@ Entity instantiatePlayerEntity(ECSManager &ecs, Vec2i positionInTiles, Rotation 
 {
 	Entity player = ecs.addEntity();
 
-	ecs.addComponent(player, Positionable{{positionInTiles.x * TILE_SIZE, positionInTiles.y * TILE_SIZE}});
+	ecs.addComponent(player,
+	                 Positionable{{(float)(positionInTiles.x * TILE_SIZE), (float)(positionInTiles.y * TILE_SIZE)}});
 	ecs.addComponent(player, Rotatable{rotation});
 	ecs.addComponent(player, RigidBody{false, positionInTiles, positionInTiles, 0, 0});
 	ecs.addComponent(player, Animatable{PLAYER_STANDING_ANIMATION_NUMBER,

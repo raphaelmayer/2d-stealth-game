@@ -29,7 +29,6 @@ class InputSystem final : public System {
 
 				// only allow input if player is not currently moving
 				if (!rigidBody.isMoving) {
-					// if (rigidBody.endPosition == position) {
 					//  allow movement or starting an interaction, if player is not in an interaction
 					if (controllable.isInInteractionWith == 0) {
 						if (keyState[SDL_SCANCODE_RETURN].pressed) {
@@ -37,8 +36,8 @@ class InputSystem final : public System {
 						} else {
 							handleMovement(ecs, entity, keyState);
 						}
-						// allow ending an interaction, if player is in an interaction
 					} else {
+						// allow ending an interaction, if player is in an interaction
 						if (keyState[SDL_SCANCODE_RETURN].pressed) {
 							controllable.isTryingToEndInteraction = true;
 						}
@@ -56,38 +55,32 @@ class InputSystem final : public System {
 	{
 		if (ecs.hasComponent<Positionable>(entity)) {
 			auto &positionable = ecs.getComponent<Positionable>(entity);
-			auto &rigidBody = ecs.getComponent<RigidBody>(entity); // existance check happens earlier
+			auto &rigidBody = ecs.getComponent<RigidBody>(entity); // existence check happens earlier
 			Vec2i velocity{0, 0};
 
 			if (keyState[SDL_GetScancodeFromKey(SDLK_w)].held) {
 				velocity.y = -1;
-				// rigidBody.isMoving = true;
 			} else if (keyState[SDL_GetScancodeFromKey(SDLK_d)].held) {
 				velocity.x = 1;
-				// rigidBody.isMoving = true;
 			} else if (keyState[SDL_GetScancodeFromKey(SDLK_s)].held) {
 				velocity.y = 1;
-				// rigidBody.isMoving = true;
 			} else if (keyState[SDL_GetScancodeFromKey(SDLK_a)].held) {
 				velocity.x = -1;
-				// rigidBody.isMoving = true;
 			}
-			// TODO: change comment, if we don't set isMoving here anymore. Right now, if endPosition differs from
-			// position, we move and PhysicsSystem sets isMoving.
-			// Movement mechanism: if isMoving && endPosition => move
-			rigidBody.endPosition = {positionable.position.x + velocity.x * TILE_SIZE,
-			                         positionable.position.y + velocity.y * TILE_SIZE};
+
+			// Movement mechanism: if endPosition != position => move
+			rigidBody.endPosition = Utils::toGrid(positionable.position) + velocity * TILE_SIZE;
 		}
 	}
 
-	void handleCamera(const std::array<KeyState, SDL_NUM_SCANCODES> &keyState, Vec2i mouseWheelDelta,
-	                  Vec2i mousePosition)
+	void handleCamera(const std::array<KeyState, SDL_NUM_SCANCODES> &keyState, const Vec2i &mouseWheelDelta,
+	                  const Vec2i &mousePosition)
 	{
 		if (mouseWheelDelta.y > 0)
 			camera_.zoomIn();
 		if (mouseWheelDelta.y < 0)
 			camera_.zoomOut();
-		
+
 		if (mousePosition.x < 10)
 			camera_.move(CamDirection::LEFT);
 		if (mousePosition.x > engine_.getWindowSize().x - 10)

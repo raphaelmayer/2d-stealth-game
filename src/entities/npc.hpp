@@ -10,7 +10,9 @@
 #include "../components/Rotatable.hpp"
 #include "../constants.hpp"
 #include "../ecs/ECSManager.hpp"
+#include "../engine/types/Vec2f.hpp"
 #include "../engine/types/Vec2i.hpp"
+#include "../modules/Utils.hpp"
 #include <string>
 
 // for playerSpriteSheetY use one of the constants PLAYER_{RED|BLUE|WHITE}_SPRITE_SHEET_Y
@@ -20,7 +22,7 @@ Entity instantiateNPCEntity(ECSManager &ecs, Vec2i positionInTiles, Rotation rot
 {
 	Entity npc = ecs.addEntity();
 
-	ecs.addComponent(npc, Positionable{{positionInTiles.x * TILE_SIZE, positionInTiles.y * TILE_SIZE}});
+	ecs.addComponent(npc, Positionable{Utils::toFloat(positionInTiles) * TILE_SIZE});
 	ecs.addComponent(npc, Rotatable{rotation});
 	ecs.addComponent(npc, RigidBody{false, positionInTiles * TILE_SIZE, positionInTiles * TILE_SIZE});
 	ecs.addComponent(npc, Animatable{PLAYER_STANDING_ANIMATION_NUMBER,

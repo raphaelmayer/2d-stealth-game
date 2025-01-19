@@ -2,9 +2,11 @@
 
 #include "../../components/Vision.hpp"
 #include "../../ecs/ECSManager.hpp"
+#include "../../engine/types/Vec2f.hpp"
 #include "behaviortree_cpp/action_node.h"
 #include "behaviortree_cpp/basic_types.h" // ports etc
 #include "behaviortree_cpp/tree_node.h"   // NodeConfig
+
 #include <string>
 
 // I guess we could set a vector of all visible enemies (or just a check, since we could reuse
@@ -25,7 +27,7 @@ class IsEnemyVisible : public BT::SyncActionNode {
 		return {
 			BT::InputPort<Entity>("entity"),
 			BT::OutputPort<Entity>("otherEntity"),
-			BT::OutputPort<Vec2i>("otherPosition"),
+			BT::OutputPort<Vec2f>("otherPosition"),
 			BT::OutputPort<Rotation>("direction")
 		};
 		// clang-format on
@@ -40,16 +42,16 @@ class IsEnemyVisible : public BT::SyncActionNode {
 			return BT::NodeStatus::FAILURE;
 		}
 
-		const Vec2i &position = ecs.getComponent<Positionable>(entity).position;
+		const Vec2f &position = ecs.getComponent<Positionable>(entity).position;
 		const Rotation &rotation = ecs.getComponent<Rotatable>(entity).rotation;
 		const Entity &otherEntity = vision.visibleEnemies[0];
-		const Vec2i &otherPosition = ecs.getComponent<Positionable>(otherEntity).position;
+		const Vec2f &otherPosition = ecs.getComponent<Positionable>(otherEntity).position;
 
 		// TODO: Is this actually the best place to do this?
 		Rotation direction = calculateDirection(position, otherPosition, rotation);
 
 		setOutput<Entity>("otherEntity", otherEntity);
-		setOutput<Vec2i>("otherPosition", otherPosition);
+		setOutput<Vec2f>("otherPosition", otherPosition);
 		setOutput<Rotation>("direction", direction);
 
 		return BT::NodeStatus::SUCCESS;
@@ -68,14 +70,14 @@ class IsEnemyVisible : public BT::SyncActionNode {
 		return exp.value();
 	}
 
-	Rotation calculateDirection(const Vec2i &start, const Vec2i &end, const Rotation &currentRotation)
+	Rotation calculateDirection(const Vec2f &start, const Vec2f &end, const Rotation &currentRotation)
 	{
 		// Calculate the difference between the points
-		double dx = end.x - start.x;
-		double dy = end.y - start.y;
+		float dx = end.x - start.x;
+		float dy = end.y - start.y;
 
 		// Normalize the direction vector
-		double magnitude = std::sqrt(dx * dx + dy * dy);
+		float magnitude = std::sqrt(dx * dx + dy * dy);
 		if (magnitude == 0) {
 			return currentRotation; // Default direction for no movement
 		}

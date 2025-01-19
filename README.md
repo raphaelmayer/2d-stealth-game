@@ -128,4 +128,10 @@ cmake --open xbuild
 
 ## Ideas for sound engine
 - add SoundLibrary class to hold all sound chunks (in game context)
-- 
+
+### Difference between entities
+
+| Player          | NPC             | Projectile      | Weapon          |
+|-----------------|-----------------|-----------------|-----------------|
+| Controllable    | AI              | Projectile      | Weapon          |
+

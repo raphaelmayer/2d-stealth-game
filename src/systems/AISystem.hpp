@@ -5,7 +5,7 @@
 #include "../components/AI.hpp"
 #include "../components/Vision.hpp"
 #include "../ecs/ECSManager.hpp"
-#include "../engine/types/Vec2i.hpp"
+#include "../engine/types/Vec2f.hpp"
 #include "../modules/BTManager.hpp"
 #include "../modules/MapManager.hpp"
 #include "../systems/AIPerceptionSystem.hpp"
@@ -52,7 +52,7 @@ class AISystem final : public System {
 	void updateHighLevelAIState(ECSManager &ecs, Entity entity, double deltaTime)
 	{
 		// These components are a given at this point, because we check above. Possible error down the line.
-		Vec2i &position = ecs.getComponent<Positionable>(entity).position;
+		Vec2f &position = ecs.getComponent<Positionable>(entity).position;
 		Vision &vision = ecs.getComponent<Vision>(entity);
 		AI &ai = ecs.getComponent<AI>(entity);
 
@@ -76,7 +76,7 @@ class AISystem final : public System {
 				if (ai.detectionTime >= ai.detectionThreshold) {
 					ai.detectionTime = 0;
 					ai.originalPosition = (ai.previousState == AIState::Unaware)
-					                          ? position
+					                          ? Utils::toInt(position)
 					                          : ai.originalPosition; // TODO: Should only happen on first detect, bc we
 					                                                 // want to save the position of the idle state
 					ai.previousState = currentState;

@@ -13,6 +13,7 @@
 #include "../constants.hpp"
 #include "../ecs/ECSManager.hpp"
 #include "../engine/types/Vec2i.hpp"
+#include "../modules/Utils.hpp"
 
 #define ITEMS_SPRITESHEET_Y 1000
 #define SPRITE_SIZE TILE_SIZE
@@ -33,7 +34,7 @@ Entity instantiateItemEntity(ECSManager &ecs, const Vec2i position, const Vec2i 
 {
 	Entity item = ecs.addEntity();
 
-	ecs.addComponent(item, Positionable{position * TILE_SIZE});
+	ecs.addComponent(item, Positionable{Utils::toFloat(position) * TILE_SIZE});
 	ecs.addComponent(item,
 	                 Renderable{{spriteSheetPos.x * SPRITE_SIZE, ITEMS_SPRITESHEET_Y + spriteSheetPos.y * SPRITE_SIZE},
 	                            {SPRITE_SIZE, SPRITE_SIZE},

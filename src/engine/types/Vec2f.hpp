@@ -1,16 +1,19 @@
 #pragma once
 
-#include "../constants.hpp"
+#include "../../constants.hpp"
 #include "Vec2i.hpp"
 #include <cassert>
 #include <cmath>
 
-// Currently not used anywhere.
 struct Vec2f {
 	float x;
 	float y;
 
-	bool operator==(const Vec2f &v) const { return x == v.x && y == v.y; }
+	bool operator==(const Vec2f &v) const
+	{
+		constexpr float epsilon = 1e-2f; // Tolerance value for comparison
+		return (std::abs(x - v.x) < epsilon) && (std::abs(y - v.y) < epsilon);
+	}
 	bool operator!=(const Vec2f &v) const { return !operator==(v); }
 
 	Vec2f operator+(float n) const { return {x + n, y + n}; }
@@ -97,10 +100,6 @@ struct Vec2f {
 	// Sign function
 	Vec2f sign() const { return {std::copysign(1.0f, x), std::copysign(1.0f, y)}; }
 
-	// Convert vector from pixel domain to tile domain, e.g.: (32.0f, 32.0f).toTileSize() == (2.0f, 2.0f)
-	// Also rounds the result.
-	Vec2f toTileSize() const { return {std::round(x / TILE_SIZE), std::round(y / TILE_SIZE)}; }
-
 	// Normalize the vector
 	Vec2f norm() const
 	{
@@ -109,8 +108,7 @@ struct Vec2f {
 		return {x / magnitude, y / magnitude};
 	}
 
-	// Convert to Vec2d (integer version of the vector)
-	Vec2i toVec2d() const { return Vec2i(static_cast<int>(x), static_cast<int>(y)); }
+	float length() { return std::sqrt(x * x + y * y); }
 
 	template <class Archive>
 	void serialize(Archive &archive)

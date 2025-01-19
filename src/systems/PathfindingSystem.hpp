@@ -5,6 +5,7 @@
 #include "../constants.hpp"
 #include "../ecs/ECSManager.hpp"
 #include "../modules/MapManager.hpp"
+#include "../modules/Utils.hpp"
 #include "System.hpp"
 #include <cmath>
 #include <set>
@@ -34,22 +35,25 @@ class PathfindingSystem final : public System {
 	}
 
   private:
-	void handleAIPathfinding(Vec2i &position, RigidBody &rigidBody, AI &ai, auto walkableView)
+	void handleAIPathfinding(Vec2f &position, RigidBody &rigidBody, AI &ai, auto walkableView)
 	{
-		if (ai.targetPosition != Vec2i{-1, -1} && ai.targetPosition != position) {
-			// TODO: We need to check, if targetPosition is reachable. If not, we could use a couple of strategies like finding the nearest reachable tile. 
-			
+		if (ai.targetPosition != Vec2i{-1, -1} && ai.targetPosition != Utils::toInt(position)) {
+			// TODO: We need to check, if targetPosition is reachable. If not, we could use a couple of strategies like
+			// finding the nearest reachable tile.
+
 			// If path does not point to target position, calculate a new one
 			if (ai.path.empty() || ai.targetPosition != ai.path[ai.path.size() - 1]) {
 				std::cout << "Recalculating path. pathIndex=" << ai.pathIndex << "\n";
-				ai.path = AStar::findPath(walkableView, position.toTileSize(), ai.targetPosition.toTileSize());
-				for (auto &waypoint : ai.path) // A* works in tile space, so we transform back to pixel space.
-					waypoint *= TILE_SIZE;
+				auto intpath =
+				    AStar::findPath(walkableView, Utils::toTileSize(position), Utils::toTileSize(ai.targetPosition));
+				ai.path = {};
+				for (auto &waypoint : intpath) // A* works in tile space, so we transform back to pixel space.
+					ai.path.push_back(waypoint * TILE_SIZE);
 				ai.pathIndex = 0;
 			}
 
 			// If we reach an intermediate position on our path, increment to next path position.
-			if (ai.path[ai.pathIndex] == position) {
+			if (ai.path[ai.pathIndex] == Utils::toInt(position)) {
 				if (ai.pathIndex < ai.path.size() - 1) {
 					ai.pathIndex += 1;
 					rigidBody.endPosition = ai.path[ai.pathIndex];
@@ -67,7 +71,7 @@ class PathfindingSystem final : public System {
 	{
 		for (const auto &other : ecs.getEntities()) {
 			if (ecs.hasComponent<Collider>(other) && ecs.hasComponent<Positionable>(other) && entity != other) {
-				const auto &otherPos = ecs.getComponent<Positionable>(other).position.toTileSize();
+				const auto &otherPos = Utils::toTileSize(ecs.getComponent<Positionable>(other).position);
 				walkableView[otherPos.y][otherPos.x] = 1;
 			}
 		}
