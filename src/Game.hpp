@@ -3,6 +3,7 @@
 #include "SDL_mixer.h"
 #include "components/AI.hpp"
 #include "components/Patrol.hpp"
+#include "components/Projectile.hpp"
 #include "constants.hpp"
 #include "ecs/ECSManager.hpp"
 #include "ecs/Entity.hpp"
@@ -10,6 +11,7 @@
 #include "entities/item.hpp"
 #include "entities/npc.hpp"
 #include "entities/player.hpp"
+#include "entities/projectile.hpp"
 #include "entities/sign.hpp"
 #include "modules/BTManager.hpp"
 #include "modules/Camera.hpp"
@@ -25,6 +27,7 @@
 #include "systems/PathfindingSystem.hpp"
 #include "systems/PhysicsSystem.hpp"
 #include "systems/ProgressSystem.hpp"
+#include "systems/ProjectileSystem.hpp"
 #include "systems/RenderSystem.hpp"
 #include "ui/InGameMenu.hpp"
 #include "ui/MainMenu.hpp"
@@ -92,6 +95,7 @@ class Game : public Engine {
 			audioSystem->update(ecs, deltaTime);
 			progressSystem->update(ecs, deltaTime);
 			debugSystem->update(ecs, deltaTime);
+			projectileSystem->update(ecs, deltaTime);
 
 			break;
 		}
@@ -118,6 +122,7 @@ class Game : public Engine {
 		audioSystem = std::make_unique<AudioSystem>(PLAYER);
 		debugSystem = std::make_unique<DebugSystem>(*this, mapManager, camera);
 		pathfindingSystem = std::make_unique<PathfindingSystem>(mapManager);
+		projectileSystem = std::make_unique<ProjectileSystem>();
 	}
 
 	void createTestEntity(const Vec2i &position, const std::vector<PatrolPoint> &waypoints)
@@ -162,4 +167,5 @@ class Game : public Engine {
 	std::unique_ptr<AudioSystem> audioSystem;
 	std::unique_ptr<DebugSystem> debugSystem;
 	std::unique_ptr<PathfindingSystem> pathfindingSystem;
+	std::unique_ptr<ProjectileSystem> projectileSystem;
 };
