@@ -99,13 +99,18 @@ class InputSystem final : public System {
 	{
 		constexpr int RIGHT_MOUSE_BUTTON = 2;
 		if (keyStates[RIGHT_MOUSE_BUTTON].held == true) {
-			auto start = ecs.getComponent<Positionable>(entity).position;
-			auto screenPos = Utils::toFloat(engine_.getMousePosition());
+			Vec2f start = ecs.getComponent<Positionable>(entity).position;
+			Vec2f mouseScreenPos = Utils::toFloat(engine_.getMousePosition());
 			// Our renderscale is uniform across axis, so we just pick a dimension.
-			auto worldPos = (screenPos / (camera_.getZoom() * engine_.getRenderScale().x)) + camera_.getPosition();
-			auto velocity = 300; // should be read from gun or something
+			Vec2f mouseWorldPos =
+			    (mouseScreenPos / (camera_.getZoom() * engine_.getRenderScale().x)) + camera_.getPosition();
+			std::cout << "SCRCRD: ";
+			Utils::print(mouseScreenPos);
+			std::cout << "WLDCRD: ";
+			Utils::print(mouseWorldPos);
+			float velocity = 300.f; // should be read from gun or something
 
-			spawnProjectile(ecs, Utils::toInt(start), Utils::toInt(worldPos), velocity);
+			spawnProjectile(ecs, start, mouseWorldPos, velocity);
 		}
 	}
 };
