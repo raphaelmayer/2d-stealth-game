@@ -55,7 +55,20 @@ class InputSystem final : public System {
 	const Engine &engine_;
 	Camera &camera_;
 
-	static void handleMovement(ECSManager &ecs, Entity entity, const std::array<KeyState, SDL_NUM_SCANCODES> &keyStates)
+	void handleMovement_MOUSE(ECSManager &ecs, Entity entity, const std::array<KeyState, SDL_NUM_SCANCODES> &keyStates)
+	{
+		// When we switch to the RTS-style controller we need to move some things. Currently pathfinding related stuff
+		// is in the AI component, since only AI uses pathfinding as of now.
+		//
+		// constexpr int RIGHT_MOUSE_BUTTON = 2;
+		// if (keyStates[RIGHT_MOUSE_BUTTON].held == true) {
+		//	auto &pathfinding = ecs.getComponent<Pathfinding>(entity);
+		//	const Vec2f mousePos = Utils::toFloat(engine_.getMousePosition());
+		//	pathfinding.targetPosition = screenToWorld(mousePos);
+		// }
+	}
+
+	void handleMovement(ECSManager &ecs, Entity entity, const std::array<KeyState, SDL_NUM_SCANCODES> &keyStates)
 	{
 		if (ecs.hasComponent<Positionable>(entity)) {
 			auto &positionable = ecs.getComponent<Positionable>(entity);
@@ -97,20 +110,22 @@ class InputSystem final : public System {
 
 	void handleShooting(ECSManager &ecs, const Entity &entity, const std::array<KeyState, NUM_MOUSE_BUTTONS> &keyStates)
 	{
+		// This shooting mechanism should not be in InputSystem. What if we want to handle different weapons or
+		// different actions depending on if an entity is an enemy or friendly.
 		constexpr int RIGHT_MOUSE_BUTTON = 2;
 		if (keyStates[RIGHT_MOUSE_BUTTON].held == true) {
 			Vec2f start = ecs.getComponent<Positionable>(entity).position;
 			Vec2f mouseScreenPos = Utils::toFloat(engine_.getMousePosition());
-			// Our renderscale is uniform across axis, so we just pick a dimension.
-			Vec2f mouseWorldPos =
-			    (mouseScreenPos / (camera_.getZoom() * engine_.getRenderScale().x)) + camera_.getPosition();
-			std::cout << "SCRCRD: ";
-			Utils::print(mouseScreenPos);
-			std::cout << "WLDCRD: ";
-			Utils::print(mouseWorldPos);
+			Vec2f mouseWorldPos = screenToWorld(mouseScreenPos);
 			float velocity = 300.f; // should be read from gun or something
 
 			spawnProjectile(ecs, start, mouseWorldPos, velocity);
 		}
+	}
+
+	Vec2f screenToWorld(const Vec2f &vec) const
+	{
+		// Our renderscale is uniform across axis, so we just pick a dimension.
+		return (vec / (camera_.getZoom() * engine_.getRenderScale().x)) + camera_.getPosition();
 	}
 };
