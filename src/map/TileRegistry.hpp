@@ -7,15 +7,6 @@
 #include <string>
 #include <vector>
 
-// tile in the internal map, consisting of 2 layers of TileSprites, which are referenced by a char
-// TODO: rename Tile -> TileInstance or TileComposition?
-struct Tile {
-	int backgroundId;
-	int objectId;
-};
-
-struct CellMetadata {};
-
 // Actual tile info
 struct TileMetadata {
 	int id = 0;
@@ -32,7 +23,7 @@ struct TileMetadata {
 	TileMetadata() = default;
 };
 
-// new code to replace TileMetadata when we switch to TMX (Tiled)
+// TODO: new struct to replace TileMetadata when we switch to a new tileset
 struct TileMetadata_TBD {
 	int id;                  // corresponds to 1d location in tileset
 	std::string name;        // additional display name?

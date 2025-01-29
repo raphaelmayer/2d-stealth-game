@@ -10,15 +10,10 @@ enum class LayerID {
 	// tile layers
 	BACKGROUND = 0,
 	OBJECT,
-	NUM_LAYERS,
-	// ids below not used right now
 	OBJECT2,
-	FOREGROUND,
 	COSMETIC,
-	// property layers (we could use bit masks here but is it even necessary?)
-	COLLISION,
-	VISION,
-	PENETRATION,
+	FOREGROUND,
+	NUM_LAYERS
 };
 
 using Layer = std::vector<int>;

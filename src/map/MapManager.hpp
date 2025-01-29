@@ -53,20 +53,16 @@ class MapManager {
 	int getWalkableMapView(int x, int y) const { return walkableView[y][x]; }
 
   private:
-	void printMap(LevelMap map) const
+	void printMap(const LevelMap &map) const
 	{
-		for (size_t i = 0; i < map.numLayers(); i++) {
-			std::cout << "Layer index: " << i << "\n";
-			const auto &layerData = map.getLayer(static_cast<LayerID>(i));
-
-			for (size_t idx = 0; idx < layerData.size(); idx++) {
-				std::cout << layerData[idx] << " ";
-
-				if ((idx + 1) % map.getWidth() == 0) {
+		int layerIndex = 0;
+		for (auto &layerData : map.getLayers()) {
+			std::cout << "Layer index: " << layerIndex++ << "\n";
+			for (std::size_t i = 0; i < layerData.size(); i++) {
+				std::cout << layerData[i] << " ";
+				if ((i + 1) % map.getWidth() == 0)
 					std::cout << "\n";
-				}
 			}
-
 			std::cout << "\n";
 		}
 	}
