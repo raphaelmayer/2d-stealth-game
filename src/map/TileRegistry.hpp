@@ -62,7 +62,7 @@ class TileRegistry {
 			int x, y;
 			bool walkable;
 			if (iss >> id >> description >> x >> y >> std::boolalpha >> walkable) {
-				int tileid = y * (9) + x + 1;
+				int tileid = y * (9) + x + 1; // should read 9 from tileset width
 				tileMap.emplace(tileid, TileMetadata(tileid, description, x, y, walkable));
 			} else {
 				std::cerr << "Error parsing line: " << line << std::endl;

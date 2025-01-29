@@ -13,7 +13,7 @@
 #include "entities/player.hpp"
 #include "entities/projectile.hpp"
 #include "entities/sign.hpp"
-#include "map/MapManagerTMX.hpp"
+#include "map/MapManager.hpp"
 #include "modules/BTManager.hpp"
 #include "modules/Camera.hpp"
 #include "modules/GameStateManager.hpp"
