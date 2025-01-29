@@ -2,7 +2,7 @@
 #include "../components/RigidBody.hpp"
 #include "../constants.hpp"
 #include "../ecs/Entity.hpp"
-#include "../modules/MapManager.hpp"
+#include "../map/MapManager.hpp"
 #include "System.hpp"
 #include <cmath>
 #include <set>
@@ -89,7 +89,7 @@ class PhysicsSystem final : public System {
 	bool wouldCollide(ECSManager &ecs, Entity entity, RigidBody &rigidBody)
 	{
 		const Vec2i tileSizedEndPos = Utils::toTileSize(rigidBody.endPosition);
-		const Tile endTile = mapManager_.getTile(tileSizedEndPos.x, tileSizedEndPos.y);
+		// const Tile endTile = mapManager_.getTile(tileSizedEndPos.x, tileSizedEndPos.y);
 
 		if (ecs.hasComponent<Collider>(entity)) {
 			// check if any collidable entity occupies the tile we are trying to move on
@@ -111,9 +111,13 @@ class PhysicsSystem final : public System {
 
 			// check map tiles separately, because they are not entities
 			// TODO: improve collision detection between player and map, as soon as map loading is sorted
-			// if (mapManager_.getWalkableMapView()[tileSizedEndPos.y][tileSizedEndPos.x])
-			if (!mapManager_.getTileData(endTile.objectId).walkable)
-				return true;
+			return mapManager_.getWalkableMapView()[tileSizedEndPos.y][tileSizedEndPos.x];
+			//if (endTile.objectId == 0) // id 0 implies no/empty tile. temporary fix.
+			//	return !mapManager_.getTileData(endTile.backgroundId).walkable;
+			//else
+			//	return !mapManager_.getTileData(endTile.objectId).walkable;
+
+			//std::cout << mapManager_.getTileData(endTile.objectId).walkable << "\n";
 		}
 
 		return false;

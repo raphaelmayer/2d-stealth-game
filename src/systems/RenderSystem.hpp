@@ -7,8 +7,8 @@
 #include "../ecs/ECSManager.hpp"
 #include "../ecs/Entity.hpp"
 #include "../engine/Engine.hpp"
+#include "../map/MapManagerTMX.hpp"
 #include "../modules/Camera.hpp"
-#include "../modules/MapManager.hpp"
 #include "System.hpp"
 #include <cmath>
 #include <functional>
@@ -109,11 +109,12 @@ class RenderSystem final : public System {
 		int endX = std::min(map.getWidth(), static_cast<int>((camPos.x + visibleArea.x) / TILE_SIZE) + 1);
 		int endY = std::min(map.getHeight(), static_cast<int>((camPos.y + visibleArea.y) / TILE_SIZE) + 1);
 
-		for (int y = startY; y < endY; y++) {
-			for (int x = startX; x < endX; x++) {
-				const std::vector<TileMetadata> fullTiledata = mapManager_.getTileData(x, y);
-				for (const TileMetadata &tiledata : fullTiledata) {
-					Vec2i srcPos = Vec2i{tiledata.spriteSheetX, tiledata.spriteSheetY} * TILE_SIZE;
+		for (size_t i = 0; i < static_cast<size_t>(LayerID::NUM_LAYERS); i++) {
+			for (int y = startY; y < endY; y++) {
+				for (int x = startX; x < endX; x++) {
+					int backgroundId = mapManager_.getLevelMap().getLayer(static_cast<LayerID>(i))[y][x];
+					// TODO: should read 9 from tileset width
+					Vec2i srcPos = Utils::to2d(backgroundId - 1, 9) * TILE_SIZE;
 					Recti src = {srcPos.x, srcPos.y, TILE_SIZE, TILE_SIZE};
 					Recti dst = {x * TILE_SIZE, y * TILE_SIZE, TILE_SIZE, TILE_SIZE};
 

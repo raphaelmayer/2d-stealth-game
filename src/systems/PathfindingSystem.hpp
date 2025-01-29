@@ -4,7 +4,7 @@
 #include "../components/RigidBody.hpp"
 #include "../constants.hpp"
 #include "../ecs/ECSManager.hpp"
-#include "../modules/MapManager.hpp"
+#include "../map/MapManager.hpp"
 #include "../modules/Utils.hpp"
 #include "System.hpp"
 #include <cmath>
@@ -43,7 +43,9 @@ class PathfindingSystem final : public System {
 
 			// If path does not point to target position, calculate a new one
 			if (ai.path.empty() || ai.targetPosition != ai.path[ai.path.size() - 1]) {
-				std::cout << "Recalculating path. pathIndex=" << ai.pathIndex << "\n";
+				std::cout << "Recalculating path. pathIndex=" << ai.pathIndex << ", pos x: " << position.x
+				          << ", pos y: " << position.y << ", tarpos x: " << position.x << ", tarpos y: " << position.y
+				          << "\n";
 				auto intpath =
 				    AStar::findPath(walkableView, Utils::toTileSize(position), Utils::toTileSize(ai.targetPosition));
 				ai.path = {};

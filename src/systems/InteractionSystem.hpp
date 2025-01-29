@@ -11,17 +11,14 @@
 #include "../constants.hpp"
 #include "../ecs/Entity.hpp"
 #include "../engine/Engine.hpp"
-#include "../modules/MenuStack.hpp"
+#include "../ui/MenuStack.hpp"
 #include "../ui/TextDialog.hpp"
 #include "System.hpp"
 #include <iostream>
 
 class InteractionSystem final : public System {
   public:
-	InteractionSystem(Engine &engine, MenuStack &menuStack)
-	    : engine_(engine), menuStack_(menuStack)
-	{
-	}
+	InteractionSystem(Engine &engine, MenuStack &menuStack) : engine_(engine), menuStack_(menuStack) {}
 
 	void update(ECSManager &ecs, const double deltaTime) override
 	{

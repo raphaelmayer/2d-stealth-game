@@ -22,12 +22,13 @@ class InputSystem final : public System {
 		Vec2i mouseWheelDelta = engine_.getMouseWheelDelta();
 		Vec2i mousePos = engine_.getMousePosition();
 
+		handleCamera(mouseWheelDelta, mousePos, keyStates);
+		Utils::print(Utils::toTileSize(screenToWorld(Utils::toFloat(engine_.getMousePosition()))));
+
 		for (const Entity &entity : entities) {
 			if (ecs.hasComponent<Controllable>(entity) && ecs.hasComponent<RigidBody>(entity)) {
 				auto &controllable = ecs.getComponent<Controllable>(entity);
 				auto &rigidBody = ecs.getComponent<RigidBody>(entity);
-
-				handleCamera(mouseWheelDelta, mousePos, keyStates);
 
 				handleShooting(ecs, entity, mouseKeyStates);
 

@@ -13,11 +13,10 @@
 #include "entities/player.hpp"
 #include "entities/projectile.hpp"
 #include "entities/sign.hpp"
+#include "map/MapManagerTMX.hpp"
 #include "modules/BTManager.hpp"
 #include "modules/Camera.hpp"
 #include "modules/GameStateManager.hpp"
-#include "modules/MapManager.hpp"
-#include "modules/MenuStack.hpp"
 #include "modules/SaveGameManager.hpp"
 #include "systems/AISystem.hpp"
 #include "systems/AudioSystem.hpp"
@@ -31,6 +30,7 @@
 #include "systems/RenderSystem.hpp"
 #include "ui/InGameMenu.hpp"
 #include "ui/MainMenu.hpp"
+#include "ui/MenuStack.hpp"
 #include <chrono>
 #include <functional>
 #include <iostream>
@@ -73,6 +73,7 @@ class Game : public Engine {
 			}
 
 			if (!addedEntities) {
+				instantiatePlayerEntity(ecs, {17, 17});
 				addTestEntities();
 				addedEntities = true;
 			}
@@ -82,7 +83,7 @@ class Game : public Engine {
 			pathfindingSystem->update(ecs, deltaTime);
 			physicsSystem->update(ecs, deltaTime);
 
-			camera.focus(ecs.getComponent<Positionable>(PLAYER).position);
+			//camera.focus(ecs.getComponent<Positionable>(PLAYER).position);
 
 			// must happen in between update of physicsystem and rendersystem, or will result in flickering
 			renderSystem->update(ecs, deltaTime);
@@ -92,8 +93,8 @@ class Game : public Engine {
 			menuStack.update();
 
 			interactionSystem->update(ecs, deltaTime);
-			audioSystem->update(ecs, deltaTime);
-			progressSystem->update(ecs, deltaTime);
+			//audioSystem->update(ecs, deltaTime);
+			//progressSystem->update(ecs, deltaTime);
 			debugSystem->update(ecs, deltaTime);
 			projectileSystem->update(ecs, deltaTime);
 
@@ -136,17 +137,19 @@ class Game : public Engine {
 
 	void addTestEntities()
 	{
-		createTestEntity({15, 6}, {{Vec2i{15, 6} * TILE_SIZE, Rotation::SOUTH, 2},
-		                           {Vec2i{19, 5} * TILE_SIZE, Rotation::NORTH, 2},
-		                           {Vec2i{24, 7} * TILE_SIZE, Rotation::EAST, 2}});
 		createTestEntity(
-		    {21, 7}, {{Vec2i{21, 7} * TILE_SIZE, Rotation::SOUTH, 2}, {Vec2i{21, 8} * TILE_SIZE, Rotation::NORTH, 2}});
+		    {15, 6}, {{Vec2i{10, 3} * TILE_SIZE, Rotation::SOUTH, 2}, {Vec2i{2, 3} * TILE_SIZE, Rotation::SOUTH, 6}});
+		createTestEntity({2, 2}, {{Vec2i{9, 3} * TILE_SIZE, Rotation::SOUTH, 2},
+		                           {Vec2i{6, 2} * TILE_SIZE, Rotation::SOUTH, 6},
+		                           {Vec2i{5, 3} * TILE_SIZE, Rotation::SOUTH, 6}});
 		createTestEntity(
-		    {14, 7}, {{Vec2i{14, 7} * TILE_SIZE, Rotation::EAST, 5}, {Vec2i{20, 7} * TILE_SIZE, Rotation::WEST, 5}});
-		createTestEntity({16, 6}, {{Vec2i{16, 6} * TILE_SIZE, Rotation::SOUTH, 0},
-		                           {Vec2i{19, 6} * TILE_SIZE, Rotation::NORTH, 0},
-		                           {Vec2i{19, 7} * TILE_SIZE, Rotation::EAST, 0},
-		                           {Vec2i{16, 7} * TILE_SIZE, Rotation::WEST, 0}});
+		    {16, 7}, {{Vec2i{11, 5} * TILE_SIZE, Rotation::SOUTH, 5}, {Vec2i{11, 14} * TILE_SIZE, Rotation::NORTH, 5}});
+		createTestEntity(
+		    {14, 7}, {{Vec2i{13, 11} * TILE_SIZE, Rotation::SOUTH, 60}});
+		createTestEntity({16, 6}, {{Vec2i{0, 6} * TILE_SIZE, Rotation::SOUTH, 0},
+		                           {Vec2i{9, 6} * TILE_SIZE, Rotation::NORTH, 0},
+		                           {Vec2i{9, 13} * TILE_SIZE, Rotation::EAST, 0},
+		                           {Vec2i{0, 13} * TILE_SIZE, Rotation::WEST, 0}});
 	}
 
 	ECSManager ecs;
