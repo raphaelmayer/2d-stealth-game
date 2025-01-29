@@ -95,7 +95,6 @@ cmake --open xbuild
 - all tests for my code
 
 #### Joshua Meyer
-- /assets (designing map, initial game state, etc.)
 - AudioSystem.hpp
 - InteractionSystem.hpp
 - ProgressSystem.hpp
@@ -106,9 +105,14 @@ cmake --open xbuild
 	- Change `ECSManager` to `ECS` to switch to new version.
 	- Remove old files.
 - Pathfinding & Movement:
-	- If `targetPosition` is blocked or unreachable we try to recalculate a path every iteration. We need to check, if `targetPosition` is reachable. If not, we could use a couple of strategies like finding the nearest reachable tile, resetting, etc.
+	- If `targetPosition` is blocked or unreachable we try to recalculate a path every iteration. 
+	  This leads to entities getting stuck and potentially dead lock each other, if they want to move onto each others position for example.
+	  We need to check, if `targetPosition` is reachable. If not, we could use a couple of strategies like finding the nearest reachable tile, resetting, etc.
 - switch from TXT to TMX map files
 - need to adjust camera scrolling speed based on zoom level
+- switch to 8 directions
+- switch to RTS-style controller (mouse movement)
+- Design and implement some sort of weapon system (Loadout etc)
 
 ### Features 
 - Implement dedicated sound engine wrapping sdl as part of our engine.
@@ -117,6 +121,7 @@ cmake --open xbuild
 - Sprint feature
 - Stances? Crouch, Prone
 - design and implement a dedicated `AnimationSystem`
+- switch to bounding box collision?
 
 ### Low priority
 - handle window resizing

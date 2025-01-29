@@ -4,7 +4,7 @@
 #include "../ecs/ECSManager.hpp"
 #include "../engine/Engine.hpp"
 #include "../engine/types/Vec2i.hpp"
-#include "../modules/MenuStack.hpp"
+#include "../ui/MenuStack.hpp"
 #include <string>
 
 class StatsMenu final : public UIElement {

@@ -1,12 +1,12 @@
 #pragma once
 
 #include "../constants.hpp"
-#include "../modules/GameStateManager.hpp"
-#include "../modules/MenuStack.hpp"
-#include "../modules/SaveGameManager.hpp"
 #include "../ecs/ECSManager.hpp"
 #include "../engine/Engine.hpp"
 #include "../engine/types/Vec2i.hpp"
+#include "../modules/GameStateManager.hpp"
+#include "../modules/SaveGameManager.hpp"
+#include "../ui/MenuStack.hpp"
 #include "ListDialog.hpp"
 #include "TextDialog.hpp"
 #include "UIElement.hpp"
@@ -16,14 +16,15 @@
 class ConfirmationMenu final : public UIElement {
   public:
 	ConfirmationMenu(Engine &game, MenuStack &menuStack, std::string text, std::function<void()> action)
-	    : UIElement(game), game_(game), menuStack_(menuStack), textBox(game, menuStack, text), listMenu(game,
-	                                                                    {{"YES",
-	                                                                      [&menuStack, action]() {
-		                                                                      auto deadMenu = menuStack.pop();
-		                                                                      action();
-	                                                                      }},
-	                                                                     {"NO", [&menuStack]() { menuStack.pop(); }}},
-	                                                                    Vec2i{x, y}, menuWidth_)
+	    : UIElement(game), game_(game), menuStack_(menuStack), textBox(game, menuStack, text),
+	      listMenu(game,
+	               {{"YES",
+	                 [&menuStack, action]() {
+		                 auto deadMenu = menuStack.pop();
+		                 action();
+	                 }},
+	                {"NO", [&menuStack]() { menuStack.pop(); }}},
+	               Vec2i{x, y}, menuWidth_)
 
 	{
 	}

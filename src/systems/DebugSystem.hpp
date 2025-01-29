@@ -8,8 +8,8 @@
 #include "../ecs/Entity.hpp"
 #include "../engine/Engine.hpp"
 #include "../engine/types/Vec2f.hpp"
+#include "../map/MapManager.hpp"
 #include "../modules/Camera.hpp"
-#include "../modules/MapManager.hpp"
 #include "System.hpp"
 
 class DebugSystem : public System {

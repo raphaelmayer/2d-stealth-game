@@ -72,6 +72,14 @@ Vec2f discreteDirection4_signBased(const Vec2f &vec)
 	}
 }
 
+Vec2i to2d(int n, int width)
+{
+	return Vec2i{n % width, n / width};
+}
+
+int to1d(const Vec2i& vec, int width) {
+	return vec.y * width + vec.x;
+}
 
 void print(const Vec2f &vec)
 {

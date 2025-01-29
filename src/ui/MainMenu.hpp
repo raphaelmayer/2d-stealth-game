@@ -6,19 +6,18 @@
 #include "../engine/types/Texture.hpp"
 #include "../engine/types/Vec2i.hpp"
 #include "../modules/GameStateManager.hpp"
-#include "../modules/MenuStack.hpp"
 #include "../modules/SaveGameManager.hpp"
+#include "../ui/MenuStack.hpp"
 #include "ListDialog.hpp"
 
 class MainMenu final : public ListDialog {
   public:
 	MainMenu(Engine &game, GameStateManager &gameStateManager, SaveGameManager &saveGameManager, MenuStack &menuStack)
-	    : background(game.loadTexture(MAINMENU_BACKGROUND)),
-	      engine(game),
+	    : background(game.loadTexture(MAINMENU_BACKGROUND)), engine(game),
 	      ListDialog(game,
 	                 {{"NEW GAME",
 	                   [&gameStateManager, &saveGameManager, &menuStack]() {
-		                   saveGameManager.load(WORLD_DEFINITION_PATH);
+		                   //saveGameManager.load(WORLD_DEFINITION_PATH);
 		                   gameStateManager.setGameState(GameState::PLAYING);
 		                   menuStack.pop();
 	                   }},

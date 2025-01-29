@@ -1,19 +1,22 @@
 #pragma once
 
-#include "KeyState.hpp"
 #include "../types/Vec2i.hpp"
+#include "KeyState.hpp"
 #include <SDL.h>
 #include <array>
+
+#define NUM_MOUSE_BUTTONS 5
 
 class Mouse {
   public:
 	Mouse() {}
 
 	// Returns the state of a specific mouse button.
-	const KeyState &getButtonState(const Uint8 button) const
-	{
-		return buttonStates_[button - 1]; // SDL mouse buttons are 1-based (1 = Left, 2 = Middle, etc.)
-	}
+	// Mouse buttons are 0-based (0 = Left, 1 = Middle, etc.)
+	const KeyState &getButtonState(const Uint8 button) const { return buttonStates_[button]; }
+	// Returns the current state of all buttons.
+	// Mouse buttons are 0-based (0 = Left, 1 = Middle, etc.)
+	const std::array<KeyState, NUM_MOUSE_BUTTONS> &getButtonStates() const { return buttonStates_; }
 
 	// Returns the current mouse position.
 	const Vec2i &getPosition() const { return position_; }
@@ -22,17 +25,22 @@ class Mouse {
 	const Vec2i &getWheelDelta() const { return wheelDelta_; }
 
 	// Updates the mouse state based on the SDL event.
+	// SDL mouse buttons are 1-based (1 = Left, 2 = Middle, etc.)
 	void update(const SDL_Event &event)
 	{
+		int buttonIndex;
 		switch (event.type) {
 		case SDL_MOUSEBUTTONDOWN:
-			buttonStates_[event.button.button - 1].pressed = true;
-			buttonStates_[event.button.button - 1].held = true;
+			buttonIndex = static_cast<int>(event.button.button - 1);
+			buttonStates_[buttonIndex].pressed = true;
+			buttonStates_[buttonIndex].held = true;
+			std::cout << "MouseBtn <" << static_cast<int>(event.button.button) << ">\n";
 			break;
 
 		case SDL_MOUSEBUTTONUP:
-			buttonStates_[event.button.button - 1].held = false;
-			buttonStates_[event.button.button - 1].released = true;
+			buttonIndex = static_cast<int>(event.button.button - 1);
+			buttonStates_[buttonIndex].held = false;
+			buttonStates_[buttonIndex].released = true;
 			break;
 
 		case SDL_MOUSEMOTION:
@@ -61,7 +69,7 @@ class Mouse {
 	}
 
   private:
-	std::array<KeyState, 5> buttonStates_{}; // Supports up to 5 mouse buttons.
-	Vec2i position_{0, 0};                   // Current mouse position.
-	Vec2i wheelDelta_{0, 0};                 // Mouse wheel delta since last frame.
+	std::array<KeyState, NUM_MOUSE_BUTTONS> buttonStates_{}; // Supports up to NUM_MOUSE_BUTTONS mouse buttons.
+	Vec2i position_{0, 0};                                   // Current mouse position.
+	Vec2i wheelDelta_{0, 0};                                 // Mouse wheel delta since last frame.
 };

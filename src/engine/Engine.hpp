@@ -70,7 +70,11 @@ class Engine {
 	const std::array<KeyState, SDL_NUM_SCANCODES> &getKeyStates() const { return keyboard_.getKeyStates(); }
 	// Get the state of a specific key
 	const KeyState getKeyState(const SDL_Scancode key) const { return keyboard_.getKeyState(key); }
+	// Returns the current state of all buttons.
+	// SDL mouse buttons are 1-based (1 = Left, 2 = Middle, etc.)
+	const std::array<KeyState, NUM_MOUSE_BUTTONS> &getMouseButtonStates() const { return mouse_.getButtonStates(); }
 	// Returns the state of a specific mouse button.
+	// SDL mouse buttons are 1-based (1 = Left, 2 = Middle, etc.)
 	const KeyState &getMouseButtonState(const Uint8 button) const { return mouse_.getButtonState(button); }
 	// Returns the current mouse position.
 	const Vec2i &getMousePosition() const { return mouse_.getPosition(); }

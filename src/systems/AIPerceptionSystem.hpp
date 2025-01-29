@@ -6,9 +6,9 @@
 #include "../components/Vision.hpp"
 #include "../ecs/ECSManager.hpp"
 #include "../engine/types/Vec2i.hpp"
+#include "../map/MapManager.hpp"
+#include "../map/TileRegistry.hpp" // TileMetadata struct
 #include "../modules/DDA.hpp"
-#include "../modules/MapManager.hpp"
-#include "../modules/TileRegistry.hpp" // TileMetadata struct
 #include "../modules/Utils.hpp"
 #include "../systems/System.hpp"
 #include <cmath>

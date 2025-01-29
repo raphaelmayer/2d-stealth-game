@@ -6,8 +6,8 @@
 #include "../components/Vision.hpp"
 #include "../ecs/ECSManager.hpp"
 #include "../engine/types/Vec2f.hpp"
+#include "../map/MapManager.hpp"
 #include "../modules/BTManager.hpp"
-#include "../modules/MapManager.hpp"
 #include "../systems/AIPerceptionSystem.hpp"
 #include "../systems/System.hpp"
 #include <cmath>
