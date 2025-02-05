@@ -120,7 +120,7 @@ class InputSystem final : public System {
 			Vec2f mouseWorldPos = screenToWorld(mouseScreenPos);
 			float velocity = 300.f; // should be read from gun or something
 
-			spawnProjectile(ecs, start, mouseWorldPos, velocity);
+			spawnProjectile(ecs, start, mouseWorldPos, velocity, entity);
 		}
 	}
 

@@ -47,16 +47,25 @@ class ProjectileSystem final : public System {
   private:
 	bool wouldCollide(ECSManager &ecs, const Entity entity, const Vec2f &position)
 	{
+		Entity shooter = ecs.getComponent<Projectile>(entity).shooter;
 		// check collision with entities
 		for (const auto &otherEntity : ecs.getEntities()) {
 			if (entity == otherEntity) {
 				continue;
 			}
 
+			if (otherEntity == shooter) {
+				continue;
+			}
+
 			if (ecs.hasComponent<Collider>(otherEntity)) {
 				Vec2f otherPosition = ecs.getComponent<Positionable>(otherEntity).position;
-				// Currently we naively check positions directly, without regarding size / bounding box.
-				if ((position - otherPosition).length() < 0.1f) {
+
+				// TODO: read entity size from component
+				const Rectf projectileBoundingBox{position.x, position.y, 3, 3};
+				const Rectf otherBoundingBox{otherPosition.x, otherPosition.y, TILE_SIZE, TILE_SIZE};
+
+				if (aabb_checkCollision(projectileBoundingBox, otherBoundingBox)) {
 					return true;
 				}
 			}
@@ -66,6 +75,20 @@ class ProjectileSystem final : public System {
 		// TODO
 
 		return false;
+	}
+
+	bool aabb_checkCollision(const Rectf &a, const Rectf &b) const
+	{
+		// If one rectangle is to the left of the other
+		if (a.x + a.w < b.x || b.x + b.w < a.x)
+			return false;
+
+		// If one rectangle is above the other
+		if (a.y + a.h < b.y || b.y + b.h < a.y)
+			return false;
+
+		// Otherwise, there is a collision
+		return true;
 	}
 
 	std::vector<Entity> toRemove;
