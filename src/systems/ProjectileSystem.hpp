@@ -16,21 +16,24 @@ class ProjectileSystem final : public System {
 		for (const Entity &entity : entities) {
 			if (ecs.hasComponent<Projectile>(entity) && ecs.hasComponent<Positionable>(entity)) {
 				Vec2f &position = ecs.getComponent<Positionable>(entity).position;
-				Projectile &projectile = ecs.getComponent<Projectile>(entity);
-				Vec2f targetPosition = projectile.targetPosition;
-				float velocity = projectile.velocity;
-				Vec2f toTarget = targetPosition - position;
+				const Projectile &projectile = ecs.getComponent<Projectile>(entity);
+				const Vec2f startPosition = projectile.startPosition;
+				const Vec2f targetPosition = projectile.targetPosition;
+				const float velocity = projectile.velocity;
 
-				Vec2f startToTarget = targetPosition - projectile.startPosition;
-				Vec2f startToPosition = position - projectile.startPosition;
+				const Vec2f toTarget = targetPosition - position;
+				const float moveDistance = std::min(toTarget.length(), velocity * static_cast<float>(deltaTime));
+				const Vec2f newPosition = position + (toTarget.norm() * moveDistance);
 
-				// A projectile could have either a target position or an exit angle
+				if (wouldCollide(ecs, entity, newPosition)) {
+					std::cout << "Collision\n";
+				}
 
-				if (toTarget.length() < 0.01 || (startToTarget.length() - startToPosition.length()) < 0.0f) {
+				if (toTarget.length() < 0.01) {
 					position = targetPosition;
 					toRemove.push_back(entity);
 				} else {
-					position += (toTarget.norm() * velocity * deltaTime);
+					position = newPosition;
 				}
 			}
 		}
@@ -42,5 +45,28 @@ class ProjectileSystem final : public System {
 	}
 
   private:
+	bool wouldCollide(ECSManager &ecs, const Entity entity, const Vec2f &position)
+	{
+		// check collision with entities
+		for (const auto &otherEntity : ecs.getEntities()) {
+			if (entity == otherEntity) {
+				continue;
+			}
+
+			if (ecs.hasComponent<Collider>(otherEntity)) {
+				Vec2f otherPosition = ecs.getComponent<Positionable>(otherEntity).position;
+				// Currently we naively check positions directly, without regarding size / bounding box.
+				if ((position - otherPosition).length() < 0.1f) {
+					return true;
+				}
+			}
+		}
+
+		// check collision with map
+		// TODO
+
+		return false;
+	}
+
 	std::vector<Entity> toRemove;
 };
