@@ -1,7 +1,9 @@
 #pragma once
 
+using WeaponID = int;
+
 struct WeaponMetadata {
-	int id;
+	WeaponID id;
 	std::string name;
 	std::string description;
 

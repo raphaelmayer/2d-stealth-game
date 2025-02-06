@@ -6,10 +6,27 @@
 #include <unordered_map>
 #include <utility>
 
-// A generic database that loads data from a CSV file into an unordered_map.
+/**
+ * @brief Loads CSV data into an unordered_map.
+ *
+ * CSVDatabase uses CSVParser to load a CSV file. For each row (after skipping the header),
+ * it splits the line into tokens (columns) and calls a user-supplied parsing function.
+ * The parsing function must accept a std::vector<std::string> (the tokens) and return a
+ * std::pair<KeyType, ElementType>.
+ *
+ * @tparam KeyType      Type used as the key in the map.
+ * @tparam ElementType  Type stored as the value.
+ */
 template <typename KeyType, typename ElementType>
 class CSVDatabase {
   public:
+	/**
+	 * @brief Constructs the database by loading a CSV file.
+	 *
+	 * @param filePath   Path to the CSV file.
+	 * @param parseFunc  A callable with signature:
+	 *                   std::pair<KeyType, ElementType>(const std::vector<std::string>&)
+	 */
 	template <typename RowParserType>
 	CSVDatabase(const std::string &filePath, RowParserType &&parseFunc)
 	{
