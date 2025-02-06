@@ -9,5 +9,7 @@ struct Projectile {
 	Vec2f startPosition;
 	Vec2f targetPosition;
 	float velocity;
-	Entity shooter;
+	
+	Entity shooter;			// entity id of the entity that shot the weapon
+	// WeaponID launcher;	// weapon id of the weapon that was shot
 };

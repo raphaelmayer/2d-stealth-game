@@ -1,14 +1,15 @@
-#include "Game.hpp"
+// #include "Game.hpp"
 #include "constants.hpp"
-// #include "map/MapManagerTMX.hpp"
+#include "modules/CSVParser.hpp"
+#include "weapons/WeaponDatabase.hpp"
+#include "weapons/WeaponMetadata.hpp"
 
 int main()
 {
-	/*MapManager mm;
-
-	mm.loadMap(1);*/
-
-	Game game = Game("Ants and Islands", {WINDOW_WIDTH, WINDOW_HEIGHT}, {PIXEL_SIZE, PIXEL_SIZE}, FPS);
-	game.start();
+	WeaponDatabase wdb("../assets/weapon_data.csv");
 	return 0;
+
+	// Game game = Game("Ants and Islands", {WINDOW_WIDTH, WINDOW_HEIGHT}, {PIXEL_SIZE, PIXEL_SIZE}, FPS);
+	// game.start();
+	// return 0;
 }

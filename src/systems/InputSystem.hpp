@@ -119,8 +119,10 @@ class InputSystem final : public System {
 			Vec2f mouseScreenPos = Utils::toFloat(engine_.getMousePosition());
 			Vec2f mouseWorldPos = screenToWorld(mouseScreenPos);
 			float velocity = 300.f; // should be read from gun or something
+			//WeaponID weaponId = ecs.getComponent<Loadout>(entity).mainhand;
 
 			spawnProjectile(ecs, start, mouseWorldPos, velocity, entity);
+			//spawnProjectile(ecs, start, mouseWorldPos, entity, weaponId);
 		}
 	}
 

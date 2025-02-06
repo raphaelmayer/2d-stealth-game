@@ -113,6 +113,7 @@ cmake --open xbuild
 - switch to 8 directions
 - switch to RTS-style controller (mouse movement)
 - Design and implement some sort of weapon system (Loadout etc)
+  - item categories: weapon | armor | projectile ?
 
 ### Features 
 - Implement dedicated sound engine wrapping sdl as part of our engine.
