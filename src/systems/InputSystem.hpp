@@ -30,7 +30,7 @@ class InputSystem final : public System {
 				auto &controllable = ecs.getComponent<Controllable>(entity);
 				auto &rigidBody = ecs.getComponent<RigidBody>(entity);
 
-				handleShooting(ecs, entity, mouseKeyStates);
+				handleShooting(ecs, entity, mouseKeyStates, deltaTime);
 
 				// only allow input if player is not currently moving
 				if (!rigidBody.isMoving) {
@@ -109,19 +109,59 @@ class InputSystem final : public System {
 			camera_.move(CamDirection::DOWN);
 	}
 
-	void handleShooting(ECSManager &ecs, const Entity &entity, const std::array<KeyState, NUM_MOUSE_BUTTONS> &keyStates)
+	void handleShooting(ECSManager &ecs, const Entity &entity, const std::array<KeyState, NUM_MOUSE_BUTTONS> &keyStates,
+	                    const double deltaTime)
 	{
-		// This shooting mechanism should not be in InputSystem. What if we want to handle different weapons or
-		// different actions depending on if an entity is an enemy or friendly.
+		EquippedWeapon &ew = ecs.getComponent<EquippedWeapon>(entity);
+		WeaponMetadata wdata = WeaponDatabase::getInstance().get(ew.weaponId);
+
+		if (ew.firerateAccumulator > wdata.firerate) {
+			ew.firerateAccumulator = 0.f;
+		}
+
+		if (ew.firerateAccumulator > 0.f) {
+			ew.firerateAccumulator += static_cast<float>(deltaTime);
+		}
+
+		if (ew.reloadTimeAccumulator >= wdata.reloadTime) {
+			ew.magazineSize = wdata.magazineSize;
+			ew.reloadTimeAccumulator = 0.f;
+		}
+
+		if (ew.reloadTimeAccumulator > 0.f) {
+			ew.reloadTimeAccumulator += static_cast<float>(deltaTime);
+			return;
+		}
+
 		constexpr int RIGHT_MOUSE_BUTTON = 2;
+		if (keyStates[RIGHT_MOUSE_BUTTON].released == true) {
+			ew.warmupAccumulator = 0.f;
+		}
+
 		if (keyStates[RIGHT_MOUSE_BUTTON].held == true) {
+
+			if (ew.magazineSize == 0) {
+				ew.reloadTimeAccumulator += static_cast<float>(deltaTime);
+				return;
+			}
+
+			if (ew.firerateAccumulator != 0.f) {
+				return;
+			}
+
+			if (ew.warmupAccumulator < wdata.warmup) {
+				ew.warmupAccumulator += static_cast<float>(deltaTime);
+				return;
+			}
+
+			// shoot
+			ew.firerateAccumulator += static_cast<float>(deltaTime);
+			--ew.magazineSize;
+
 			Vec2f start = ecs.getComponent<Positionable>(entity).position;
 			Vec2f mouseScreenPos = Utils::toFloat(engine_.getMousePosition());
 			Vec2f mouseWorldPos = screenToWorld(mouseScreenPos);
-			float velocity = 300.f; // should be read from gun or something
-			//WeaponID weaponId = ecs.getComponent<Loadout>(entity).mainhand;
-			WeaponID weaponId = 1; // assault rifle
-			spawnProjectile(ecs, start, mouseWorldPos, entity, weaponId);
+			spawnProjectile(ecs, start, mouseWorldPos, entity, ew.weaponId);
 		}
 	}
 

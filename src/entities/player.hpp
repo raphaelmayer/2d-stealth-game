@@ -3,6 +3,7 @@
 #include "../components/Animatable.hpp"
 #include "../components/Collider.hpp"
 #include "../components/Controllable.hpp"
+#include "../components/EquippedWeapon.hpp"
 #include "../components/Interactable.hpp"
 #include "../components/Inventory.hpp"
 #include "../components/Positionable.hpp"
@@ -30,6 +31,7 @@ Entity instantiatePlayerEntity(ECSManager &ecs, Vec2i positionInTiles, Rotation 
 	ecs.addComponent(player, Collider{});
 	ecs.addComponent(player, Controllable{});
 	ecs.addComponent(player, Inventory{});
+	ecs.addComponent(player, EquippedWeapon{2,5}); // assault rifle with full mag
 
 	return player;
 }

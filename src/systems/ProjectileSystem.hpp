@@ -2,12 +2,13 @@
 #include "../components/Projectile.hpp"
 #include "../ecs/ECSManager.hpp"
 #include "../ecs/Entity.hpp"
+#include "../map/MapManager.hpp"
 #include "System.hpp"
 #include <set>
 
 class ProjectileSystem final : public System {
   public:
-	ProjectileSystem() {}
+	ProjectileSystem(const MapManager &mapmanager) : mapmanager_(mapmanager) {}
 
 	void update(ECSManager &ecs, const double deltaTime) override
 	{
@@ -26,7 +27,8 @@ class ProjectileSystem final : public System {
 				const Vec2f newPosition = position + (toTarget.norm() * moveDistance);
 
 				if (wouldCollide(ecs, entity, newPosition)) {
-					std::cout << "Collision\n";
+					// TODO: apply damage or register hit and let another system handle damage
+					toRemove.push_back(entity);
 				}
 
 				if (toTarget.length() < 0.01) {
@@ -45,10 +47,48 @@ class ProjectileSystem final : public System {
 	}
 
   private:
+	const MapManager &mapmanager_;
+
 	bool wouldCollide(ECSManager &ecs, const Entity entity, const Vec2f &position)
 	{
+		if (checkCollisionsWithMap(ecs, entity, position)) {
+			return true;
+		}
+
+		if (checkCollisionsWithEntities(ecs, entity, position)) {
+			return true;
+		}
+
+		return false;
+	}
+
+	bool aabb_checkCollision(const Rectf &a, const Rectf &b) const
+	{
+		// If one rectangle is to the left of the other
+		if (a.x + a.w < b.x || b.x + b.w < a.x)
+			return false;
+
+		// If one rectangle is above the other
+		if (a.y + a.h < b.y || b.y + b.h < a.y)
+			return false;
+
+		// Otherwise, there is a collision
+		return true;
+	}
+
+	bool checkCollisionsWithMap(ECSManager &ecs, const Entity entity, const Vec2f &position)
+	{
+		// TODO: check collision with map
+		// We need to implement a penetrable property for tiles.
+		// Since we change our tileset soon, we'll defer until this is done.
+
+		return false;
+	}
+
+	bool checkCollisionsWithEntities(ECSManager &ecs, const Entity entity, const Vec2f &position)
+	{
 		Entity shooter = ecs.getComponent<Projectile>(entity).shooter;
-		// check collision with entities
+
 		for (const auto &otherEntity : ecs.getEntities()) {
 			if (entity == otherEntity) {
 				continue;
@@ -71,24 +111,7 @@ class ProjectileSystem final : public System {
 			}
 		}
 
-		// check collision with map
-		// TODO
-
 		return false;
-	}
-
-	bool aabb_checkCollision(const Rectf &a, const Rectf &b) const
-	{
-		// If one rectangle is to the left of the other
-		if (a.x + a.w < b.x || b.x + b.w < a.x)
-			return false;
-
-		// If one rectangle is above the other
-		if (a.y + a.h < b.y || b.y + b.h < a.y)
-			return false;
-
-		// Otherwise, there is a collision
-		return true;
 	}
 
 	std::vector<Entity> toRemove;
