@@ -192,6 +192,6 @@ class ProgressSystem final : public System {
 		inventory.items.erase(newEnd, inventory.items.end());
 
 		// add audio component for item remove sound
-		ecs.addComponent(PLAYER, Audio{SFX_REMOVE_ITEM});
+		ecs.addComponent(PLAYER, SoundEmitter{SFX_REMOVE_ITEM});
 	}
 };

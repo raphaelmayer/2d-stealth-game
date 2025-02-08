@@ -1,4 +1,4 @@
-#include "../components/Audio.hpp"
+#include "../components/SoundEmitter.hpp"
 #include "../ecs/Entity.hpp"
 #include "System.hpp"
 #include <SDL.h>
@@ -12,9 +12,9 @@ class AudioSystem final : public System {
 		// Play SFX
 		const std::set<Entity> &entities = ecs.getEntities();
 		for (const Entity &entity : entities) {
-			if (ecs.hasComponent<Audio>(entity)) {
-				playSFX(ecs.getComponent<Audio>(entity).file.c_str());
-				ecs.removeComponent<Audio>(entity);
+			if (ecs.hasComponent<SoundEmitter>(entity)) {
+				playSFX(ecs.getComponent<SoundEmitter>(entity).file.c_str());
+				ecs.removeComponent<SoundEmitter>(entity);
 			}
 		}
 		// Change background music depending on the players position

@@ -18,7 +18,7 @@ enum Rotation{NORTH, EAST, SOUTH, WEST };
 #define LEVEL_2_WEST_BORDER 43
 
 #define COMPONENT_TYPES \
-	Animatable, Audio, Collectable, Collider, Consumable, Controllable, Interactable, Inventory, Positionable, \
+	Animatable, SoundEmitter, Collectable, Collider, Consumable, Controllable, Interactable, Inventory, Positionable, \
 	    Renderable, RigidBody, Rotatable, Stats, Tombstone
 
 #define SAVEFILE_PATH "savefile.json"
@@ -37,6 +37,8 @@ enum Rotation{NORTH, EAST, SOUTH, WEST };
 #define ANIMATION_UPDATE_RATE_IN_SECONDS 0.075 //(WALK_SPEED)
 #define PLAYER_STANDING_ANIMATION_NUMBER 1
 #define PLAYER_NUMBER_ANIMATIONS 4
+
+
 
 // Asset File Addresses
 // Graphics

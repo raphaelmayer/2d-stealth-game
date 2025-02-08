@@ -1,7 +1,7 @@
 #pragma once
 
 #include "../components/Animatable.hpp"
-#include "../components/Audio.hpp"
+#include "../components/SoundEmitter.hpp"
 #include "../components/Collectable.hpp"
 #include "../components/Collider.hpp"
 #include "../components/Consumable.hpp"

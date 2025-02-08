@@ -11,7 +11,7 @@ Engine::Engine(const std::string title, const Vec2i screenSize, const Vec2i pixe
 	if (TTF_Init() != 0)
 		fprintf(stderr, "SDL_ttf initialization failed: %s\n", TTF_GetError());
 	// Mix_Init(); // automatically called when opening a music file
-	if (Mix_OpenAudio(22050, MIX_DEFAULT_FORMAT, 2, 4096) < 0)
+	if (Mix_OpenAudio(44100, MIX_DEFAULT_FORMAT, 2, 4096) < 0)
 		fprintf(stderr, "Audio initialization failed: %s\n", Mix_GetError());
 
 	font_ = std::unique_ptr<TTF_Font, SDL_Deleter>(TTF_OpenFontDPI(FONT_ARIAL, 8, 100, 200));

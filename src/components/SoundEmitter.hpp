@@ -2,7 +2,7 @@
 
 #include <string>
 
-struct Audio {
+struct SoundEmitter {
 	std::string file; 
 
 	template <class Archive>
