@@ -14,7 +14,7 @@ class MapManager {
 	void loadMap(const int levelId)
 	{
 		levelMap = mapLoader.loadMap(levelId);
-		printMap(levelMap);
+		// printMap(levelMap);
 
 		// create views
 		walkableView = createWalkableMapView(levelMap);

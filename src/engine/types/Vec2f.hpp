@@ -104,11 +104,13 @@ struct Vec2f {
 	Vec2f norm() const
 	{
 		float magnitude = std::sqrt(x * x + y * y);
-		assert(magnitude != 0.0f);
+		if (magnitude == 0.0f) {
+			return {0.0f, 0.0f}; // Avoid division by zero
+		}
 		return {x / magnitude, y / magnitude};
 	}
 
-	float length() { return std::sqrt(x * x + y * y); }
+	float length() const { return std::sqrt(x * x + y * y); }
 
 	template <class Archive>
 	void serialize(Archive &archive)

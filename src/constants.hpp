@@ -21,9 +21,6 @@ enum Rotation{NORTH, EAST, SOUTH, WEST };
 	Animatable, SoundEmitter, Collectable, Collider, Consumable, Controllable, Interactable, Inventory, Positionable, \
 	    Renderable, RigidBody, Rotatable, Stats, Tombstone
 
-#define SAVEFILE_PATH "savefile.json"
-#define WORLD_DEFINITION_PATH "../assets/default_game.json"
-
 // SpriteSheet addresses
 #define PLAYER_SPRITE_SHEET_Y_WHITE 720
 #define PLAYER_SPRITE_SHEET_Y_BLUE 808
@@ -41,6 +38,10 @@ enum Rotation{NORTH, EAST, SOUTH, WEST };
 
 
 // Asset File Addresses
+// Data
+#define SAVEFILE_PATH "savefile.json"
+#define WORLD_DEFINITION_PATH "../assets/default_game.json"
+#define WEAPONDATA_PATH "../assets/weapon_data.csv"
 // Graphics
 #define SPRITE_SHEET "../assets/overworld_spritesheet.png"
 #define MAP_CHAR_MAPPING "../assets/overworld_char_mapping.csv"

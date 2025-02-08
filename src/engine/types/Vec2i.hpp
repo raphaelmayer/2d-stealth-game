@@ -101,7 +101,7 @@ struct Vec2i {
 	// Sign function
 	Vec2i sign() const { return {(x > 0) - (x < 0), (y > 0) - (y < 0)}; }
 
-	float length() { return std::sqrt(x * x + y * y); }
+	float length() const { return std::sqrt(x * x + y * y); }
 
 	template <class Archive>
 	void serialize(Archive &archive)

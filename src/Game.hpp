@@ -123,7 +123,7 @@ class Game : public Engine {
 		audioSystem = std::make_unique<AudioSystem>(PLAYER);
 		debugSystem = std::make_unique<DebugSystem>(*this, mapManager, camera);
 		pathfindingSystem = std::make_unique<PathfindingSystem>(mapManager);
-		projectileSystem = std::make_unique<ProjectileSystem>();
+		projectileSystem = std::make_unique<ProjectileSystem>(mapManager);
 	}
 
 	void createTestEntity(const Vec2i &position, const std::vector<PatrolPoint> &waypoints)

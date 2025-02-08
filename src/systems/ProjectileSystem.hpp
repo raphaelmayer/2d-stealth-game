@@ -2,12 +2,13 @@
 #include "../components/Projectile.hpp"
 #include "../ecs/ECSManager.hpp"
 #include "../ecs/Entity.hpp"
+#include "../map/MapManager.hpp"
 #include "System.hpp"
 #include <set>
 
 class ProjectileSystem final : public System {
   public:
-	ProjectileSystem() {}
+	ProjectileSystem(const MapManager &mapmanager) : mapmanager_(mapmanager) {}
 
 	void update(ECSManager &ecs, const double deltaTime) override
 	{
@@ -16,21 +17,25 @@ class ProjectileSystem final : public System {
 		for (const Entity &entity : entities) {
 			if (ecs.hasComponent<Projectile>(entity) && ecs.hasComponent<Positionable>(entity)) {
 				Vec2f &position = ecs.getComponent<Positionable>(entity).position;
-				Projectile &projectile = ecs.getComponent<Projectile>(entity);
-				Vec2f targetPosition = projectile.targetPosition;
-				float velocity = projectile.velocity;
-				Vec2f toTarget = targetPosition - position;
+				const Projectile &projectile = ecs.getComponent<Projectile>(entity);
+				const Vec2f startPosition = projectile.startPosition;
+				const Vec2f targetPosition = projectile.targetPosition;
+				const float velocity = projectile.velocity;
 
-				Vec2f startToTarget = targetPosition - projectile.startPosition;
-				Vec2f startToPosition = position - projectile.startPosition;
+				const Vec2f toTarget = targetPosition - position;
+				const float moveDistance = std::min(toTarget.length(), velocity * static_cast<float>(deltaTime));
+				const Vec2f newPosition = position + (toTarget.norm() * moveDistance);
 
-				// A projectile could have either a target position or an exit angle
+				if (wouldCollide(ecs, entity, newPosition)) {
+					// TODO: apply damage or register hit and let another system handle damage
+					toRemove.push_back(entity);
+				}
 
-				if (toTarget.length() < 0.01 || (startToTarget.length() - startToPosition.length()) < 0.0f) {
+				if (toTarget.length() < 0.01) {
 					position = targetPosition;
 					toRemove.push_back(entity);
 				} else {
-					position += (toTarget.norm() * velocity * deltaTime);
+					position = newPosition;
 				}
 			}
 		}
@@ -42,5 +47,72 @@ class ProjectileSystem final : public System {
 	}
 
   private:
+	const MapManager &mapmanager_;
+
+	bool wouldCollide(ECSManager &ecs, const Entity entity, const Vec2f &position)
+	{
+		if (checkCollisionsWithMap(ecs, entity, position)) {
+			return true;
+		}
+
+		if (checkCollisionsWithEntities(ecs, entity, position)) {
+			return true;
+		}
+
+		return false;
+	}
+
+	bool aabb_checkCollision(const Rectf &a, const Rectf &b) const
+	{
+		// If one rectangle is to the left of the other
+		if (a.x + a.w < b.x || b.x + b.w < a.x)
+			return false;
+
+		// If one rectangle is above the other
+		if (a.y + a.h < b.y || b.y + b.h < a.y)
+			return false;
+
+		// Otherwise, there is a collision
+		return true;
+	}
+
+	bool checkCollisionsWithMap(ECSManager &ecs, const Entity entity, const Vec2f &position)
+	{
+		// TODO: check collision with map
+		// We need to implement a penetrable property for tiles.
+		// Since we change our tileset soon, we'll defer until this is done.
+
+		return false;
+	}
+
+	bool checkCollisionsWithEntities(ECSManager &ecs, const Entity entity, const Vec2f &position)
+	{
+		Entity shooter = ecs.getComponent<Projectile>(entity).shooter;
+
+		for (const auto &otherEntity : ecs.getEntities()) {
+			if (entity == otherEntity) {
+				continue;
+			}
+
+			if (otherEntity == shooter) {
+				continue;
+			}
+
+			if (ecs.hasComponent<Collider>(otherEntity)) {
+				Vec2f otherPosition = ecs.getComponent<Positionable>(otherEntity).position;
+
+				// TODO: read entity size from component
+				const Rectf projectileBoundingBox{position.x, position.y, 3, 3};
+				const Rectf otherBoundingBox{otherPosition.x, otherPosition.y, TILE_SIZE, TILE_SIZE};
+
+				if (aabb_checkCollision(projectileBoundingBox, otherBoundingBox)) {
+					return true;
+				}
+			}
+		}
+
+		return false;
+	}
+
 	std::vector<Entity> toRemove;
 };
