@@ -113,55 +113,14 @@ class InputSystem final : public System {
 	                    const double deltaTime)
 	{
 		EquippedWeapon &ew = ecs.getComponent<EquippedWeapon>(entity);
-		WeaponMetadata wdata = WeaponDatabase::getInstance().get(ew.weaponId);
-
-		if (ew.firerateAccumulator > wdata.firerate) {
-			ew.firerateAccumulator = 0.f;
-		}
-
-		if (ew.firerateAccumulator > 0.f) {
-			ew.firerateAccumulator += static_cast<float>(deltaTime);
-		}
-
-		if (ew.reloadTimeAccumulator >= wdata.reloadTime) {
-			ew.magazineSize = wdata.magazineSize;
-			ew.reloadTimeAccumulator = 0.f;
-		}
-
-		if (ew.reloadTimeAccumulator > 0.f) {
-			ew.reloadTimeAccumulator += static_cast<float>(deltaTime);
-			return;
-		}
 
 		constexpr int RIGHT_MOUSE_BUTTON = 2;
 		if (keyStates[RIGHT_MOUSE_BUTTON].released == true) {
-			ew.warmupAccumulator = 0.f;
+			ew.isTriggerHeld = false;
 		}
 
 		if (keyStates[RIGHT_MOUSE_BUTTON].held == true) {
-
-			if (ew.magazineSize == 0) {
-				ew.reloadTimeAccumulator += static_cast<float>(deltaTime);
-				return;
-			}
-
-			if (ew.firerateAccumulator != 0.f) {
-				return;
-			}
-
-			if (ew.warmupAccumulator < wdata.warmup) {
-				ew.warmupAccumulator += static_cast<float>(deltaTime);
-				return;
-			}
-
-			// shoot
-			ew.firerateAccumulator += static_cast<float>(deltaTime);
-			--ew.magazineSize;
-
-			Vec2f start = ecs.getComponent<Positionable>(entity).position;
-			Vec2f mouseScreenPos = Utils::toFloat(engine_.getMousePosition());
-			Vec2f mouseWorldPos = screenToWorld(mouseScreenPos);
-			spawnProjectile(ecs, start, mouseWorldPos, entity, ew.weaponId);
+			ew.isTriggerHeld = true;
 		}
 	}
 

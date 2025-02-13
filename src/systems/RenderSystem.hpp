@@ -68,7 +68,12 @@ class RenderSystem final : public System {
 					if (ecs.hasComponent<AI>(entity)) {
 						const AI &ai = ecs.getComponent<AI>(entity);
 						renderAlertnessLevel(position, ai, camPos, camZoom);
-						// renderDetectionVisual(position, ai);
+					}
+
+					if (ecs.hasComponent<EquippedWeapon>(entity)) {
+						const EquippedWeapon &ew = ecs.getComponent<EquippedWeapon>(entity);
+						renderWarmupVisual(position, ew);
+						renderReloadVisual(position, ew);
 					}
 				}
 			}
@@ -191,15 +196,46 @@ class RenderSystem final : public System {
 		}
 	}
 
-	void renderDetectionVisual(const Vec2f &position, const AI &ai)
+	void renderDetectionVisual(const Vec2f &position, const AI &ai) const
 	{
-		float maxTime = 2.0f; // TODO: read from component, where detection time is do
+		float maxTime = ai.detectionThreshold;
 		float fillPercent = ai.detectionTime / maxTime;
+		renderLoadingBar(Rectf{position.x, position.y, TILE_SIZE, 4}, fillPercent);
+	}
+
+	void renderWarmupVisual(const Vec2f &position, const EquippedWeapon &ew) const
+	{
+		auto wdata = WeaponDatabase::getInstance().get(ew.weaponId);
+		if (ew.warmupAccumulator == 0 || ew.warmupAccumulator >= wdata.warmup)
+			return;
+
+		float maxTime = wdata.warmup;
+		float fillPercent = ew.warmupAccumulator / maxTime;
+		Rectf dst = camera_.rectToScreen(Rectf{position.x, position.y - TILE_SIZE, TILE_SIZE * 2, TILE_SIZE / 2});
+		engine_.drawText(dst, "WUP");
+		renderLoadingBar(Rectf{position.x, position.y, TILE_SIZE, 4}, fillPercent);
+	}
+
+	void renderReloadVisual(const Vec2f &position, const EquippedWeapon &ew) const
+	{
+		auto wdata = WeaponDatabase::getInstance().get(ew.weaponId);
+		if (ew.reloadTimeAccumulator == 0 || ew.reloadTimeAccumulator >= wdata.reloadTime)
+			return;
+
+		float maxTime = wdata.reloadTime;
+		float fillPercent = ew.reloadTimeAccumulator / maxTime;
+		Rectf dst = camera_.rectToScreen(Rectf{position.x, position.y - TILE_SIZE, TILE_SIZE * 2, TILE_SIZE / 2});
+		engine_.drawText(dst, "RLD");
+		renderLoadingBar(Rectf{position.x, position.y, TILE_SIZE, 4}, fillPercent);
+	}
+
+	void renderLoadingBar(const Rectf &position, const float fillPercent) const
+	{
 		Rectf dstBorder;
 		dstBorder.x = static_cast<float>(position.x);
 		dstBorder.y = static_cast<float>(position.y);
-		dstBorder.w = static_cast<float>(TILE_SIZE);
-		dstBorder.h = static_cast<float>(4);
+		dstBorder.w = static_cast<float>(position.w);
+		dstBorder.h = static_cast<float>(position.h);
 
 		Rectf dst = dstBorder;
 		float borderThickness = 1.0f;

@@ -13,4 +13,6 @@ struct EquippedWeapon {
 	float warmupAccumulator = 0;// accumulator for the weapon's warmup phase
 	float firerateAccumulator = 0;// fire rate control enforcing a delay between shots
 	float reloadTimeAccumulator = 0;//tracks the reload duration
+
+	bool isTriggerHeld = false;
 };
