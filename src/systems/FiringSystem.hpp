@@ -5,6 +5,7 @@
 #include "../engine/Engine.hpp"
 #include "../entities/projectile.hpp"
 #include "../modules/Camera.hpp"
+#include "../modules/StateMachine.hpp"
 #include "System.hpp"
 #include <set>
 
@@ -30,6 +31,11 @@ class FiringSystem final : public System {
   private:
 	const Engine &engine_;
 	const Camera &camera_;
+
+	// we either need to store the SM within a component or we use a dedicated SMManager and just use entitiy ids to
+	// index the correct SM, like we are doing with e.g. BTManager.
+	// StateMachine firingSM{std::make_unique<IdleNode>()};
+	// std::unordered_map<Entity, StateMachine> stateMachines;
 
 	void handleShooting(ECSManager &ecs, const Entity &entity, const double deltaTime)
 	{
@@ -82,5 +88,13 @@ class FiringSystem final : public System {
 			Vec2f mouseWorldPos = camera_.screenToWorld(mouseScreenPos, engine_.getRenderScale());
 			spawnProjectile(ecs, start, mouseWorldPos, entity, ew.weaponId);
 		}
+	}
+
+	void handleShooting2(ECSManager &ecs, const Entity &entity, const double deltaTime)
+	{
+		EquippedWeapon &ew = ecs.getComponent<EquippedWeapon>(entity);
+		WeaponMetadata wdata = WeaponDatabase::getInstance().get(ew.weaponId);
+
+		// firingSM.update(deltaTime);
 	}
 };
