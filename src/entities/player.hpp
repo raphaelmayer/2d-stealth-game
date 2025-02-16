@@ -6,6 +6,7 @@
 #include "../components/EquippedWeapon.hpp"
 #include "../components/Interactable.hpp"
 #include "../components/Inventory.hpp"
+#include "../components/Pathfinding.hpp"
 #include "../components/Positionable.hpp"
 #include "../components/Renderable.hpp"
 #include "../components/RigidBody.hpp"
@@ -31,7 +32,8 @@ Entity instantiatePlayerEntity(ECSManager &ecs, Vec2i positionInTiles, Rotation 
 	ecs.addComponent(player, Collider{});
 	ecs.addComponent(player, Controllable{});
 	ecs.addComponent(player, Inventory{});
-	ecs.addComponent(player, EquippedWeapon{2,5}); // assault rifle with full mag
+	ecs.addComponent(player, EquippedWeapon{2, 5}); // assault rifle with full mag
+	ecs.addComponent(player, Pathfinding{});
 
 	return player;
 }

@@ -1,6 +1,6 @@
 #pragma once
 
-#include "../../components/AI.hpp"
+#include "../../components/Pathfinding.hpp"
 #include "../../components/Positionable.hpp"
 #include "../../components/RigidBody.hpp"
 #include "../../ecs/ECSManager.hpp"
@@ -43,11 +43,11 @@ class MoveTo : public BT::StatefulActionNode {
 		if (!entity)
 			return BT::NodeStatus::FAILURE;
 
-		auto &ai = ecs.getComponent<AI>(entity.value());
-		ai.targetPosition = Utils::toInt(pos.value());
+		auto &targetPosition = ecs.getComponent<Pathfinding>(entity.value()).targetPosition;
+		targetPosition = Utils::toInt(pos.value());
 
 		const Vec2f &position = ecs.getComponent<Positionable>(entity.value()).position;
-		if (position == Utils::toFloat(ai.targetPosition))
+		if (position == Utils::toFloat(targetPosition))
 			return BT::NodeStatus::SUCCESS;
 
 		return BT::NodeStatus::RUNNING;

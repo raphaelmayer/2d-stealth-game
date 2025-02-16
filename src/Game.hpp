@@ -2,6 +2,7 @@
 
 #include "SDL_mixer.h"
 #include "components/AI.hpp"
+#include "components/Pathfinding.hpp"
 #include "components/Patrol.hpp"
 #include "components/Projectile.hpp"
 #include "constants.hpp"
@@ -134,6 +135,7 @@ class Game : public Engine {
 		Entity e = instantiateNPCEntity(ecs, position);
 		ecs.addComponent<Vision>(e, Vision{});
 		ecs.addComponent<AI>(e, AI{position});
+		ecs.addComponent<Pathfinding>(e, Pathfinding{});
 		ecs.addComponent<Patrol>(e, Patrol{waypoints});
 		btManager.createTreeForEntity(e, "MainTree");
 	}
