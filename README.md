@@ -113,6 +113,7 @@ cmake --open xbuild
 - switch to 8 directions
 - switch to RTS-style controller (mouse movement)
 - Design and implement some sort of weapon system (Loadout etc)
+  - item categories: weapon | armor | projectile ?
 
 ### Features 
 - Implement dedicated sound engine wrapping sdl as part of our engine.
@@ -130,6 +131,12 @@ cmake --open xbuild
 - Change CMake config for assets. Currently it is kind of cumbersome (see `src/CMakeLists.txt`)
 - The font should not be owned by engine, at least not hardcoded as it is right now.
 - Reevaluate rendering functions API regarding rect or vector as arguments (especially draw/fillRectangle).
+- Texture.hpp takes a SDL_Texture type. We have a function to create a SDL_Texture, so the user does not have to interact with sdl directly, but there is a better solution here. 
+- State machines: We need a generic state machine class to simplify a couple of areas:
+	- Weapon firing state
+	- AI alert state
+	- ...
+- Still using SDL specific types for mouse and key ids.
 
 ## Ideas for sound engine
 - add SoundLibrary class to hold all sound chunks (in game context)

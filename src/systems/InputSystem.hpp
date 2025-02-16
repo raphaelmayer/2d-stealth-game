@@ -30,7 +30,7 @@ class InputSystem final : public System {
 				auto &controllable = ecs.getComponent<Controllable>(entity);
 				auto &rigidBody = ecs.getComponent<RigidBody>(entity);
 
-				handleShooting(ecs, entity, mouseKeyStates);
+				handleShooting(ecs, entity, mouseKeyStates, deltaTime);
 
 				// only allow input if player is not currently moving
 				if (!rigidBody.isMoving) {
@@ -109,18 +109,18 @@ class InputSystem final : public System {
 			camera_.move(CamDirection::DOWN);
 	}
 
-	void handleShooting(ECSManager &ecs, const Entity &entity, const std::array<KeyState, NUM_MOUSE_BUTTONS> &keyStates)
+	void handleShooting(ECSManager &ecs, const Entity &entity, const std::array<KeyState, NUM_MOUSE_BUTTONS> &keyStates,
+	                    const double deltaTime)
 	{
-		// This shooting mechanism should not be in InputSystem. What if we want to handle different weapons or
-		// different actions depending on if an entity is an enemy or friendly.
-		constexpr int RIGHT_MOUSE_BUTTON = 2;
-		if (keyStates[RIGHT_MOUSE_BUTTON].held == true) {
-			Vec2f start = ecs.getComponent<Positionable>(entity).position;
-			Vec2f mouseScreenPos = Utils::toFloat(engine_.getMousePosition());
-			Vec2f mouseWorldPos = screenToWorld(mouseScreenPos);
-			float velocity = 300.f; // should be read from gun or something
+		EquippedWeapon &ew = ecs.getComponent<EquippedWeapon>(entity);
 
-			spawnProjectile(ecs, start, mouseWorldPos, velocity);
+		constexpr int RIGHT_MOUSE_BUTTON = 2;
+		if (keyStates[RIGHT_MOUSE_BUTTON].released == true) {
+			ew.isTriggerHeld = false;
+		}
+
+		if (keyStates[RIGHT_MOUSE_BUTTON].held == true) {
+			ew.isTriggerHeld = true;
 		}
 	}
 

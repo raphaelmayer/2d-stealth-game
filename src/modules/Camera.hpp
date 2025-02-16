@@ -2,6 +2,7 @@
 
 #include "../engine/types/Vec2f.hpp"
 #include "../engine/types/Vec2i.hpp"
+#include "../engine/types/Rectf.hpp"
 #include <vector>
 
 enum class CamDirection { UP = 0, RIGHT, DOWN, LEFT };
@@ -67,6 +68,12 @@ class Camera {
 		Vec2f size = Vec2f{rect.w, rect.h} * zoom;
 		Rectf camAdjustedDst{screenPos.x, screenPos.y, size.x, size.y};
 		return camAdjustedDst;
+	}
+
+	Vec2f screenToWorld(const Vec2f &vec, const Vec2i &renderScale) const
+	{
+		// Our renderscale is uniform across axis, so we just pick a dimension.
+		return (vec / (getZoom() * static_cast<float>(renderScale.x))) + getPosition();
 	}
 
   private:

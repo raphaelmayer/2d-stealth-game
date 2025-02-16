@@ -35,6 +35,7 @@ struct TileMetadata_TBD {
 	// TODO: add constructor for easy instantiation
 };
 
+// TODO: Refactor to use CSVDatabase class, as soon as we switch to the new tileset.
 class TileRegistry {
   public:
 	void loadFromFile(const std::string &fileName)

@@ -21,6 +21,7 @@
 #include "systems/AISystem.hpp"
 #include "systems/AudioSystem.hpp"
 #include "systems/DebugSystem.hpp"
+#include "systems/FiringSystem.hpp"
 #include "systems/InputSystem.hpp"
 #include "systems/InteractionSystem.hpp"
 #include "systems/PathfindingSystem.hpp"
@@ -81,9 +82,10 @@ class Game : public Engine {
 			inputSystem->update(ecs, deltaTime);
 			aiSystem->update(ecs, deltaTime);
 			pathfindingSystem->update(ecs, deltaTime);
+			firingSystem->update(ecs, deltaTime);
 			physicsSystem->update(ecs, deltaTime);
 
-			//camera.focus(ecs.getComponent<Positionable>(PLAYER).position);
+			// camera.focus(ecs.getComponent<Positionable>(PLAYER).position);
 
 			// must happen in between update of physicsystem and rendersystem, or will result in flickering
 			renderSystem->update(ecs, deltaTime);
@@ -93,8 +95,8 @@ class Game : public Engine {
 			menuStack.update();
 
 			interactionSystem->update(ecs, deltaTime);
-			//audioSystem->update(ecs, deltaTime);
-			//progressSystem->update(ecs, deltaTime);
+			// audioSystem->update(ecs, deltaTime);
+			// progressSystem->update(ecs, deltaTime);
 			debugSystem->update(ecs, deltaTime);
 			projectileSystem->update(ecs, deltaTime);
 
@@ -123,7 +125,8 @@ class Game : public Engine {
 		audioSystem = std::make_unique<AudioSystem>(PLAYER);
 		debugSystem = std::make_unique<DebugSystem>(*this, mapManager, camera);
 		pathfindingSystem = std::make_unique<PathfindingSystem>(mapManager);
-		projectileSystem = std::make_unique<ProjectileSystem>();
+		projectileSystem = std::make_unique<ProjectileSystem>(mapManager);
+		firingSystem = std::make_unique<FiringSystem>(*this, camera);
 	}
 
 	void createTestEntity(const Vec2i &position, const std::vector<PatrolPoint> &waypoints)
@@ -140,12 +143,11 @@ class Game : public Engine {
 		createTestEntity(
 		    {15, 6}, {{Vec2i{10, 3} * TILE_SIZE, Rotation::SOUTH, 2}, {Vec2i{2, 3} * TILE_SIZE, Rotation::SOUTH, 6}});
 		createTestEntity({2, 2}, {{Vec2i{9, 3} * TILE_SIZE, Rotation::SOUTH, 2},
-		                           {Vec2i{6, 2} * TILE_SIZE, Rotation::SOUTH, 6},
-		                           {Vec2i{5, 3} * TILE_SIZE, Rotation::SOUTH, 6}});
+		                          {Vec2i{6, 2} * TILE_SIZE, Rotation::SOUTH, 6},
+		                          {Vec2i{5, 3} * TILE_SIZE, Rotation::SOUTH, 6}});
 		createTestEntity(
 		    {16, 7}, {{Vec2i{11, 5} * TILE_SIZE, Rotation::SOUTH, 5}, {Vec2i{11, 14} * TILE_SIZE, Rotation::NORTH, 5}});
-		createTestEntity(
-		    {14, 7}, {{Vec2i{13, 11} * TILE_SIZE, Rotation::SOUTH, 60}});
+		createTestEntity({14, 7}, {{Vec2i{13, 11} * TILE_SIZE, Rotation::SOUTH, 60}});
 		createTestEntity({16, 6}, {{Vec2i{0, 6} * TILE_SIZE, Rotation::SOUTH, 0},
 		                           {Vec2i{9, 6} * TILE_SIZE, Rotation::NORTH, 0},
 		                           {Vec2i{9, 13} * TILE_SIZE, Rotation::EAST, 0},
@@ -171,4 +173,5 @@ class Game : public Engine {
 	std::unique_ptr<DebugSystem> debugSystem;
 	std::unique_ptr<PathfindingSystem> pathfindingSystem;
 	std::unique_ptr<ProjectileSystem> projectileSystem;
+	std::unique_ptr<FiringSystem> firingSystem;
 };

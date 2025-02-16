@@ -8,6 +8,7 @@
 #include <tileson.hpp>
 #include <vector>
 
+// Loads TMX JSON maps using tileson and populates a LevelMap.
 class MapLoader {
   public:
 	MapLoader() {}

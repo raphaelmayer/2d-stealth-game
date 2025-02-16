@@ -20,6 +20,11 @@ configure_file(
     COPYONLY
 )
 configure_file(
+    ${CMAKE_SOURCE_DIR}/assets/weapon_data.csv
+    ${CMAKE_BINARY_DIR}/assets/weapon_data.csv
+    COPYONLY
+)
+configure_file(
     ${CMAKE_SOURCE_DIR}/assets/overworld_spritesheet.png
     ${CMAKE_BINARY_DIR}/assets/overworld_spritesheet.png
     COPYONLY
