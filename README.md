@@ -96,8 +96,6 @@ cmake --open xbuild
 
 #### Joshua Meyer
 - AudioSystem.hpp
-- InteractionSystem.hpp
-- ProgressSystem.hpp
 
 ## TODO
 - Switch to new ECS version
@@ -108,12 +106,11 @@ cmake --open xbuild
 	- If `targetPosition` is blocked or unreachable we try to recalculate a path every iteration. 
 	  This leads to entities getting stuck and potentially dead lock each other, if they want to move onto each others position for example.
 	  We need to check, if `targetPosition` is reachable. If not, we could use a couple of strategies like finding the nearest reachable tile, resetting, etc.
-- switch from TXT to TMX map files
 - need to adjust camera scrolling speed based on zoom level
 - switch to 8 directions
-- switch to RTS-style controller (mouse movement)
-- Design and implement some sort of weapon system (Loadout etc)
-  - item categories: weapon | armor | projectile ?
+- Cancelling player movement by clicking on a impassable tile resets player. depending on direction he walks back to 
+  the previous tile or finishes the current movement to endPosition. This is most likely due to our A* algorithm.
+  If it does not find a path it returns the start position. Solution: return empty path and handle appropriately in `PathfindingSystem`. 
 
 ### Features 
 - Implement dedicated sound engine wrapping sdl as part of our engine.
@@ -130,7 +127,6 @@ cmake --open xbuild
 - we broke `ProgressSystem` because it relies on `interactable.isTextVisible`
 - Change CMake config for assets. Currently it is kind of cumbersome (see `src/CMakeLists.txt`)
 - The font should not be owned by engine, at least not hardcoded as it is right now.
-- Reevaluate rendering functions API regarding rect or vector as arguments (especially draw/fillRectangle).
 - Texture.hpp takes a SDL_Texture type. We have a function to create a SDL_Texture, so the user does not have to interact with sdl directly, but there is a better solution here. 
 - State machines: We need a generic state machine class to simplify a couple of areas:
 	- Weapon firing state

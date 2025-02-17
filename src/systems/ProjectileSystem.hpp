@@ -3,6 +3,7 @@
 #include "../ecs/ECSManager.hpp"
 #include "../ecs/Entity.hpp"
 #include "../map/MapManager.hpp"
+#include "../modules/AABB.hpp"
 #include "System.hpp"
 #include <set>
 
@@ -62,20 +63,6 @@ class ProjectileSystem final : public System {
 		return false;
 	}
 
-	bool aabb_checkCollision(const Rectf &a, const Rectf &b) const
-	{
-		// If one rectangle is to the left of the other
-		if (a.x + a.w < b.x || b.x + b.w < a.x)
-			return false;
-
-		// If one rectangle is above the other
-		if (a.y + a.h < b.y || b.y + b.h < a.y)
-			return false;
-
-		// Otherwise, there is a collision
-		return true;
-	}
-
 	bool checkCollisionsWithMap(ECSManager &ecs, const Entity entity, const Vec2f &position)
 	{
 		// TODO: check collision with map
@@ -105,7 +92,7 @@ class ProjectileSystem final : public System {
 				const Rectf projectileBoundingBox{position.x, position.y, 3, 3};
 				const Rectf otherBoundingBox{otherPosition.x, otherPosition.y, TILE_SIZE, TILE_SIZE};
 
-				if (aabb_checkCollision(projectileBoundingBox, otherBoundingBox)) {
+				if (AABB::checkCollision(projectileBoundingBox, otherBoundingBox)) {
 					return true;
 				}
 			}
