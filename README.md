@@ -80,20 +80,6 @@ cmake -S . -B xbuild -GXcode
 cmake --open xbuild
 ```
 
-## Work distribution
-#### Raphael Mayer
-- project setup & CMake
-- /engine
-- /ecs
-- Game.hpp (excluding tilemap code and viewport code)
-- GameStateManager.hpp
-- SaveGameManager.hpp
-- MenuStack.hpp and UI elements (/ui)
-- InputSystem.hpp (handle movement)
-- PhysicsSystem.hpp
-- RenderSystem.hpp (excluding animation code)
-- all tests for my code
-
 #### Joshua Meyer
 - AudioSystem.hpp
 
@@ -106,7 +92,6 @@ cmake --open xbuild
 	- If `targetPosition` is blocked or unreachable we try to recalculate a path every iteration. 
 	  This leads to entities getting stuck and potentially dead lock each other, if they want to move onto each others position for example.
 	  We need to check, if `targetPosition` is reachable. If not, we could use a couple of strategies like finding the nearest reachable tile, resetting, etc.
-- need to adjust camera scrolling speed based on zoom level
 - switch to 8 directions
 - Cancelling player movement by clicking on a impassable tile resets player. depending on direction he walks back to 
   the previous tile or finishes the current movement to endPosition. This is most likely due to our A* algorithm.
@@ -120,7 +105,6 @@ cmake --open xbuild
 - Stances? Crouch, Prone
 - design and implement a dedicated `AnimationSystem`
 - switch to bounding box collision?
-- support multiple player entities
 - damage system
 - cover mechanics
 - implement player AI for engaging? I.e. move into range and LOS
@@ -128,7 +112,6 @@ cmake --open xbuild
 ### Low priority
 - handle window resizing
 - UI rendering needs to be adjusted
-- we broke `ProgressSystem` because it relies on `interactable.isTextVisible`
 - Change CMake config for assets. Currently it is kind of cumbersome (see `src/CMakeLists.txt`)
 - The font should not be owned by engine, at least not hardcoded as it is right now.
 - Texture.hpp takes a SDL_Texture type. We have a function to create a SDL_Texture, so the user does not have to interact with sdl directly, but there is a better solution here. 
@@ -136,14 +119,7 @@ cmake --open xbuild
 	- Weapon firing state
 	- AI alert state
 	- ...
-- Still using SDL specific types for mouse and key ids.
+- Still using SDL specific types for mouse and keycodes.
 
 ## Ideas for sound engine
 - add SoundLibrary class to hold all sound chunks (in game context)
-
-### Difference between entities
-
-| Player          | NPC             | Projectile      | Weapon          |
-|-----------------|-----------------|-----------------|-----------------|
-| Controllable    | AI              | Projectile      | Weapon          |
-
