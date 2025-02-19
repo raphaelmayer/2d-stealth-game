@@ -1,5 +1,6 @@
 #include "../components/EquippedWeapon.hpp"
 #include "../components/Positionable.hpp"
+#include "../components/Target.hpp"
 #include "../ecs/ECSManager.hpp"
 #include "../ecs/Entity.hpp"
 #include "../engine/Engine.hpp"
@@ -11,7 +12,7 @@
 
 class FiringSystem final : public System {
   public:
-	explicit FiringSystem(const Engine &engine, const Camera &camera) : engine_(engine), camera_(camera) {}
+	explicit FiringSystem(const Engine &engine) : engine_(engine) {}
 
 	void update(ECSManager &ecs, const double deltaTime) override
 	{
@@ -20,24 +21,20 @@ class FiringSystem final : public System {
 
 		for (const Entity &entity : entities) {
 			if (ecs.hasComponent<EquippedWeapon>(entity) && ecs.hasComponent<Positionable>(entity)) {
-				auto &ew = ecs.getComponent<EquippedWeapon>(entity);
-				auto &position = ecs.getComponent<Positionable>(entity).position;
-
-				handleShooting(ecs, entity, deltaTime);
+				handleFiring(ecs, entity, deltaTime);
 			}
 		}
 	}
 
   private:
 	const Engine &engine_;
-	const Camera &camera_;
 
 	// we either need to store the SM within a component or we use a dedicated SMManager and just use entitiy ids to
 	// index the correct SM, like we are doing with e.g. BTManager.
 	// StateMachine firingSM{std::make_unique<IdleNode>()};
 	// std::unordered_map<Entity, StateMachine> stateMachines;
 
-	void handleShooting(ECSManager &ecs, const Entity &entity, const double deltaTime)
+	void handleFiring(ECSManager &ecs, const Entity &entity, const double deltaTime)
 	{
 		EquippedWeapon &ew = ecs.getComponent<EquippedWeapon>(entity);
 		WeaponMetadata wdata = WeaponDatabase::getInstance().get(ew.weaponId);
@@ -60,11 +57,16 @@ class FiringSystem final : public System {
 			return;
 		}
 
-		if (!ew.isTriggerHeld) {
+		if (!ecs.hasComponent<Target>(entity)) {
 			ew.warmupAccumulator = 0.f;
 		}
 
-		if (ew.isTriggerHeld) {
+		bool isMoving = ecs.getComponent<RigidBody>(entity).isMoving;
+		if (ecs.hasComponent<Target>(entity) && !isMoving) {
+			Target targetComp = ecs.getComponent<Target>(entity);
+
+			// TODO: check weapon range and LOS. but probably somewhere else.
+
 			if (ew.magazineSize == 0) {
 				ew.reloadTimeAccumulator += static_cast<float>(deltaTime);
 				return;
@@ -83,18 +85,9 @@ class FiringSystem final : public System {
 			ew.firerateAccumulator += static_cast<float>(deltaTime);
 			--ew.magazineSize;
 
-			Vec2f start = ecs.getComponent<Positionable>(entity).position;
-			Vec2f mouseScreenPos = Utils::toFloat(engine_.getMousePosition());
-			Vec2f mouseWorldPos = camera_.screenToWorld(mouseScreenPos, engine_.getRenderScale());
-			spawnProjectile(ecs, start, mouseWorldPos, entity, ew.weaponId);
+			Vec2f start = ecs.getComponent<Positionable>(entity).position + (TILE_SIZE / 2);
+			Vec2f targetPos = ecs.getComponent<Positionable>(targetComp.entity).position + (TILE_SIZE / 2);
+			spawnProjectile(ecs, start, targetPos, entity, ew.weaponId);
 		}
-	}
-
-	void handleShooting2(ECSManager &ecs, const Entity &entity, const double deltaTime)
-	{
-		EquippedWeapon &ew = ecs.getComponent<EquippedWeapon>(entity);
-		WeaponMetadata wdata = WeaponDatabase::getInstance().get(ew.weaponId);
-
-		// firingSM.update(deltaTime);
 	}
 };

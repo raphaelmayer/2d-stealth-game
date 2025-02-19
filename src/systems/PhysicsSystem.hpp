@@ -1,3 +1,4 @@
+#include "../components/Pathfinding.hpp"
 #include "../components/Positionable.hpp"
 #include "../components/RigidBody.hpp"
 #include "../constants.hpp"
@@ -51,9 +52,9 @@ class PhysicsSystem final : public System {
 			// TODO?: We currently do a next tile check with endPosition. We might want to switch to a bounding box
 			// approach, where we use newPosition to check, if the move is valid and only then apply it.
 			if (wouldCollide(ecs, entity, rigidBody)) {
-				// Clear path if AI, or do something else:
-				if (ecs.hasComponent<AI>(entity)) {
-					ecs.getComponent<AI>(entity).path.clear();
+				// Clear path if Pathfinding, or do something else:
+				if (ecs.hasComponent<Pathfinding>(entity)) {
+					ecs.getComponent<Pathfinding>(entity).path.clear();
 				}
 				resetCurrentMovementParams(rigidBody, currentPosition);
 				continue;
@@ -112,12 +113,12 @@ class PhysicsSystem final : public System {
 			// check map tiles separately, because they are not entities
 			// TODO: improve collision detection between player and map, as soon as map loading is sorted
 			return mapManager_.getWalkableMapView()[tileSizedEndPos.y][tileSizedEndPos.x];
-			//if (endTile.objectId == 0) // id 0 implies no/empty tile. temporary fix.
+			// if (endTile.objectId == 0) // id 0 implies no/empty tile. temporary fix.
 			//	return !mapManager_.getTileData(endTile.backgroundId).walkable;
-			//else
+			// else
 			//	return !mapManager_.getTileData(endTile.objectId).walkable;
 
-			//std::cout << mapManager_.getTileData(endTile.objectId).walkable << "\n";
+			// std::cout << mapManager_.getTileData(endTile.objectId).walkable << "\n";
 		}
 
 		return false;

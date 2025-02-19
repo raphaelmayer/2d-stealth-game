@@ -44,10 +44,10 @@ class Engine {
 	void drawPoint(const Vec2f &pos, const ColorRGBA &color) const;
 	void drawLine(const Vec2i &start, const Vec2i &end, const ColorRGBA &color) const;
 	void drawLine(const Vec2f &start, const Vec2f &end, const ColorRGBA &color) const;
-	void fillRectangle(const Vec2i &pos, const int &width, const int &height, const ColorRGBA &color) const;
-	void fillRectangle(const Vec2f &pos, const float &width, const float &height, const ColorRGBA &color) const;
-	void drawRectangle(const Vec2i &pos, const int &width, const int &height, const ColorRGBA &color) const;
-	void drawRectangle(const Vec2f &pos, const float &width, const float &height, const ColorRGBA &color) const;
+	void fillRectangle(const Recti &rect, const ColorRGBA &color) const;
+	void fillRectangle(const Rectf &rect, const ColorRGBA &color) const;
+	void drawRectangle(const Recti &rect, const ColorRGBA &color) const;
+	void drawRectangle(const Rectf &rect, const ColorRGBA &color) const;
 	void fillCircle(const Vec2i &pos, const int &radius, const ColorRGBA &color) const;
 	void fillCircle(const Vec2f &pos, const int &radius, const ColorRGBA &color) const;
 	void drawCircle(const Vec2i &pos, const int &radius, const ColorRGBA &color) const;
@@ -66,10 +66,13 @@ class Engine {
 	void drawText(const Recti &dst, const std::string &text) const;
 	void drawText(const Rectf &dst, const std::string &text) const;
 
+	void enableAlphaBlending();
+	void disableAlphaBlending();
+
 	// Get the state of all keys
 	const std::array<KeyState, SDL_NUM_SCANCODES> &getKeyStates() const { return keyboard_.getKeyStates(); }
 	// Get the state of a specific key
-	const KeyState getKeyState(const SDL_Scancode key) const { return keyboard_.getKeyState(key); }
+	const KeyState &getKeyState(const SDL_Scancode key) const { return keyboard_.getKeyState(key); }
 	// Returns the current state of all buttons.
 	// SDL mouse buttons are 1-based (1 = Left, 2 = Middle, etc.)
 	const std::array<KeyState, NUM_MOUSE_BUTTONS> &getMouseButtonStates() const { return mouse_.getButtonStates(); }
@@ -77,7 +80,7 @@ class Engine {
 	// SDL mouse buttons are 1-based (1 = Left, 2 = Middle, etc.)
 	const KeyState &getMouseButtonState(const Uint8 button) const { return mouse_.getButtonState(button); }
 	// Returns the current mouse position.
-	const Vec2i &getMousePosition() const { return mouse_.getPosition(); }
+	const Vec2i getMousePosition() const { return mouse_.getPosition() / getRenderScale(); }
 	// Returns the mouse wheel delta since the last frame.
 	const Vec2i &getMouseWheelDelta() const { return mouse_.getWheelDelta(); }
 

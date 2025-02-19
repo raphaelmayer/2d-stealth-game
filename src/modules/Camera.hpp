@@ -1,17 +1,18 @@
 #pragma once
 
+#include "../engine/types/Rectf.hpp"
 #include "../engine/types/Vec2f.hpp"
 #include "../engine/types/Vec2i.hpp"
-#include "../engine/types/Rectf.hpp"
 #include <vector>
 
 enum class CamDirection { UP = 0, RIGHT, DOWN, LEFT };
 
 /*
  * A flexible 2D camera for top-down games.
- * This camera centers a focus point (e.g., the player) in the visible area while supporting smooth zooming, directional
- * movement, and screen-to-world coordinate transformations. The visible area is determined by the screen size and zoom
- * level, and the camera's position corresponds to the top-left corner of the view in world coordinates.
+ * This camera supports smooth zooming, directional movement, and screen-to-world coordinate transformations. It can
+ * also center around a focus point (e.g., the player) in the visible area.
+ * The visible area is determined by the screen size and zoom level, and the camera's position corresponds to the
+ * top-left corner of the view in world coordinates.
  */
 class Camera {
   public:
@@ -31,29 +32,38 @@ class Camera {
 
 	Vec2f getPosition() const { return position; }
 
+	void setPosition(const Vec2f &pos) { position = pos; }
+
+	void move(const Vec2f &offset) { position += offset / zoom; }
+
+	void move(const CamDirection &direction, float amount = DEFAULT_MOVESTEP)
+	{
+		move(dirv[static_cast<int>(direction)] * amount);
+	}
+
 	float getZoom() const { return zoom; }
 
-	void zoomIn()
+	void setZoom(float amount) { zoom = amount; }
+
+	void zoomIn(float zoomAmount = DEFAULT_ZOOMSTEP)
 	{
 		Vec2f visibleAreaBefore = screenSize / zoom;
-		zoom += zoomStep;
+		zoom += zoomAmount;
 		Vec2f visibleAreaAfter = screenSize / zoom;
 
 		// Adjust position to keep the center consistent
 		position += (visibleAreaBefore - visibleAreaAfter) / 2;
 	}
 
-	void zoomOut()
+	void zoomOut(float zoomAmount = DEFAULT_ZOOMSTEP)
 	{
 		Vec2f visibleAreaBefore = screenSize / zoom;
-		zoom -= zoomStep;
+		zoom -= zoomAmount;
 		Vec2f visibleAreaAfter = screenSize / zoom;
 
 		// Adjust position to keep the center consistent
 		position += (visibleAreaBefore - visibleAreaAfter) / 2;
 	}
-
-	void move(const CamDirection &direction) { position += dirv[static_cast<int>(direction)]; }
 
 	Rectf rectToScreen(const Recti &rect) const
 	{
@@ -70,16 +80,14 @@ class Camera {
 		return camAdjustedDst;
 	}
 
-	Vec2f screenToWorld(const Vec2f &vec, const Vec2i &renderScale) const
-	{
-		// Our renderscale is uniform across axis, so we just pick a dimension.
-		return (vec / (getZoom() * static_cast<float>(renderScale.x))) + getPosition();
-	}
+	Vec2f screenToWorld(const Vec2f &vec) const { return (vec / getZoom()) + getPosition(); }
 
   private:
 	Vec2f screenSize;
 	Vec2f position = {0.0f, 0.0f};
 	float zoom = 1.0f;
-	float zoomStep = 0.02f;
-	std::vector<Vec2f> dirv = {{0, -4}, {4, 0}, {0, 4}, {-4, 0}}; // aligns with CamDirection enum
+	std::vector<Vec2f> dirv = {{0, -1}, {1, 0}, {0, 1}, {-1, 0}}; // aligns with CamDirection enum
+
+	static constexpr float DEFAULT_ZOOMSTEP = 0.02f;
+	static constexpr float DEFAULT_MOVESTEP = 4.0f;
 };

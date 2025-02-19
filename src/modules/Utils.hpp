@@ -77,7 +77,8 @@ Vec2i to2d(int n, int width)
 	return Vec2i{n % width, n / width};
 }
 
-int to1d(const Vec2i& vec, int width) {
+int to1d(const Vec2i &vec, int width)
+{
 	return vec.y * width + vec.x;
 }
 
@@ -89,6 +90,21 @@ void print(const Vec2f &vec)
 void print(const Vec2i &vec)
 {
 	std::cout << vec.x << ", " << vec.y << '\n';
+}
+
+Rectf vectorsToRectangle(const Vec2f &vec1, const Vec2f &vec2)
+{
+	Rectf rect{};
+
+	// Calculate the top-left corner (x, y)
+	rect.x = std::min(vec1.x, vec2.x);
+	rect.y = std::min(vec1.y, vec2.y);
+
+	// Calculate the width and height
+	rect.w = std::abs(vec1.x - vec2.x);
+	rect.h = std::abs(vec1.y - vec2.y);
+
+	return rect;
 }
 
 } // namespace Utils

@@ -9,6 +9,7 @@
 #include "../engine/Engine.hpp"
 #include "../map/MapManager.hpp"
 #include "../modules/Camera.hpp"
+#include "../modules/Utils.hpp"
 #include "System.hpp"
 #include <cmath>
 #include <functional>
@@ -229,15 +230,10 @@ class RenderSystem final : public System {
 		renderLoadingBar(Rectf{position.x, position.y, TILE_SIZE, 4}, fillPercent);
 	}
 
-	void renderLoadingBar(const Rectf &position, const float fillPercent) const
+	void renderLoadingBar(const Rectf &rect, const float fillPercent) const
 	{
-		Rectf dstBorder;
-		dstBorder.x = static_cast<float>(position.x);
-		dstBorder.y = static_cast<float>(position.y);
-		dstBorder.w = static_cast<float>(position.w);
-		dstBorder.h = static_cast<float>(position.h);
-
-		Rectf dst = dstBorder;
+		Rectf dstBorder = rect;
+		Rectf dst = rect;
 		float borderThickness = 1.0f;
 		dst.x = dst.x + borderThickness;
 		dst.y = dst.y + borderThickness;
@@ -247,8 +243,8 @@ class RenderSystem final : public System {
 		dstBorder = camera_.rectToScreen(dstBorder);
 		dst = camera_.rectToScreen(dst);
 
-		engine_.drawRectangle(Vec2f{dstBorder.x, dstBorder.y}, dstBorder.w, dstBorder.h, {255, 255, 255, 255});
-		engine_.fillRectangle(Vec2f{dst.x, dst.y}, dst.w, dst.h, {50, 168, 82, 255});
+		engine_.drawRectangle(dstBorder, {255, 255, 255, 255});
+		engine_.fillRectangle(dst, {50, 168, 82, 255});
 	}
 
 	const Engine &engine_;

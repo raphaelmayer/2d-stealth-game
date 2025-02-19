@@ -34,7 +34,6 @@ class Mouse {
 			buttonIndex = static_cast<int>(event.button.button - 1);
 			buttonStates_[buttonIndex].pressed = true;
 			buttonStates_[buttonIndex].held = true;
-			std::cout << "MouseBtn <" << static_cast<int>(event.button.button) << ">\n";
 			break;
 
 		case SDL_MOUSEBUTTONUP:

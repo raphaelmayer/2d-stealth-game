@@ -1,6 +1,6 @@
 #pragma once
 
-#include "../components/AI.hpp"
+#include "../components/Pathfinding.hpp"
 #include "../components/Positionable.hpp"
 #include "../components/Rotatable.hpp"
 #include "../components/Vision.hpp"
@@ -113,14 +113,14 @@ class DebugSystem : public System {
 	void renderPaths(ECSManager &ecs)
 	{
 		for (const auto &entity : ecs.getEntities()) {
-			if (ecs.hasComponent<AI>(entity)) {
-				const auto &ai = ecs.getComponent<AI>(entity);
-				for (size_t i = ai.pathIndex; i < ai.path.size(); i++) {
-					if (i + 1 < ai.path.size())
-						engine_.drawLine(screenOffset(Utils::toFloat(ai.path[i])),
-						                 screenOffset(Utils::toFloat(ai.path[i + 1])), {255, 255, 255, 255});
+			if (ecs.hasComponent<Pathfinding>(entity)) {
+				const auto &pf = ecs.getComponent<Pathfinding>(entity);
+				for (size_t i = pf.pathIndex; i < pf.path.size(); i++) {
+					if (i + 1 < pf.path.size())
+						engine_.drawLine(screenOffset(Utils::toFloat(pf.path[i])),
+						                 screenOffset(Utils::toFloat(pf.path[i + 1])), {255, 255, 255, 255});
 				}
-				engine_.drawCircle(screenOffset(Utils::toFloat(ai.targetPosition)), (TILE_SIZE / 2) * camera_.getZoom(),
+				engine_.drawCircle(screenOffset(Utils::toFloat(pf.targetPosition)), (TILE_SIZE / 2) * camera_.getZoom(),
 				                   {255, 255, 255, 255});
 			}
 		}

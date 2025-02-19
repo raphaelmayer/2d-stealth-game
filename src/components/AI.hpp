@@ -21,14 +21,14 @@ struct AI {
 	const float detectionThreshold = 2.0; // Time to transition to searching
 	const float searchTimeout = 5.0;      // Timeout for searching
 
-	Vec2i targetPosition{-1, -1}; // Current target
-	std::vector<Vec2i> path = {}; // Current path to the target
-	int pathIndex = 0;
+	//Vec2i targetPosition{-1, -1}; // Current target
+	//std::vector<Vec2i> path = {}; // Current path to the target
+	//int pathIndex = 0;
 
 	// TODO: handle serialization, when the time comes
 	template <class Archive>
 	void serialize(Archive &archive)
 	{
-		archive(targetPosition);
+		archive();
 	}
 };
