@@ -120,6 +120,10 @@ cmake --open xbuild
 - Stances? Crouch, Prone
 - design and implement a dedicated `AnimationSystem`
 - switch to bounding box collision?
+- support multiple player entities
+- damage system
+- cover mechanics
+- implement player AI for engaging? I.e. move into range and LOS
 
 ### Low priority
 - handle window resizing

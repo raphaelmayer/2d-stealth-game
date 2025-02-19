@@ -74,6 +74,7 @@ class Game : public Engine {
 
 			if (!addedEntities) {
 				instantiatePlayerEntity(ecs, {17, 18});
+				instantiatePlayerEntity(ecs, {16, 18});
 				addTestEntities();
 				addedEntities = true;
 			}
@@ -121,11 +122,11 @@ class Game : public Engine {
 		aiSystem = std::make_unique<AISystem>(btManager, mapManager);
 		physicsSystem = std::make_unique<PhysicsSystem>(mapManager);
 		renderSystem = std::make_unique<RenderSystem>(*this, mapManager, camera);
-		audioSystem = std::make_unique<AudioSystem>(PLAYER);
+		// audioSystem = std::make_unique<AudioSystem>(PLAYER);
 		debugSystem = std::make_unique<DebugSystem>(*this, mapManager, camera);
 		pathfindingSystem = std::make_unique<PathfindingSystem>(mapManager);
 		projectileSystem = std::make_unique<ProjectileSystem>(mapManager);
-		firingSystem = std::make_unique<FiringSystem>(*this, camera);
+		firingSystem = std::make_unique<FiringSystem>(*this);
 	}
 
 	void createTestEntity(const Vec2i &position, const std::vector<PatrolPoint> &waypoints)

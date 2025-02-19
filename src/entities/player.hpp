@@ -32,7 +32,7 @@ Entity instantiatePlayerEntity(ECSManager &ecs, Vec2i positionInTiles, Rotation 
 	ecs.addComponent(player, Collider{});
 	ecs.addComponent(player, Controllable{});
 	ecs.addComponent(player, Inventory{});
-	ecs.addComponent(player, EquippedWeapon{2, 5}); // assault rifle with full mag
+	ecs.addComponent(player, EquippedWeapon{1, 30}); // assault rifle with full mag
 	ecs.addComponent(player, Pathfinding{});
 
 	return player;

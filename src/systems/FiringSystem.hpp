@@ -12,7 +12,7 @@
 
 class FiringSystem final : public System {
   public:
-	explicit FiringSystem(const Engine &engine, const Camera &camera) : engine_(engine), camera_(camera) {}
+	explicit FiringSystem(const Engine &engine) : engine_(engine) {}
 
 	void update(ECSManager &ecs, const double deltaTime) override
 	{
@@ -21,9 +21,6 @@ class FiringSystem final : public System {
 
 		for (const Entity &entity : entities) {
 			if (ecs.hasComponent<EquippedWeapon>(entity) && ecs.hasComponent<Positionable>(entity)) {
-				auto &ew = ecs.getComponent<EquippedWeapon>(entity);
-				auto &position = ecs.getComponent<Positionable>(entity).position;
-
 				handleFiring(ecs, entity, deltaTime);
 			}
 		}
@@ -31,7 +28,6 @@ class FiringSystem final : public System {
 
   private:
 	const Engine &engine_;
-	const Camera &camera_;
 
 	// we either need to store the SM within a component or we use a dedicated SMManager and just use entitiy ids to
 	// index the correct SM, like we are doing with e.g. BTManager.
@@ -89,7 +85,7 @@ class FiringSystem final : public System {
 			ew.firerateAccumulator += static_cast<float>(deltaTime);
 			--ew.magazineSize;
 
-			Vec2f start = ecs.getComponent<Positionable>(entity).position;
+			Vec2f start = ecs.getComponent<Positionable>(entity).position + (TILE_SIZE / 2);
 			Vec2f targetPos = ecs.getComponent<Positionable>(targetComp.entity).position + (TILE_SIZE / 2);
 			spawnProjectile(ecs, start, targetPos, entity, ew.weaponId);
 		}
