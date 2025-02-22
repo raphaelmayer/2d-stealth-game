@@ -18,7 +18,9 @@
 // decide.
 class InputSystem final : public System {
   public:
-	explicit InputSystem(const Engine &engine, Camera &camera) : engine_(engine), camera_(camera) {}
+	explicit InputSystem(const Engine &engine, Camera &camera) : engine_(engine), camera_(camera)
+	{
+	}
 
 	void update(ECSManager &ecs, const double deltaTime) override
 	{
@@ -51,7 +53,7 @@ class InputSystem final : public System {
 	static constexpr int RIGHT_MOUSE_BUTTON = 2;
 
 	void handleEntityControl(ECSManager &ecs, Entity entity, const std::array<KeyState, NUM_MOUSE_BUTTONS> &keyStates,
-	                         const double deltaTime)
+	                         const double deltaTime) const
 	{
 		if (keyStates[RIGHT_MOUSE_BUTTON].pressed) {
 			const Vec2f mousePos = camera_.screenToWorld(Utils::toFloat(engine_.getMousePosition()));
@@ -118,7 +120,7 @@ class InputSystem final : public System {
 	}
 
 	void handleCamera(const Vec2i &mouseWheelDelta, const Vec2i &mousePosition,
-	                  const std::array<KeyState, SDL_NUM_SCANCODES> &keyStates)
+	                  const std::array<KeyState, SDL_NUM_SCANCODES> &keyStates) const
 	{
 		if (mouseWheelDelta.y > 0)
 			camera_.zoomIn();

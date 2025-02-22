@@ -45,7 +45,7 @@ class RenderSystem final : public System {
 	}
 
   private:
-	void renderMap(const Rectf &camView)
+	void renderMap(const Rectf &camView) const
 	{
 		const LevelMap &map = mapManager_.getLevelMap();
 
@@ -80,7 +80,7 @@ class RenderSystem final : public System {
 		return dst.x >= leftBound && dst.x < rightBound && dst.y >= topBound && dst.y < bottomBound;
 	}
 
-	void renderEntity(ECSManager &ecs, Entity entity, const Rectf &camView)
+	void renderEntity(ECSManager &ecs, Entity entity, const Rectf &camView) const
 	{
 		auto &position = ecs.getComponent<Positionable>(entity).position;
 		auto &renderable = ecs.getComponent<Renderable>(entity);
@@ -118,7 +118,7 @@ class RenderSystem final : public System {
 		}
 	}
 
-	void renderAlertnessLevel(const Vec2f &position, const AI &ai)
+	void renderAlertnessLevel(const Vec2f &position, const AI &ai) const
 	{
 		const Recti dst = {position.x + (TILE_SIZE / 4), position.y - TILE_SIZE, TILE_SIZE, TILE_SIZE};
 		const Rectf camAdjustedDst = camera_.rectToScreen(dst);

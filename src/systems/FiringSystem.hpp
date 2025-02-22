@@ -36,7 +36,7 @@ class FiringSystem final : public System {
 	// StateMachine firingSM{std::make_unique<IdleNode>()};
 	// std::unordered_map<Entity, StateMachine> stateMachines;
 
-	void handleFiring(ECSManager &ecs, const Entity &entity, const double deltaTime)
+	void handleFiring(ECSManager &ecs, const Entity &entity, const double deltaTime) const
 	{
 		EquippedWeapon &ew = ecs.getComponent<EquippedWeapon>(entity);
 		WeaponMetadata wdata = WeaponDatabase::getInstance().get(ew.weaponId);

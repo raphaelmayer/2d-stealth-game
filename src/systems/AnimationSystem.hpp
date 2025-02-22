@@ -37,7 +37,7 @@ class AnimationSystem final : public System {
 	}
 
   private:
-	void handleAnimation(ECSManager &ecs, const Entity entity, Animatable &animatable, int &spriteSrcY)
+	void handleAnimation(ECSManager &ecs, const Entity entity, Animatable &animatable, int &spriteSrcY) const
 	{
 		if (animatable.timeElapsed > ANIMATION_UPDATE_RATE_IN_SECONDS) {
 			animatable.timeElapsed = 0;

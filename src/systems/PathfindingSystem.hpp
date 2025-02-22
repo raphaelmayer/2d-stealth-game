@@ -35,7 +35,7 @@ class PathfindingSystem final : public System {
 	}
 
   private:
-	void handleAIPathfinding(Vec2f &position, RigidBody &rigidBody, Pathfinding &pf, auto walkableView)
+	void handleAIPathfinding(Vec2f &position, RigidBody &rigidBody, Pathfinding &pf, auto walkableView) const
 	{
 		if (pf.targetPosition != Vec2i{-1, -1} && pf.targetPosition != Utils::toInt(position)) {
 			// TODO: We need to check, if targetPosition is reachable. If not, we could use a couple of strategies like
@@ -69,7 +69,7 @@ class PathfindingSystem final : public System {
 
 	// TODO: Replace auto type, as soon as we decided on how to define and share a view.
 	// This function adds collidable entities to our walkable map view.
-	auto populateWalkableView(ECSManager &ecs, Entity entity, auto walkableView)
+	auto populateWalkableView(ECSManager &ecs, Entity entity, auto walkableView) const
 	{
 		for (const auto &other : ecs.getEntities()) {
 			if (ecs.hasComponent<Collider>(other) && ecs.hasComponent<Positionable>(other) && entity != other) {

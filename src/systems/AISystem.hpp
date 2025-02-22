@@ -49,7 +49,7 @@ class AISystem final : public System {
   private:
 	// TODO: Create dedicated state machine at some point. Currently everything related to state is stored in the AI
 	// component.
-	void updateHighLevelAIState(ECSManager &ecs, Entity entity, double deltaTime)
+	void updateHighLevelAIState(ECSManager &ecs, Entity entity, double deltaTime) const
 	{
 		// These components are a given at this point, because we check above. Possible error down the line.
 		Vec2f &position = ecs.getComponent<Positionable>(entity).position;

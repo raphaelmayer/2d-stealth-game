@@ -53,7 +53,7 @@ class ProjectileSystem final : public System {
 	const MapManager &mapmanager_;
 	std::vector<Entity> toRemove;
 
-	bool wouldCollide(ECSManager &ecs, const Entity entity, const Vec2f &position)
+	bool wouldCollide(ECSManager &ecs, const Entity entity, const Vec2f &position) const
 	{
 		if (checkCollisionsWithMap(ecs, entity, position)) {
 			return true;
@@ -66,7 +66,7 @@ class ProjectileSystem final : public System {
 		return false;
 	}
 
-	bool checkCollisionsWithMap(ECSManager &ecs, const Entity entity, const Vec2f &position)
+	bool checkCollisionsWithMap(ECSManager &ecs, const Entity entity, const Vec2f &position) const
 	{
 		// TODO: check collision with map
 		// We need to implement a penetrable property for tiles.
@@ -75,7 +75,7 @@ class ProjectileSystem final : public System {
 		return false;
 	}
 
-	bool checkCollisionsWithEntities(ECSManager &ecs, const Entity entity, const Vec2f &position)
+	bool checkCollisionsWithEntities(ECSManager &ecs, const Entity entity, const Vec2f &position) const
 	{
 		const Entity shooter = ecs.getComponent<Projectile>(entity).shooter;
 

@@ -94,7 +94,7 @@ class PhysicsSystem final : public System {
 		return nextPos == currentPos;
 	}
 
-	void resetCurrentMovementParams(RigidBody &rigidBody, const Vec2f &currentPos)
+	void resetCurrentMovementParams(RigidBody &rigidBody, const Vec2f &currentPos) const
 	{
 		rigidBody.isMoving = false;
 		Vec2i newPosition = Utils::toInt(Utils::round(currentPos / TILE_SIZE)) * TILE_SIZE;
