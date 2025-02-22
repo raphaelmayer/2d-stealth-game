@@ -49,12 +49,6 @@ class RenderSystem final : public System {
 					spriteSrc.x = rotation * 2 * size.x;
 				}
 
-				if (ecs.hasComponent<Animatable>(entity)) {
-					auto &animatable = ecs.getComponent<Animatable>(entity);
-					animatable.timeElapsed += deltaTime;
-					handleAnimation(ecs, entity, animatable, spriteSrc.y);
-				}
-
 				Recti src = {spriteSrc.x, spriteSrc.y, size.x, size.y};
 				Recti dst = {position.x, position.y + offset_y, size.x, size.y};
 

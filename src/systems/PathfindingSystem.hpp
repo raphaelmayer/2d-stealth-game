@@ -58,11 +58,11 @@ class PathfindingSystem final : public System {
 			if (pf.path[pf.pathIndex] == Utils::toInt(position)) {
 				if (pf.pathIndex < pf.path.size() - 1) {
 					pf.pathIndex += 1;
-					rigidBody.endPosition = pf.path[pf.pathIndex];
+					rigidBody.nextPosition = pf.path[pf.pathIndex];
 					// resetCurrentMovementParams(position, rigidBody);
 				}
 			} else {
-				rigidBody.endPosition = pf.path[pf.pathIndex];
+				rigidBody.nextPosition = pf.path[pf.pathIndex];
 			}
 		}
 	}
