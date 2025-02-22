@@ -149,28 +149,7 @@ class PhysicsSystem final : public System {
 	{
 		if (ecs.hasComponent<Rotatable>(entity)) {
 			auto &rotatable = ecs.getComponent<Rotatable>(entity);
-			rotatable.rotation = toRotation(direction);
-		}
-	}
-
-	Rotation toRotation(const Vec2f &moveDir) const
-	{
-		// Because we used "toTarget.norm()" it could have any angle,
-		// but we only handle 4 directions, so pick the largest axis.
-		if (std::fabs(moveDir.x) > std::fabs(moveDir.y)) {
-			// Horizontal movement
-			if (moveDir.x > 0.f) {
-				return Rotation::EAST;
-			} else {
-				return Rotation::WEST;
-			}
-		} else {
-			// Vertical movement
-			if (moveDir.y > 0.f) {
-				return Rotation::SOUTH;
-			} else {
-				return Rotation::NORTH;
-			}
+			rotatable.rotation = Utils::vec2fToRotation(direction);
 		}
 	}
 

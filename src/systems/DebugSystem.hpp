@@ -57,7 +57,7 @@ class DebugSystem : public System {
 		const auto &vision = ecs.getComponent<Vision>(entity);
 
 		// Map Rotation to forward direction vectors
-		Vec2f forwardDirection = rotationToVec2f(rot);
+		Vec2f forwardDirection = Utils::rotationToVec2f(rot);
 
 		// Calculate the left and right edges of the cone
 		float halfAngleRad = (vision.angle / 2.0f) * ((float)M_PI / 180.0f);
@@ -88,26 +88,6 @@ class DebugSystem : public System {
 		float cosAngle = std::cos(angleRad);
 		float sinAngle = std::sin(angleRad);
 		return {vec.x * cosAngle - vec.y * sinAngle, vec.x * sinAngle + vec.y * cosAngle};
-	}
-
-	Vec2f rotationToVec2f(Rotation rotation) const
-	{
-
-		switch (rotation) {
-		case NORTH:
-			return {0, -1};
-			break;
-		case EAST:
-			return {1, 0};
-			break;
-		case SOUTH:
-			return {0, 1};
-			break;
-		case WEST:
-			return {-1, 0};
-			break;
-		}
-		return {0, 0};
 	}
 
 	void renderPaths(ECSManager &ecs)
