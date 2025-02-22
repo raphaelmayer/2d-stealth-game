@@ -224,7 +224,7 @@ TEST_CASE("ECS Benchmark", "[ECS]")
 					if (ecs.hasComponent<RigidBody>(entity) && ecs.hasComponent<Positionable>(entity)) {
 						auto &position = ecs.getComponent<Positionable>(entity).position;
 						auto &rigidBody = ecs.getComponent<RigidBody>(entity);
-						rigidBody.endPosition = position + 1;
+						rigidBody.nextPosition = position + 1;
 					}
 				}
 			}
@@ -237,7 +237,7 @@ TEST_CASE("ECS Benchmark", "[ECS]")
 					if (ecs.hasComponent<RigidBody>(entity) && ecs.hasComponent<Positionable>(entity)) {
 						auto &position = ecs.getComponent<Positionable>(entity).position;
 						auto &rigidBody = ecs.getComponent<RigidBody>(entity);
-						position = rigidBody.endPosition;
+						position = rigidBody.nextPosition;
 					}
 				}
 			}

@@ -107,4 +107,45 @@ Rectf vectorsToRectangle(const Vec2f &vec1, const Vec2f &vec2)
 	return rect;
 }
 
+Rotation vec2fToRotation(const Vec2f &vec)
+{
+	// Because we used "toTarget.norm()" it could have any angle,
+	// but we only handle 4 directions, so pick the largest axis.
+	if (std::fabs(vec.x) > std::fabs(vec.y)) {
+		// Horizontal movement
+		if (vec.x > 0.f) {
+			return Rotation::EAST;
+		} else {
+			return Rotation::WEST;
+		}
+	} else {
+		// Vertical movement
+		if (vec.y > 0.f) {
+			return Rotation::SOUTH;
+		} else {
+			return Rotation::NORTH;
+		}
+	}
+}
+
+Vec2f rotationToVec2f(Rotation rotation)
+{
+
+	switch (rotation) {
+	case NORTH:
+		return {0, -1};
+		break;
+	case EAST:
+		return {1, 0};
+		break;
+	case SOUTH:
+		return {0, 1};
+		break;
+	case WEST:
+		return {-1, 0};
+		break;
+	}
+	return {0, 0};
+}
+
 } // namespace Utils

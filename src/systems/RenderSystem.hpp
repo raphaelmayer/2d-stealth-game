@@ -15,6 +15,8 @@
 #include <functional>
 #include <iostream>
 
+constexpr int TILESET_COLUMNS = 9; // TODO: Read from actual tileset data
+
 // The RenderSystem is responsible for rendering the map and all entities with Renderable components.
 // It performs visibility culling using the camera's position to avoid unnecessary rendering.
 class RenderSystem final : public System {
@@ -29,147 +31,99 @@ class RenderSystem final : public System {
 	{
 		Vec2f camPos = camera_.getPosition();
 		float camZoom = camera_.getZoom();
+		Vec2f screenSize = Utils::toFloat(engine_.getScreenSize()) / camZoom;
+		Rectf camView{camPos.x, camPos.y, screenSize.x, screenSize.y};
 
-		drawMap(camPos, camZoom);
+		renderMap(camView);
 
 		const std::set<Entity> &entities = ecs.getEntities();
 		for (const Entity &entity : entities) {
 			if (ecs.hasComponent<Renderable>(entity) && ecs.hasComponent<Positionable>(entity)) {
-				auto &position = ecs.getComponent<Positionable>(entity).position;
-				auto &renderable = ecs.getComponent<Renderable>(entity);
-
-				Vec2i spriteSrc = renderable.spriteSrc;
-				Vec2i size = renderable.size;
-				int offset_y = renderable.offset_y;
-
-				if (ecs.hasComponent<Rotatable>(entity)) {
-					const auto rotation = ecs.getComponent<Rotatable>(entity).rotation;
-					// due to how the spritesheet and the Rotation enum are laid out
-					// this corresponds to the sprite for the current direction
-					spriteSrc.x = rotation * 2 * size.x;
-				}
-
-				if (ecs.hasComponent<Animatable>(entity)) {
-					auto &animatable = ecs.getComponent<Animatable>(entity);
-					animatable.timeElapsed += deltaTime;
-					handleAnimation(ecs, entity, animatable, spriteSrc.y);
-				}
-
-				Recti src = {spriteSrc.x, spriteSrc.y, size.x, size.y};
-				Recti dst = {position.x, position.y + offset_y, size.x, size.y};
-
-				// Perform visibility culling before rendering the entity.
-				if (isVisibleOnScreen(dst, camPos, engine_.getScreenSize() / camZoom)) {
-					Rectf camAdjustedDst = camera_.rectToScreen(dst);
-					engine_.drawTexture(spritesheet_, src, camAdjustedDst);
-
-					// Currently testing: rendering weapons
-					// Render the weapon if applicable
-					// renderWeapon(ecs, entity, position, camPos);
-					if (ecs.hasComponent<AI>(entity)) {
-						const AI &ai = ecs.getComponent<AI>(entity);
-						renderAlertnessLevel(position, ai, camPos, camZoom);
-					}
-
-					if (ecs.hasComponent<EquippedWeapon>(entity)) {
-						const EquippedWeapon &ew = ecs.getComponent<EquippedWeapon>(entity);
-						renderWarmupVisual(position, ew);
-						renderReloadVisual(position, ew);
-					}
-				}
+				renderEntity(ecs, entity, camView);
 			}
 		}
 	}
 
   private:
-	void handleAnimation(ECSManager &ecs, const Entity entity, Animatable &animatable, int &spriteSrcY)
-	{
-		if (animatable.timeElapsed > ANIMATION_UPDATE_RATE_IN_SECONDS) {
-			animatable.timeElapsed = 0;
-			if (ecs.hasComponent<RigidBody>(entity) && ecs.getComponent<RigidBody>(entity).isMoving) {
-				animatable.currentAnimation += 1;
-				if (animatable.currentAnimation >= PLAYER_NUMBER_ANIMATIONS) {
-					animatable.currentAnimation = 0;
-				}
-			} else {
-				animatable.currentAnimation = PLAYER_STANDING_ANIMATION_NUMBER;
-			}
-		}
-		spriteSrcY = animatable.animationAdresses[animatable.currentAnimation];
-	}
-
-	bool isVisibleOnScreen(const Recti &dst, const Vec2f &cameraPosition, const Vec2i &screenSize)
-	{
-		return dst.x >= (cameraPosition.x - TILE_SIZE) && dst.x < (cameraPosition.x + screenSize.x)
-		       && dst.y >= (cameraPosition.y - TILE_SIZE) && dst.y < (cameraPosition.y + screenSize.y);
-	}
-
-	void drawMap(const Vec2f &camPos, const float &zoom)
+	void renderMap(const Rectf &camView) const
 	{
 		const LevelMap &map = mapManager_.getLevelMap();
 
-		// Calculate the range of visible tiles to render based on the camera's position.
-		Vec2i visibleArea = engine_.getScreenSize() / zoom;
-		int startX = std::max(0, static_cast<int>(camPos.x / TILE_SIZE));
-		int startY = std::max(0, static_cast<int>(camPos.y / TILE_SIZE));
-		int endX = std::min(map.getWidth(), static_cast<int>((camPos.x + visibleArea.x) / TILE_SIZE) + 1);
-		int endY = std::min(map.getHeight(), static_cast<int>((camPos.y + visibleArea.y) / TILE_SIZE) + 1);
+		// Calculate the range of visible tiles to selectively render based on the camera's position.
+		int startX = std::max(0, static_cast<int>(camView.x / TILE_SIZE));
+		int startY = std::max(0, static_cast<int>(camView.y / TILE_SIZE));
+		int endX = std::min(map.getWidth(), static_cast<int>((camView.x + camView.w) / TILE_SIZE) + 1);
+		int endY = std::min(map.getHeight(), static_cast<int>((camView.y + camView.h) / TILE_SIZE) + 1);
 
 		for (auto layer : map.getLayers()) {
 			for (int y = startY; y < endY; y++) {
 				for (int x = startX; x < endX; x++) {
-					int tileIndex = Utils::to1d({x, y}, map.getWidth());
-					int tileid = layer[tileIndex];
-					Vec2i srcPos = Utils::to2d(tileid - 1, 9) * TILE_SIZE; // TODO: should read 9 from tileset width
-					Recti src = {srcPos.x, srcPos.y, TILE_SIZE, TILE_SIZE};
-					Recti dst = {x * TILE_SIZE, y * TILE_SIZE, TILE_SIZE, TILE_SIZE};
-
-					// Perform visibility culling before rendering the tile.
-					if (isVisibleOnScreen(dst, camPos, engine_.getScreenSize() / zoom)) {
-						Rectf camAdjustedDst = camera_.rectToScreen(dst);
-						engine_.drawTexture(spritesheet_, src, camAdjustedDst);
-					}
+					const int tileIndex = Utils::to1d({x, y}, map.getWidth());
+					const int tileid = layer[tileIndex] - 1;
+					const Vec2i srcPos = Utils::to2d(tileid, TILESET_COLUMNS) * TILE_SIZE;
+					const Recti src = {srcPos.x, srcPos.y, TILE_SIZE, TILE_SIZE};
+					const Recti dst = {x * TILE_SIZE, y * TILE_SIZE, TILE_SIZE, TILE_SIZE};
+					const Rectf camAdjustedDst = camera_.rectToScreen(dst);
+					engine_.drawTexture(spritesheet_, src, camAdjustedDst);
 				}
 			}
 		}
 	}
 
-	Vec2i CalculateWeaponOffset(const Rotation &rotation)
+	bool isVisibleOnScreen(const Recti &dst, const Rectf &camView) const
 	{
-		if (rotation == Rotation::EAST)
-			return {2, 6}; // EAST
-		if (rotation == Rotation::SOUTH)
-			return {-2, 2}; // SOUTH
-		if (rotation == Rotation::WEST)
-			return {-2, 6}; // WEST
-		if (rotation == Rotation::NORTH)
-			return {2, 2}; // NORTH
+		const float leftBound = camView.x - TILE_SIZE;
+		const float rightBound = camView.x + camView.w;
+		const float topBound = camView.y - TILE_SIZE;
+		const float bottomBound = camView.y + camView.h;
 
-		return {0, 0};
+		return dst.x >= leftBound && dst.x < rightBound && dst.y >= topBound && dst.y < bottomBound;
 	}
 
-	void renderWeapon(ECSManager &ecs, const Entity &entity, const Vec2f &position, const Vec2f &camPos)
+	void renderEntity(ECSManager &ecs, Entity entity, const Rectf &camView) const
 	{
+		auto &position = ecs.getComponent<Positionable>(entity).position;
+		auto &renderable = ecs.getComponent<Renderable>(entity);
+
+		Vec2i spriteSrc = renderable.spriteSrc;
+		Vec2i size = renderable.size;
+		int offset_y = renderable.offset_y;
+
 		if (ecs.hasComponent<Rotatable>(entity)) {
-			const auto &rotation = ecs.getComponent<Rotatable>(entity).rotation;
-			Vec2i weaponOffset = CalculateWeaponOffset(rotation);
+			const auto rotation = ecs.getComponent<Rotatable>(entity).rotation;
+			// due to how the spritesheet and the Rotation enum are laid out
+			// this corresponds to the sprite for the current direction
+			spriteSrc.x = rotation * 2 * size.x;
+		}
 
-			auto flip = rotation == Rotation::EAST ? TextureFlip::NONE : TextureFlip::HORIZONTAL;
-			auto angle = rotation == Rotation::SOUTH || rotation == Rotation::NORTH ? 90 : 0;
+		Recti src = {spriteSrc.x, spriteSrc.y, size.x, size.y};
+		Recti dst = {position.x, position.y + offset_y, size.x, size.y};
 
-			Recti wepSrc = {0, 0, 64, 32};
-			Recti camAdjustedDstWep = {position.x + weaponOffset.x - camPos.x, position.y + weaponOffset.y - camPos.y,
-			                           16, 8};
+		// Perform visibility culling before rendering the entity.
+		if (isVisibleOnScreen(dst, camView)) {
+			Rectf camAdjustedDst = camera_.rectToScreen(dst);
+			engine_.drawTexture(spritesheet_, src, camAdjustedDst);
 
-			engine_.drawTexture(weaponTexture, wepSrc, camAdjustedDstWep, angle, {8, 4}, flip);
+			if (ecs.hasComponent<AI>(entity)) {
+				const AI &ai = ecs.getComponent<AI>(entity);
+				renderAlertnessLevel(position, ai);
+			}
+
+			if (ecs.hasComponent<EquippedWeapon>(entity)) {
+				const EquippedWeapon &ew = ecs.getComponent<EquippedWeapon>(entity);
+				// renderWeapon(ecs, entity, position, ew); // TODO
+				renderWarmupVisual(position, ew);
+				renderReloadVisual(position, ew);
+			}
 		}
 	}
 
-	void renderAlertnessLevel(const Vec2f &position, const AI &ai, const Vec2f &camPos, const float &camZoom)
+	void renderAlertnessLevel(const Vec2f &position, const AI &ai) const
 	{
 		const Recti dst = {position.x + (TILE_SIZE / 4), position.y - TILE_SIZE, TILE_SIZE, TILE_SIZE};
-		Rectf camAdjustedDst = camera_.rectToScreen(dst);
+		const Rectf camAdjustedDst = camera_.rectToScreen(dst);
 		std::string symbol;
+
 		switch (ai.state) {
 		case AIState::Unaware:
 			symbol = ""; // Symbol for unaware state
@@ -199,20 +153,23 @@ class RenderSystem final : public System {
 
 	void renderDetectionVisual(const Vec2f &position, const AI &ai) const
 	{
-		float maxTime = ai.detectionThreshold;
-		float fillPercent = ai.detectionTime / maxTime;
+		const float maxTime = ai.detectionThreshold;
+		const float fillPercent = ai.detectionTime / maxTime;
+
 		renderLoadingBar(Rectf{position.x, position.y, TILE_SIZE, 4}, fillPercent);
 	}
 
 	void renderWarmupVisual(const Vec2f &position, const EquippedWeapon &ew) const
 	{
-		auto wdata = WeaponDatabase::getInstance().get(ew.weaponId);
+		const WeaponMetadata wdata = WeaponDatabase::getInstance().get(ew.weaponId);
+
 		if (ew.warmupAccumulator == 0 || ew.warmupAccumulator >= wdata.warmup)
 			return;
 
-		float maxTime = wdata.warmup;
-		float fillPercent = ew.warmupAccumulator / maxTime;
-		Rectf dst = camera_.rectToScreen(Rectf{position.x, position.y - TILE_SIZE, TILE_SIZE * 2, TILE_SIZE / 2});
+		const float maxTime = wdata.warmup;
+		const float fillPercent = ew.warmupAccumulator / maxTime;
+		const Rectf dst = camera_.rectToScreen(Rectf{position.x, position.y - TILE_SIZE, TILE_SIZE * 2, TILE_SIZE / 2});
+
 		engine_.drawText(dst, "WUP");
 		renderLoadingBar(Rectf{position.x, position.y, TILE_SIZE, 4}, fillPercent);
 	}
@@ -220,21 +177,23 @@ class RenderSystem final : public System {
 	void renderReloadVisual(const Vec2f &position, const EquippedWeapon &ew) const
 	{
 		auto wdata = WeaponDatabase::getInstance().get(ew.weaponId);
+
 		if (ew.reloadTimeAccumulator == 0 || ew.reloadTimeAccumulator >= wdata.reloadTime)
 			return;
 
 		float maxTime = wdata.reloadTime;
 		float fillPercent = ew.reloadTimeAccumulator / maxTime;
 		Rectf dst = camera_.rectToScreen(Rectf{position.x, position.y - TILE_SIZE, TILE_SIZE * 2, TILE_SIZE / 2});
+
 		engine_.drawText(dst, "RLD");
 		renderLoadingBar(Rectf{position.x, position.y, TILE_SIZE, 4}, fillPercent);
 	}
 
 	void renderLoadingBar(const Rectf &rect, const float fillPercent) const
 	{
+		const float borderThickness = 1.0f;
 		Rectf dstBorder = rect;
 		Rectf dst = rect;
-		float borderThickness = 1.0f;
 		dst.x = dst.x + borderThickness;
 		dst.y = dst.y + borderThickness;
 		dst.w = (dst.w + -2 * borderThickness) * fillPercent;

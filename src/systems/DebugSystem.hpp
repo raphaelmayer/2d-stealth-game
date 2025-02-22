@@ -26,7 +26,7 @@ class DebugSystem : public System {
 	}
 
   private:
-	void renderVisionDebug(ECSManager &ecs)
+	void renderVisionDebug(ECSManager &ecs) const
 	{
 		for (const auto &entity : ecs.getEntities()) {
 			if (ecs.hasComponent<Vision>(entity)) {
@@ -41,7 +41,7 @@ class DebugSystem : public System {
 	}
 
 	void drawLinesOfSight(ECSManager &ecs, const Entity &entity, const std::vector<Entity> &others,
-	                      const ColorRGBA &color)
+	                      const ColorRGBA &color) const
 	{
 		const Vec2f &pos = ecs.getComponent<Positionable>(entity).position;
 		for (const auto &visibleEntity : others) {
@@ -50,14 +50,14 @@ class DebugSystem : public System {
 		}
 	}
 
-	void drawViewCone(ECSManager &ecs, const Entity &entity)
+	void drawViewCone(ECSManager &ecs, const Entity &entity) const
 	{
 		const auto &pos = ecs.getComponent<Positionable>(entity).position;
 		const auto &rot = ecs.getComponent<Rotatable>(entity).rotation;
 		const auto &vision = ecs.getComponent<Vision>(entity);
 
 		// Map Rotation to forward direction vectors
-		Vec2f forwardDirection = rotationToVec2f(rot);
+		Vec2f forwardDirection = Utils::rotationToVec2f(rot);
 
 		// Calculate the left and right edges of the cone
 		float halfAngleRad = (vision.angle / 2.0f) * ((float)M_PI / 180.0f);
@@ -90,27 +90,7 @@ class DebugSystem : public System {
 		return {vec.x * cosAngle - vec.y * sinAngle, vec.x * sinAngle + vec.y * cosAngle};
 	}
 
-	Vec2f rotationToVec2f(Rotation rotation) const
-	{
-
-		switch (rotation) {
-		case NORTH:
-			return {0, -1};
-			break;
-		case EAST:
-			return {1, 0};
-			break;
-		case SOUTH:
-			return {0, 1};
-			break;
-		case WEST:
-			return {-1, 0};
-			break;
-		}
-		return {0, 0};
-	}
-
-	void renderPaths(ECSManager &ecs)
+	void renderPaths(ECSManager &ecs) const
 	{
 		for (const auto &entity : ecs.getEntities()) {
 			if (ecs.hasComponent<Pathfinding>(entity)) {
@@ -128,7 +108,7 @@ class DebugSystem : public System {
 
 	// Computes the offset to center objects within tiles and adjust for the camera's position.
 	// Ensures lines and shapes are drawn relative to the tile grid, aligned to tile centers.
-	Vec2f screenOffset(const Vec2f &position)
+	Vec2f screenOffset(const Vec2f &position) const
 	{
 		Vec2f pos{position.x - camera_.getPosition().x, position.y - camera_.getPosition().y};
 		return (pos)*camera_.getZoom() + float(TILE_SIZE / 2) * camera_.getZoom();

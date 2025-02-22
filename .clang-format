@@ -4,7 +4,7 @@ IndentWidth: 4
 TabWidth: 4
 UseTab: ForIndentation
 AlignEscapedNewlines: DontAlign
-AllowShortFunctionsOnASingleLine: Inline
+AllowShortFunctionsOnASingleLine: false
 AlwaysBreakTemplateDeclarations: true
 BreakBeforeBinaryOperators: NonAssignment
 BreakBeforeBraces: Custom

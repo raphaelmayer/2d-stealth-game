@@ -20,6 +20,7 @@
 #include "modules/GameStateManager.hpp"
 #include "modules/SaveGameManager.hpp"
 #include "systems/AISystem.hpp"
+#include "systems/AnimationSystem.hpp"
 #include "systems/AudioSystem.hpp"
 #include "systems/DebugSystem.hpp"
 #include "systems/FiringSystem.hpp"
@@ -88,6 +89,7 @@ class Game : public Engine {
 			// camera.focus(ecs.getComponent<Positionable>(PLAYER).position);
 
 			// must happen in between update of physicsystem and rendersystem, or will result in flickering
+			animationSystem->update(ecs, deltaTime);
 			renderSystem->update(ecs, deltaTime);
 
 			// Needs to happen after rendering entities to be on top but before interactionsystem,
@@ -127,6 +129,7 @@ class Game : public Engine {
 		pathfindingSystem = std::make_unique<PathfindingSystem>(mapManager);
 		projectileSystem = std::make_unique<ProjectileSystem>(mapManager);
 		firingSystem = std::make_unique<FiringSystem>(*this);
+		animationSystem = std::make_unique<AnimationSystem>(*this, mapManager, camera);
 	}
 
 	void createTestEntity(const Vec2i &position, const std::vector<PatrolPoint> &waypoints)
@@ -155,9 +158,10 @@ class Game : public Engine {
 		                           {Vec2i{0, 13} * TILE_SIZE, Rotation::WEST, 0}});
 	}
 
-	// These two rendering functions are here temporarily so we can render the selection on top of everything. This is necessary because
-	// these values are within input system and we don't have a simple way to share data between systems. The solution
-	// is to implement another class, which is passed to both systems, like a PlayerController or SelectionHandler.
+	// These two rendering functions are here temporarily so we can render the selection on top of everything. This is
+	// necessary because these values are within input system and we don't have a simple way to share data between
+	// systems. The solution is to implement another class, which is passed to both systems, like a PlayerController or
+	// SelectionHandler.
 	void renderSelectionRectangle()
 	{
 		auto start = inputSystem->start;
@@ -208,4 +212,5 @@ class Game : public Engine {
 	std::unique_ptr<PathfindingSystem> pathfindingSystem;
 	std::unique_ptr<ProjectileSystem> projectileSystem;
 	std::unique_ptr<FiringSystem> firingSystem;
+	std::unique_ptr<AnimationSystem> animationSystem;
 };

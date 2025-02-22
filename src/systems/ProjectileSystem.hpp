@@ -9,7 +9,9 @@
 
 class ProjectileSystem final : public System {
   public:
-	ProjectileSystem(const MapManager &mapmanager) : mapmanager_(mapmanager) {}
+	ProjectileSystem(const MapManager &mapmanager) : mapmanager_(mapmanager)
+	{
+	}
 
 	void update(ECSManager &ecs, const double deltaTime) override
 	{
@@ -49,8 +51,9 @@ class ProjectileSystem final : public System {
 
   private:
 	const MapManager &mapmanager_;
+	std::vector<Entity> toRemove;
 
-	bool wouldCollide(ECSManager &ecs, const Entity entity, const Vec2f &position)
+	bool wouldCollide(ECSManager &ecs, const Entity entity, const Vec2f &position) const
 	{
 		if (checkCollisionsWithMap(ecs, entity, position)) {
 			return true;
@@ -63,7 +66,7 @@ class ProjectileSystem final : public System {
 		return false;
 	}
 
-	bool checkCollisionsWithMap(ECSManager &ecs, const Entity entity, const Vec2f &position)
+	bool checkCollisionsWithMap(ECSManager &ecs, const Entity entity, const Vec2f &position) const
 	{
 		// TODO: check collision with map
 		// We need to implement a penetrable property for tiles.
@@ -72,9 +75,9 @@ class ProjectileSystem final : public System {
 		return false;
 	}
 
-	bool checkCollisionsWithEntities(ECSManager &ecs, const Entity entity, const Vec2f &position)
+	bool checkCollisionsWithEntities(ECSManager &ecs, const Entity entity, const Vec2f &position) const
 	{
-		Entity shooter = ecs.getComponent<Projectile>(entity).shooter;
+		const Entity shooter = ecs.getComponent<Projectile>(entity).shooter;
 
 		for (const auto &otherEntity : ecs.getEntities()) {
 			if (entity == otherEntity) {
@@ -86,8 +89,7 @@ class ProjectileSystem final : public System {
 			}
 
 			if (ecs.hasComponent<Collider>(otherEntity)) {
-				Vec2f otherPosition = ecs.getComponent<Positionable>(otherEntity).position;
-
+				const Vec2f otherPosition = ecs.getComponent<Positionable>(otherEntity).position;
 				// TODO: read entity size from component
 				const Rectf projectileBoundingBox{position.x, position.y, 3, 3};
 				const Rectf otherBoundingBox{otherPosition.x, otherPosition.y, TILE_SIZE, TILE_SIZE};
@@ -100,6 +102,4 @@ class ProjectileSystem final : public System {
 
 		return false;
 	}
-
-	std::vector<Entity> toRemove;
 };

@@ -12,12 +12,14 @@
 
 class FiringSystem final : public System {
   public:
-	explicit FiringSystem(const Engine &engine) : engine_(engine) {}
+	explicit FiringSystem(const Engine &engine) : engine_(engine)
+	{
+	}
 
 	void update(ECSManager &ecs, const double deltaTime) override
 	{
+		const Vec2i mousePos = engine_.getMousePosition();
 		const std::set<Entity> &entities = ecs.getEntities(); // no need to iterate over all entities
-		Vec2i mousePos = engine_.getMousePosition();
 
 		for (const Entity &entity : entities) {
 			if (ecs.hasComponent<EquippedWeapon>(entity) && ecs.hasComponent<Positionable>(entity)) {
@@ -34,7 +36,7 @@ class FiringSystem final : public System {
 	// StateMachine firingSM{std::make_unique<IdleNode>()};
 	// std::unordered_map<Entity, StateMachine> stateMachines;
 
-	void handleFiring(ECSManager &ecs, const Entity &entity, const double deltaTime)
+	void handleFiring(ECSManager &ecs, const Entity &entity, const double deltaTime) const
 	{
 		EquippedWeapon &ew = ecs.getComponent<EquippedWeapon>(entity);
 		WeaponMetadata wdata = WeaponDatabase::getInstance().get(ew.weaponId);
