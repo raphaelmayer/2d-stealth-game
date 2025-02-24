@@ -30,6 +30,7 @@ class PhysicsSystem final : public System {
 			}
 
 			rigidBody.isMoving = true; // set flag for other systems
+
 			Vec2f endPosPx = Utils::toFloat(rigidBody.endPosition);
 			Vec2f startPosPx = Utils::toFloat(rigidBody.startPosition);
 			Vec2f toTarget = endPosPx - currentPosition;
@@ -70,6 +71,7 @@ class PhysicsSystem final : public System {
 			if (distToTarget < 0.01f) {
 				currentPosition = endPosPx;
 				resetCurrentMovementParams(rigidBody, currentPosition);
+				
 			}
 		}
 	}

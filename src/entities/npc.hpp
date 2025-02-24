@@ -24,7 +24,7 @@ Entity instantiateNPCEntity(ECSManager &ecs, Vec2i positionInTiles, Rotation rot
 
 	ecs.addComponent(npc, Positionable{Utils::toFloat(positionInTiles) * TILE_SIZE});
 	ecs.addComponent(npc, Rotatable{rotation});
-	ecs.addComponent(npc, RigidBody{false, positionInTiles * TILE_SIZE, positionInTiles * TILE_SIZE});
+	ecs.addComponent(npc, RigidBody{false, false, positionInTiles * TILE_SIZE, positionInTiles * TILE_SIZE});
 	ecs.addComponent(npc, Animatable{PLAYER_STANDING_ANIMATION_NUMBER,
 	                                 {playerSpriteSheetY, playerSpriteSheetY + PLAYER_SIZE_Y,
 	                                  playerSpriteSheetY + 2 * PLAYER_SIZE_Y, playerSpriteSheetY + PLAYER_SIZE_Y}});

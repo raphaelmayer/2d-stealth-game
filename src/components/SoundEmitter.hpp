@@ -1,13 +1,16 @@
 #pragma once
 
 #include <string>
+#include "../engine/types/SoundEffect.hpp"
 
 struct SoundEmitter {
-	std::string file; 
+	std::shared_ptr<SoundEffect> soundfile_p;
 
-	template <class Archive>
-	void serialize(Archive &archive)
-	{
-		archive(file);
-	}
+	//template <class Archive>
+	//void serialize(Archive &archive)
+	//{
+	//	archive(soundfile_p);
+	//}
 };
+
+

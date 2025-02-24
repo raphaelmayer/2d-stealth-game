@@ -1,45 +1,61 @@
 #pragma once
 
-#include "../Engine.hpp"
-#include "AudioConstants.hpp"
-#include <concepts>
-#include <filesystem> //should do this somewhere else right?
-#include <string>
-#include <SDL_mixer.h>
 #include "../types.hpp"
-
+#include "AudioConstants.hpp"
+#include "ChannelManager.hpp"
+#include "Listener.hpp"
+#include <SDL_mixer.h>
+#include <concepts>
+#include <filesystem>
+#include <string>
 
 
 class Audio {
   public:
 	Audio(int virtualChannels = VIRTUAL_CHANNELS);
+	~Audio();
 
-	Mix_Music *loadMusicFile(std::string pathToSoundFile);
+	Music loadMusicFile(const std::string &pathToSoundFile) const;
 
-	Mix_Chunk *loadSoundeffectFile(std::string pathToSoundFile);
+	SoundEffect loadSoundEffectFile(const std::string &pathToSoundFile) const;
 
-	void streamMusic(Mix_Music *loadedSoundFile, int loops, int fadeMs = 0);
+	void streamMusic(const Music &loadedSoundFile, int loops, int fadeMs = 0) const;
+	
+	// plays specified file on specified channel, -1 for all channels
+	int emit2D(const int channelToPlay, const SoundEffect &loadedSoundFile, const int loops,
+	           const int fadeMs = 0) const;
 
-	void emit2D(Mix_Chunk *loadedSoundFile, int loops, int fadeMs = 0);
+	void emit3D(const SoundEffect &loadedSoundFile, const Vec2f &emitterPosition, const Vec2f &listenerPosition,
+	            const int loops, const int fadeMs = 0) const;
 
-	void emit3D(Mix_Chunk *loadedSoundFile, Vec2f emitterPosition, int listener, int loops, int fadeMs = 0);
+	void pauseStream() const;
 
-	void pauseStream();
+	// pauses emission on specified channel, -1 for all channels
+	void pauseEmission(const int channelToPause) const;
 
-	void pauseEmission();
+	void pauseAllAudio() const;
 
-	void pauseAllAudio();
+	void resumeStream() const;
 
-	void resumeStream();
+	// resumes emission on specified channel, -1 for all channels
+	void resumeEmission(const int channelToResume) const;
 
-	void resumeEmission();
-
-	void stopEmission();
+	// stops emission on specified channel, -1 for all channels
+	void stopEmission(int channelToStop);
 
 	void stopStream();
 
 	void stopAllAudio();
 
-	// grouping
-};
+	// maximum volume is 128, -1 for all channels
+	void manageVolume(const int &channel, const int &volume) const;
 
+	bool isChannelPlaying(int channelId) const;
+
+	// grouping not touched for, will be implemented when/if deemed necessary
+
+  private:
+	Sint16 calculateAngle(const Vec2f &emitterPosition,
+	                      const Vec2f &listenerPosition) const; // let´s talk about const before body again please
+	int calculateDistance(const Vec2f &emitterPosition, const Vec2f &listenerPosition) const;
+};

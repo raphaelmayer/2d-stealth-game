@@ -95,9 +95,12 @@ cmake --open xbuild
 - all tests for my code
 
 #### Joshua Meyer
-- AudioSystem.hpp
 - InteractionSystem.hpp
 - ProgressSystem.hpp
+
+#### Sebastian Haidler
+ - /engine/sound
+ - AudioSystem.hpp
 
 ## TODO
 - Switch to new ECS version

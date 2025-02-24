@@ -84,6 +84,8 @@ class Engine {
 
 	double getFPS() const { return fpsCounter_.getFPS(); }
 
+	const Audio &getAudioDevice() const { return audioDevice_; }
+
 	virtual bool onStart() = 0;
 	virtual bool onUpdate(double deltaTime) = 0;
 	virtual bool onDestroy() = 0;
@@ -105,4 +107,5 @@ class Engine {
 	Mouse mouse_;
 	FPSCounter fpsCounter_;
 	FrameRateLimiter frameRateLimiter_;
+	Audio audioDevice_;
 };

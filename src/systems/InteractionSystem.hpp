@@ -70,8 +70,6 @@ class InteractionSystem final : public System {
 				if (ecs.hasComponent<Collectable>(targetEntity)) {
 					ecs.getComponent<Inventory>(entity).items.push_back(targetEntity);
 
-					// add audio component for collection sound
-					ecs.addComponent(entity, SoundEmitter{SFX_COLLECT_ITEM});
 
 					// add armor to players stats
 					ecs.getComponent<Stats>(entity).armor += ecs.getComponent<Collectable>(targetEntity).armor;

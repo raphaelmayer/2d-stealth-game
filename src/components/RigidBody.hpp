@@ -9,17 +9,18 @@
 // If the entity is moving, end position equals the immediate next tile.
 struct RigidBody {
 	bool isMoving = false;
+	bool isShooting = false; // added it here because I think you need a body to shot and for now this is the easieast way for me. We can change it!
 	Vec2i startPosition; // in pixel space. unused as of now, but might be handy in the future
 	Vec2i endPosition;   // in pixel space
 	// TODO: Remove progress and accumulator as they are no longer used.
 	float progress = 0;
 	float accumulator = 0; // accumulates movement increments smaller than 1 pixel
 
-	template <class Archive>
+	/*template <class Archive>
 	void serialize(Archive &archive)
 	{
-		archive(isMoving, startPosition, endPosition, progress, accumulator);
-	}
+		archive(isMoving, isShooting, startPosition, endPosition, progress, accumulator);
+	}*/
 };
 
 // Due to the introduction of deltaTime movement increments can become a lot smaller than 1.

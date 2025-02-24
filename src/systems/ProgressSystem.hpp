@@ -191,7 +191,6 @@ class ProgressSystem final : public System {
 		                             [&](Entity item) { return ecs.getComponent<Collectable>(item).name == key; });
 		inventory.items.erase(newEnd, inventory.items.end());
 
-		// add audio component for item remove sound
-		ecs.addComponent(PLAYER, SoundEmitter{SFX_REMOVE_ITEM});
+
 	}
 };

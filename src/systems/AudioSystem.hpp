@@ -2,71 +2,133 @@
 #include "../ecs/Entity.hpp"
 #include "System.hpp"
 #include <SDL.h>
-
-#define BACKGROUND_MUSIC_FADE_MS 700
+#include <stdint.h>
+#include <memory>
 
 class AudioSystem final : public System {
   public:
+	explicit AudioSystem(const Engine &engine) : engine_(engine)
+	{
+		footStep_ = audioDevice_.loadSoundEffectFile(SFX_FOOTSTEP);
+		sniperShot_ = audioDevice_.loadSoundEffectFile(SFX_SNIPER_SHOT_AND_RELOAD);
+
+		audioDevice_.manageVolume(-1, VOLUME_STANDARD);
+
+		// Mix_ChannelFinished(channelFinished);
+	};
+
 	void update(ECSManager &ecs, const double deltaTime) override
 	{
-		// Play SFX
+		// Start Background Music at Start of Game loop
+		if (!backgroundMusic_) {
+			backgroundMusic_ = audioDevice_.loadMusicFile(BACKGROUND_MUSIC_1);
+			audioDevice_.streamMusic(backgroundMusic_, -1);
+		}
+
+		// testing to check for isMoving here or not could work well
 		const std::set<Entity> &entities = ecs.getEntities();
+		for (Entity entity : entities) {
+			if (ecs.hasComponent<RigidBody>(entity)) {
+				RigidBody &rigidBody = ecs.getComponent<RigidBody>(entity);
+				if (rigidBody.isMoving) {
+					if (!ecs.hasComponent<SoundEmitter>(entity)) {
+						ecs.addComponent<SoundEmitter>(entity, {footStep_ptr_});
+					}
+				}
+				if (rigidBody.isShooting) {
+					if (!ecs.hasComponent<SoundEmitter>(entity)) {
+						ecs.addComponent<SoundEmitter>(entity, {sniperShot_ptr_});
+					}
+				}
+			}
+		}
+
+		// Play Soundeffects
+		/* for (Entity entity : entities) {
+		    if (entity == PLAYER) {
+		        RigidBody &rigidBody = ecs.getComponent<RigidBody>(entity);
+		        if (rigidBody.isMoving ) {
+		            if (!ecs.hasComponent<SoundEmitter>(entity)) {
+		                ecs.addComponent<SoundEmitter>(entity, {"footstep"});
+		            }
+
+		        }
+		    }
+		}*/
+		int counter = 0;
+		int channelChosen;
+		bool alreadyPlaying = false;
 		for (const Entity &entity : entities) {
+			
 			if (ecs.hasComponent<SoundEmitter>(entity)) {
-				playSFX(ecs.getComponent<SoundEmitter>(entity).file.c_str());
+				SoundEmitter soundEffect = ecs.getComponent<SoundEmitter>(entity);
+				Vec2f &position = ecs.getComponent<Positionable>(entity).position;
+				int pos_x = static_cast<int>(position.x);
+				int pos_y = static_cast<int>(position.y);
+
+				for (ChannelData channel : channelManagementList_) {
+					if (channel.emitterID != entity && soundEffect.soundfile_p != channel.soundfile_p) {
+						continue;
+					} else {
+						alreadyPlaying = true;
+						std::cout << "reached already playing \n";
+					}
+				}
+
+				if (!alreadyPlaying) {
+					if (soundEffect.soundfile_p.get() == &footStep_) {
+						channelChosen = audioDevice_.emit2D(-1, footStep_, 0); 
+						std::cout << "Channel active for step:" << channelChosen << "\n";
+						channelManagementList_[channelChosen] = {entity, footStep_ptr_, VOLUME_STANDARD, 0};
+					} /*else {
+						audioDevice_.emit2D(-1, sniperShot_, 0);
+						channelManagementList_[channelChosen] = {entity, sniperShot_ptr_, VOLUME_STANDARD, 0};
+					}*/
+				}
 				ecs.removeComponent<SoundEmitter>(entity);
 			}
+
 		}
-		// Change background music depending on the players position
-		Vec2f playerPosition = ecs.getComponent<Positionable>(player_).position;
-		switch (currentLevel) {
-		case 1:
-			if (playerPosition.x > LEVEL_2_WEST_BORDER * TILE_SIZE) {
-				playBackgroundMusic(BACKGROUND_MUSIC_2);
-				currentLevel = 2;
+		for (int i = 0; i < channelManagementList_.size();          // opening for loop like this because I need an index. maybe manual index setting above for loop is
+																	// actually easier. No enumerate option in c++ like in python as far as i could
+																	// make out
+		     i++) { 
+			if (!audioDevice_.isChannelPlaying(i)) {
+				ChannelData &openedChannelData = channelManagementList_[i];
+				openedChannelData.emitterID = -1;
+				openedChannelData.soundfile_p = NULL;
+				openedChannelData.volume = NULL;
 			}
-			break;
-		case 2:
-			if (playerPosition.x < LEVEL_1_EAST_BORDER * TILE_SIZE) {
-				playBackgroundMusic(BACKGROUND_MUSIC_1);
-				currentLevel = 1;
-			}
-			break;
 		}
-	}
-	explicit AudioSystem(const Entity player)
-	{
-		player_ = player;
-		currentLevel = 1;
-		playBackgroundMusic(BACKGROUND_MUSIC_1);
 	}
 
   private:
-	// use next free channel to play sfx
-	static void playSFX(const char *file)
-	{
-		auto chunk = Mix_LoadWAV(file);
-		if (chunk) {
-			Mix_PlayChannel(-1, chunk, 0);
-		} else {
-			fprintf(stderr, "Failed to load sfx sound at: %s\n%s", file, Mix_GetError());
-		}
-	}
+	struct ChannelData {
+		uint32_t emitterID;
+		std::shared_ptr<SoundEffect> soundfile_p;
+		int volume;
+		int assingedGroup;
+		// SoundEffect *soundfile_p; // raw pointer usage because of non ownership (chatgpt´s advice), we get a problem
+		// with cereal in the Soundemitterstruct though.#
+	};
 
-	void playBackgroundMusic(const char *file)
-	{
-		// Although documented differently, this method does block and therefore stop other systems from updating
-		// causing to stop the player from walking
-		// Mix_FadeOutMusic(BACKGROUND_MUSIC_FADE_MS);
-		backgroundMusic = Mix_LoadMUS(file);
-		if (backgroundMusic) {
-			Mix_FadeInMusic(backgroundMusic, -1, BACKGROUND_MUSIC_FADE_MS);
-		} else {
-			fprintf(stderr, "Failed to load background music at: %s\n%s", file, Mix_GetError());
-		}
-	}
+	std::array<ChannelData, VIRTUAL_CHANNELS> channelManagementList_ =
+	    {}; // we test channel management here and see if we need to bring some to the engine
 
-	Entity player_;
-	uint16_t currentLevel;
-	Mix_Music *backgroundMusic;
+	/* static void channelFinished(int channel)
+	{
+	    instance->channelManagementList_[channel] = ;
+	} // callback should work but to have this work properly we need to save more data in our channel management
+	  // container, this goes engineside anyhow because we need to wrap mixer.*/
+
+	// static AudioSystem *instance;
+	const Engine &engine_;
+	const Audio &audioDevice_ =
+	    engine_
+	        .getAudioDevice(); // let´s try to change this to only need the audio and not the whole engine -> low prio
+	Music backgroundMusic_;
+	SoundEffect footStep_;
+	std::shared_ptr<SoundEffect> footStep_ptr_ = std::make_shared<SoundEffect>(std::move(footStep_));
+	SoundEffect sniperShot_;
+	std::shared_ptr<SoundEffect> sniperShot_ptr_ = std::make_shared<SoundEffect>(std::move(footStep_));
 };

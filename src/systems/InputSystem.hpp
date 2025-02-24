@@ -39,7 +39,7 @@ class InputSystem final : public System {
 						if (keyStates[SDL_SCANCODE_RETURN].pressed) {
 							controllable.isTryingToStartInteraction = true;
 						} else {
-							handleMovement(ecs, entity, keyStates);
+							handleMovement(ecs, entity, keyStates);							
 						}
 					} else {
 						// allow ending an interaction, if player is in an interaction
@@ -47,6 +47,7 @@ class InputSystem final : public System {
 							controllable.isTryingToEndInteraction = true;
 						}
 					}
+					
 				}
 			}
 		}
@@ -88,6 +89,7 @@ class InputSystem final : public System {
 
 			// Movement mechanism: if endPosition != position => move
 			rigidBody.endPosition = Utils::toGrid(positionable.position) + velocity * TILE_SIZE;
+
 		}
 	}
 
@@ -162,6 +164,8 @@ class InputSystem final : public System {
 			Vec2f mouseScreenPos = Utils::toFloat(engine_.getMousePosition());
 			Vec2f mouseWorldPos = screenToWorld(mouseScreenPos);
 			spawnProjectile(ecs, start, mouseWorldPos, entity, ew.weaponId);
+			bool& isShooting = ecs.getComponent<RigidBody>(entity).isShooting;
+			isShooting = true; // isShooting to put Soundemitter assingment into audiosystem
 		}
 	}
 
