@@ -2,19 +2,17 @@
 #include "../ecs/Entity.hpp"
 #include "System.hpp"
 #include <SDL.h>
-#include <stdint.h>
 #include <memory>
+#include <stdint.h>
 
 class AudioSystem final : public System {
   public:
-	explicit AudioSystem(const Engine &engine) : engine_(engine)
+	explicit AudioSystem(const Engine &engine, const Camera &camera) : engine_(engine), camera_(camera)
 	{
 		footStep_ = audioDevice_.loadSoundEffectFile(SFX_FOOTSTEP);
 		sniperShot_ = audioDevice_.loadSoundEffectFile(SFX_SNIPER_SHOT_AND_RELOAD);
 
-		audioDevice_.manageVolume(-1, VOLUME_STANDARD);
-
-		// Mix_ChannelFinished(channelFinished);
+		audioDevice_.setVolume(-1, DEFAULT_VOLUME);
 	};
 
 	void update(ECSManager &ecs, const double deltaTime) override
@@ -22,7 +20,7 @@ class AudioSystem final : public System {
 		// Start Background Music at Start of Game loop
 		if (!backgroundMusic_) {
 			backgroundMusic_ = audioDevice_.loadMusicFile(BACKGROUND_MUSIC_1);
-			audioDevice_.streamMusic(backgroundMusic_, -1);
+			// audioDevice_.streamMusic(backgroundMusic_, -1);
 		}
 
 		// testing to check for isMoving here or not could work well
@@ -30,105 +28,82 @@ class AudioSystem final : public System {
 		for (Entity entity : entities) {
 			if (ecs.hasComponent<RigidBody>(entity)) {
 				RigidBody &rigidBody = ecs.getComponent<RigidBody>(entity);
-				if (rigidBody.isMoving) {
+				if (rigidBody.isMoving) {  
 					if (!ecs.hasComponent<SoundEmitter>(entity)) {
-						ecs.addComponent<SoundEmitter>(entity, {footStep_ptr_});
+						ecs.addComponent<SoundEmitter>(entity, {footStep_Ptr_}); //TODO --> MOVE TO RELEVANT SYSTEM
 					}
 				}
 				if (rigidBody.isShooting) {
 					if (!ecs.hasComponent<SoundEmitter>(entity)) {
-						ecs.addComponent<SoundEmitter>(entity, {sniperShot_ptr_});
+						ecs.addComponent<SoundEmitter>(entity, {sniperShot_Ptr_}); //TODO --> MOVE TO RELEVANT SYSTEM
+						rigidBody.isShooting = false; // move to input system or whereever
 					}
 				}
 			}
 		}
-
-		// Play Soundeffects
-		/* for (Entity entity : entities) {
-		    if (entity == PLAYER) {
-		        RigidBody &rigidBody = ecs.getComponent<RigidBody>(entity);
-		        if (rigidBody.isMoving ) {
-		            if (!ecs.hasComponent<SoundEmitter>(entity)) {
-		                ecs.addComponent<SoundEmitter>(entity, {"footstep"});
-		            }
-
-		        }
-		    }
-		}*/
 		int counter = 0;
 		int channelChosen;
 		bool alreadyPlaying = false;
 		for (const Entity &entity : entities) {
-			
+
 			if (ecs.hasComponent<SoundEmitter>(entity)) {
 				SoundEmitter soundEffect = ecs.getComponent<SoundEmitter>(entity);
-				Vec2f &position = ecs.getComponent<Positionable>(entity).position;
-				int pos_x = static_cast<int>(position.x);
-				int pos_y = static_cast<int>(position.y);
+				Vec2f &emitterPosition = ecs.getComponent<Positionable>(entity).position;
+				Vec2f listenerPosition = camera_.getPosition() + (Utils::toFloat(engine_.getScreenSize()) / 2);
 
 				for (ChannelData channel : channelManagementList_) {
-					if (channel.emitterID != entity && soundEffect.soundfile_p != channel.soundfile_p) {
-						continue;
-					} else {
+					if (channel.emitterID == entity && soundEffect.soundFile_Ptr == channel.activeTrack_Ptr) {
 						alreadyPlaying = true;
-						std::cout << "reached already playing \n";
+						break;
 					}
 				}
 
-				if (!alreadyPlaying) {
-					if (soundEffect.soundfile_p.get() == &footStep_) {
-						channelChosen = audioDevice_.emit2D(-1, footStep_, 0); 
-						std::cout << "Channel active for step:" << channelChosen << "\n";
-						channelManagementList_[channelChosen] = {entity, footStep_ptr_, VOLUME_STANDARD, 0};
-					} /*else {
-						audioDevice_.emit2D(-1, sniperShot_, 0);
-						channelManagementList_[channelChosen] = {entity, sniperShot_ptr_, VOLUME_STANDARD, 0};
-					}*/
+				if (!alreadyPlaying && entity != PLAYER) { // remove 2nd check here, just exists for testing 3d!
+					if (soundEffect.soundFile_Ptr == footStep_Ptr_) {
+						channelChosen = audioDevice_.emit2D(-1, footStep_, 0);
+						channelManagementList_[channelChosen] = {entity, footStep_Ptr_, DEFAULT_VOLUME, 0};
+					} else if (soundEffect.soundFile_Ptr == sniperShot_Ptr_) {
+						channelChosen = audioDevice_.emit2D(-1, sniperShot_, 0);
+						channelManagementList_[channelChosen] = {entity, sniperShot_Ptr_, DEFAULT_VOLUME, 0};
+					}
 				}
+				/*if (entity == PLAYER) {
+					audioDevice_.emit3D(footStep_, emitterPosition, listenerPosition, 0);
+				}*/
 				ecs.removeComponent<SoundEmitter>(entity);
 			}
-
 		}
-		for (int i = 0; i < channelManagementList_.size();          // opening for loop like this because I need an index. maybe manual index setting above for loop is
-																	// actually easier. No enumerate option in c++ like in python as far as i could
-																	// make out
-		     i++) { 
+		for (int i = 0; i < channelManagementList_.size(); i++) {
 			if (!audioDevice_.isChannelPlaying(i)) {
 				ChannelData &openedChannelData = channelManagementList_[i];
 				openedChannelData.emitterID = -1;
-				openedChannelData.soundfile_p = NULL;
-				openedChannelData.volume = NULL;
+				openedChannelData.activeTrack_Ptr = nullptr;
+				openedChannelData.volume = 0;
 			}
 		}
 	}
 
   private:
+	// we test channel management here and see if we need to bring some to the engine
 	struct ChannelData {
 		uint32_t emitterID;
-		std::shared_ptr<SoundEffect> soundfile_p;
+		std::shared_ptr<SoundEffect> activeTrack_Ptr; // point of contention
 		int volume;
-		int assingedGroup;
-		// SoundEffect *soundfile_p; // raw pointer usage because of non ownership (chatgpt´s advice), we get a problem
-		// with cereal in the Soundemitterstruct though.#
+		int assingedGroup; //stays as int
 	};
 
-	std::array<ChannelData, VIRTUAL_CHANNELS> channelManagementList_ =
-	    {}; // we test channel management here and see if we need to bring some to the engine
+	std::array<ChannelData, VIRTUAL_CHANNELS> channelManagementList_ = {};
 
-	/* static void channelFinished(int channel)
-	{
-	    instance->channelManagementList_[channel] = ;
-	} // callback should work but to have this work properly we need to save more data in our channel management
-	  // container, this goes engineside anyhow because we need to wrap mixer.*/
-
-	// static AudioSystem *instance;
 	const Engine &engine_;
 	const Audio &audioDevice_ =
 	    engine_
 	        .getAudioDevice(); // let´s try to change this to only need the audio and not the whole engine -> low prio
+	const Camera &camera_;
+
+	// internal types and pointers
 	Music backgroundMusic_;
 	SoundEffect footStep_;
-	std::shared_ptr<SoundEffect> footStep_ptr_ = std::make_shared<SoundEffect>(std::move(footStep_));
+	std::shared_ptr<SoundEffect> footStep_Ptr_ = std::make_shared<SoundEffect>(std::move(footStep_));
 	SoundEffect sniperShot_;
-	std::shared_ptr<SoundEffect> sniperShot_ptr_ = std::make_shared<SoundEffect>(std::move(footStep_));
+	std::shared_ptr<SoundEffect> sniperShot_Ptr_ = std::make_shared<SoundEffect>(std::move(footStep_));
 };

@@ -120,7 +120,7 @@ class Game : public Engine {
 		interactionSystem = std::make_unique<InteractionSystem>(*this, menuStack);
 		renderSystem = std::make_unique<RenderSystem>(*this, mapManager, camera);
 		progressSystem = std::make_unique<ProgressSystem>();
-		audioSystem = std::make_unique<AudioSystem>(*this);
+		audioSystem = std::make_unique<AudioSystem>(*this, camera);
 		debugSystem = std::make_unique<DebugSystem>(*this, mapManager, camera);
 		pathfindingSystem = std::make_unique<PathfindingSystem>(mapManager);
 		projectileSystem = std::make_unique<ProjectileSystem>(mapManager);

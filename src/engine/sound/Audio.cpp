@@ -45,33 +45,34 @@ void Audio::streamMusic(const Music &loadedSoundFile, int loops, int fadeMs) con
 	}
 }
 
-int Audio::emit2D(const int channelToPlay, const SoundEffect &loadedSoundFile, const int loops,
-                  const int fadeMs) const // should prolly return the used channel like the mixer functions to get the
-                                          // functionality needed for channelmanager
+int Audio::emit2D(const SoundEffect &loadedSoundFile, const const EmissionOptions &emissionOptions) const                                     
 {
-	int chosenChannel;
 	Mix_Chunk *SDL_ChunkType = loadedSoundFile.getSoundEffect(); // we need error handling here.
 	if (fadeMs > 0) {
-		chosenChannel = Mix_FadeInChannel(channelToPlay, SDL_ChunkType, loops, fadeMs);
+		return Mix_FadeInChannel(channelToPlay, SDL_ChunkType, loops, fadeMs);
 	} else {
-		chosenChannel = Mix_PlayChannel(channelToPlay, SDL_ChunkType, loops);
+		return Mix_PlayChannel(channelToPlay, SDL_ChunkType, loops);
 	}
-	return chosenChannel;
 }
 
-void Audio::emit3D(const SoundEffect &loadedSoundFile, const Vec2f &emitterPosition, const Vec2f &listenerPosition,
-                   const int loops, const int fadeMs) const // test function
+int Audio::emit3D(const SoundEffect &loadedSoundFile, const Vec2f &emitterPosition, const Vec2f &listenerPosition,
+                  const EmissionOptions &emissionOptions) const
 {
-	if (Mix_Playing(30) == 0) {
-		emit2D(30, loadedSoundFile, -1, 0);
+	int channelChosen; //TODO return emit2D directly not with this variable
+	if (!Mix_Playing(30)) {
+		channelChosen = emit2D(30, loadedSoundFile, loops, 0);
 	}
-	Sint16 angle = Audio::calculateAngle(emitterPosition, listenerPosition);
-	int distance = Audio::calculateDistance(emitterPosition, listenerPosition);
-	if (distance <= 255) {
+	Sint16 angle = Audio::calculateAudioAngle(emitterPosition, listenerPosition);
+	int distance = Audio::calculateAudioDistance(emitterPosition, listenerPosition);
+	if (distance <= 255) { //normalize distance
+		if (getVolume(30) == 0) { 
+			setVolume(30, VOLUME_STANDARD);
+		}	
 		Mix_SetPosition(30, angle, static_cast<Uint8>(distance));
 	} else {
-		Mix_Volume(30, 0);
+		setVolume(30, 0);
 	}
+	return channelChosen;
 }
 
 void Audio::pauseStream() const
@@ -104,23 +105,28 @@ void Audio::stopEmission(int channelToStop)
 	Mix_HaltChannel(channelToStop);
 }
 
-void Audio::stopStream()
+void Audio::stopStream() const
 {
 	Mix_HaltMusic();
 }
 
-void Audio::stopAllAudio()
+void Audio::stopAllAudio() const
 {
 	Mix_HaltMusic();
 	Mix_HaltChannel(-1);
 }
 
-void Audio::manageVolume(const int &channel, const int &volume) const
+void Audio::setVolume(const int &channel, const int &volume) const
 {
 	Mix_Volume(channel, volume);
 }
 
-Sint16 Audio::calculateAngle(const Vec2f &emitterPosition, const Vec2f &listenerPosition) const
+int Audio::getVolume(const int& channel) const
+{
+	return Mix_Volume(channel, -1);
+}
+
+Sint16 Audio::calculateAudioAngle(const Vec2f &emitterPosition, const Vec2f &listenerPosition) const
 {
 	float adjacent = emitterPosition.x - listenerPosition.x;
 	float opposite = emitterPosition.y - listenerPosition.y;
@@ -128,23 +134,14 @@ Sint16 Audio::calculateAngle(const Vec2f &emitterPosition, const Vec2f &listener
 	float angleInDegrees = angleInRadians * 180 / std::numbers::pi;
 	return angleInDegrees;
 }
-int Audio::calculateDistance(const Vec2f &emitterPosition, const Vec2f &listenerPosition) const
+int Audio::calculateAudioDistance(const Vec2f &emitterPosition, const Vec2f &listenerPosition) const
 {
-	float adjacent = fabs(emitterPosition.x - listenerPosition.x);
-	float opposite = fabs(emitterPosition.y - listenerPosition.y);
-	float hypotenuse;
-	if (adjacent == 0.00f) {
-		hypotenuse = opposite;
-	} else if (opposite == 0.00f) {
-		hypotenuse = adjacent;
-	} else {
-		hypotenuse = std::sqrt(adjacent * adjacent + opposite * opposite);
-	}
-	float distance = hypotenuse * 2;
+	float distance = (listenerPosition - emitterPosition).length() * 2;
+	
 	return static_cast<int>(distance);
 }
 
-bool Audio::isChannelPlaying(int channelId) const 
+bool Audio::isChannelPlaying(const int channelId) const //TODO not working function as -1 returns number of channels playing
 {
 	if (Mix_Playing(channelId) == 0) {
 		return false;

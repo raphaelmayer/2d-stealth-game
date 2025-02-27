@@ -4,12 +4,12 @@
 #include "../engine/types/SoundEffect.hpp"
 
 struct SoundEmitter {
-	std::shared_ptr<SoundEffect> soundfile_p;
+	std::shared_ptr<SoundEffect> soundFile_Ptr;
 
 	//template <class Archive>
 	//void serialize(Archive &archive)
 	//{
-	//	archive(soundfile_p);
+	//	archive(soundFile_Ptr);
 	//}
 };
 
