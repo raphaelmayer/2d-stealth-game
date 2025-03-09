@@ -2,7 +2,7 @@
 #include <cmath>
 #include <numbers>
 
-Audio::Audio(int virtualChannels)
+Audio::Audio(int virtualChannels) 
 {
 
 	// I will start wrapping SDL_mixer here. I want to discuss where to place what as I am still unsure but that should
@@ -14,6 +14,10 @@ Audio::Audio(int virtualChannels)
 	    < 0)
 		fprintf(stderr, "Audio initialization failed: %s\n", Mix_GetError());
 	Mix_AllocateChannels(virtualChannels);
+
+	for (int index = 0; index < VIRTUAL_CHANNELS; index++) {
+		channelManagementList_[index] = {-1, nullptr, 0, -1};
+	}
 }
 
 Audio::~Audio()
@@ -169,3 +173,5 @@ bool Audio::isChannelPlaying(const int channelId)
 		return true;
 	}
 }
+
+

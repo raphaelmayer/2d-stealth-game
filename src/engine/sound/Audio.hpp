@@ -21,7 +21,7 @@ class Audio {
 	Audio(int virtualChannels = VIRTUAL_CHANNELS);
 	~Audio();
 
-	struct EmissionOptions { // should move to private
+	struct EmissionOptions {  //can´t be private, we expect user to give these
 		int channelToPlay = -1;
 		int loops = 0;
 		int fadeMs = 0;
@@ -82,4 +82,14 @@ class Audio {
 	Sint16 calculateAudioAngle(const Vec2f &emitterPosition,
 	                           const Vec2f &listenerPosition) const; // let´s talk about const before body again please
 	int calculateAudioDistance(const Vec2f &emitterPosition, const Vec2f &listenerPosition) const;
+
+	struct ChannelData {
+		int emitterID;
+		std::shared_ptr<SoundEffect> activeTrack_Ptr; // pointer of contention
+		int volume;
+		int assingedGroup; // stays as int
+	};
+
+
+	std::array<ChannelData, VIRTUAL_CHANNELS> channelManagementList_;
 };

@@ -67,9 +67,9 @@ class AudioSystem final : public System {
 						channelManagementList_[channelChosen] = {entity, sniperShot_Ptr_, DEFAULT_VOLUME, 0};
 					}
 				}
-				/*if (entity == PLAYER) {
-					audioDevice_.emit3D(footStep_, emitterPosition, listenerPosition, 0);
-				}*/
+				//if (entity == PLAYER) {
+				//	audioDevice_.emit3D(footStep_, emitterPosition, listenerPosition, 0);
+				//}
 				ecs.removeComponent<SoundEmitter>(entity);
 			}
 		}
@@ -87,7 +87,7 @@ class AudioSystem final : public System {
 	// we test channel management here and see if we need to bring some to the engine
 	struct ChannelData {
 		uint32_t emitterID;
-		std::shared_ptr<SoundEffect> activeTrack_Ptr; // point of contention
+		std::shared_ptr<SoundEffect> activeTrack_Ptr; // pointer of contention
 		int volume;
 		int assingedGroup; //stays as int
 	};
