@@ -45,29 +45,30 @@ void Audio::streamMusic(const Music &loadedSoundFile, int loops, int fadeMs) con
 	}
 }
 
-int Audio::emit2D(const SoundEffect &loadedSoundFile, const const EmissionOptions &emissionOptions) const                                     
+int Audio::emit2D(const SoundEffect &loadedSoundFile, const const EmissionOptions &emissionOptions) const
 {
 	Mix_Chunk *SDL_ChunkType = loadedSoundFile.getSoundEffect(); // we need error handling here.
-	if (fadeMs > 0) {
-		return Mix_FadeInChannel(channelToPlay, SDL_ChunkType, loops, fadeMs);
+	if (emissionOptions.fadeMs > 0) {
+		return Mix_FadeInChannel(emissionOptions.channelToPlay, SDL_ChunkType, emissionOptions.loops,
+		                         emissionOptions.fadeMs);
 	} else {
-		return Mix_PlayChannel(channelToPlay, SDL_ChunkType, loops);
+		return Mix_PlayChannel(emissionOptions.channelToPlay, SDL_ChunkType, emissionOptions.loops);
 	}
 }
 
 int Audio::emit3D(const SoundEffect &loadedSoundFile, const Vec2f &emitterPosition, const Vec2f &listenerPosition,
                   const EmissionOptions &emissionOptions) const
 {
-	int channelChosen; //TODO return emit2D directly not with this variable
+	int channelChosen; // TODO return emit2D directly not with this variable
 	if (!Mix_Playing(30)) {
-		channelChosen = emit2D(30, loadedSoundFile, loops, 0);
+		channelChosen = emit2D(loadedSoundFile, emissionOptions);
 	}
 	Sint16 angle = Audio::calculateAudioAngle(emitterPosition, listenerPosition);
 	int distance = Audio::calculateAudioDistance(emitterPosition, listenerPosition);
-	if (distance <= 255) { //normalize distance
-		if (getVolume(30) == 0) { 
-			setVolume(30, VOLUME_STANDARD);
-		}	
+	if (distance <= 255) { // normalize distance
+		if (getVolume(30) == 0) {
+			setVolume(30, DEFAULT_VOLUME);
+		}
 		Mix_SetPosition(30, angle, static_cast<Uint8>(distance));
 	} else {
 		setVolume(30, 0);
@@ -88,6 +89,12 @@ void Audio::pauseEmission(const int channelToPause) const
 void Audio::pauseAllAudio() const // newer function Mix_PauseAudio available in Mixer 2.8.0
 {
 	Mix_Pause(-1);
+}
+
+void Audio::resumeAllAudio() const 
+{
+	Mix_Resume(-1);
+	Mix_ResumeMusic();
 }
 
 void Audio::resumeStream() const
@@ -121,10 +128,21 @@ void Audio::setVolume(const int &channel, const int &volume) const
 	Mix_Volume(channel, volume);
 }
 
-int Audio::getVolume(const int& channel) const
+void Audio::setAllVolume(const int& volume) const 
+{
+	Mix_Volume(-1, volume);
+	Mix_VolumeMusic(volume);
+}
+
+int Audio::getVolume(const int &channel) const
 {
 	return Mix_Volume(channel, -1);
 }
+
+//int Audio::getStreamVolume() const 
+//{
+//	return Mix_GetMusicVolume();
+//}
 
 Sint16 Audio::calculateAudioAngle(const Vec2f &emitterPosition, const Vec2f &listenerPosition) const
 {
@@ -137,11 +155,13 @@ Sint16 Audio::calculateAudioAngle(const Vec2f &emitterPosition, const Vec2f &lis
 int Audio::calculateAudioDistance(const Vec2f &emitterPosition, const Vec2f &listenerPosition) const
 {
 	float distance = (listenerPosition - emitterPosition).length() * 2;
-	
+
 	return static_cast<int>(distance);
 }
 
-bool Audio::isChannelPlaying(const int channelId) const //TODO not working function as -1 returns number of channels playing
+bool Audio::isChannelPlaying(const int channelId)
+    const // TODO not working function as -1 returns number of channels playing --> Update: actually since we want to
+          // disincourage the -1 of SDL_Mixer I would argue that this is working
 {
 	if (Mix_Playing(channelId) == 0) {
 		return false;

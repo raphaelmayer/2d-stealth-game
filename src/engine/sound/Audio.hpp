@@ -41,30 +41,38 @@ class Audio {
 
 	void pauseStream() const;
 
-	// pauses emission on specified channel, -1 for all channels
-	void pauseEmission(const int channelToPause) const;
+	// pauses emission on specified, or all channels
+	void pauseEmission(const int channelToPause = -1) const;
 
 	void pauseAllAudio() const;
 
 	void resumeStream() const;
 
-	// resumes emission on specified channel, -1 for all channels
-	void resumeEmission(const int channelToResume) const;
+	// resumes emission on specified channel, or all channels
+	void resumeEmission(const int channelToResume = -1) const;
 
-	void resumeAll() const; // TODO
+	//resumes emission on all channels and the stream
+	void resumeAllAudio() const; 
 
 	// stops emission on specified channel, -1 for all channels
 	void stopEmission(int channelToStop);
 
+	//stops the music stream
 	void stopStream() const;
 
 	// difference between stop and pause
 	void stopAllAudio() const;
 
-	// maximum volume is 128, -1 for all channels
+	// maximum volume is 128
 	void setVolume(const int &channel, const int &volume) const;
+	
+	// maximum volume is 128, sets Volume for stream and all channels
+	void setAllVolume(const int &volume) const;
 
 	int getVolume(const int &channel) const;
+
+	// IN SDL_Mixer we can query the volume of the currently playing music object but not the stream channel, stupido
+	//int getStreamVolume() const;
 
 	bool isChannelPlaying(const int channelId) const;
 
