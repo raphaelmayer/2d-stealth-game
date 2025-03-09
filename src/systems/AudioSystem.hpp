@@ -58,12 +58,12 @@ class AudioSystem final : public System {
 					}
 				}
 
-				if (!alreadyPlaying && entity != PLAYER) { // remove 2nd check here, just exists for testing 3d!
+				if (!alreadyPlaying) { // remove 2nd check here, just exists for testing 3d!
 					if (soundEffect.soundFile_Ptr == footStep_Ptr_) {
-						channelChosen = audioDevice_.emit2D(-1, footStep_, 0);
+						channelChosen = audioDevice_.emit2D(footStep_, {});
 						channelManagementList_[channelChosen] = {entity, footStep_Ptr_, DEFAULT_VOLUME, 0};
 					} else if (soundEffect.soundFile_Ptr == sniperShot_Ptr_) {
-						channelChosen = audioDevice_.emit2D(-1, sniperShot_, 0);
+						channelChosen = audioDevice_.emit2D(sniperShot_, {});
 						channelManagementList_[channelChosen] = {entity, sniperShot_Ptr_, DEFAULT_VOLUME, 0};
 					}
 				}
@@ -105,5 +105,5 @@ class AudioSystem final : public System {
 	SoundEffect footStep_;
 	std::shared_ptr<SoundEffect> footStep_Ptr_ = std::make_shared<SoundEffect>(std::move(footStep_));
 	SoundEffect sniperShot_;
-	std::shared_ptr<SoundEffect> sniperShot_Ptr_ = std::make_shared<SoundEffect>(std::move(footStep_));
+	std::shared_ptr<SoundEffect> sniperShot_Ptr_ = std::make_shared<SoundEffect>(std::move(sniperShot_));
 };
