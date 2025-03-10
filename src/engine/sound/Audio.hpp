@@ -18,11 +18,10 @@
 
 class Audio {
   public:
-	Audio(int virtualChannels = VIRTUAL_CHANNELS);
+	Audio();
 	~Audio();
 
 	struct EmissionOptions {  //can´t be private, we expect user to give these
-		int channelToPlay = -1;
 		int loops = 0;
 		int fadeMs = 0;
 	};
@@ -34,9 +33,9 @@ class Audio {
 	void streamMusic(const Music &loadedSoundFile, int loops, int fadeMs = 0) const;
 
 	// plays specified file on any channel, or a specified one
-	int emit2D(const SoundEffect &loadedSoundFile, const EmissionOptions &emissionOptions) const;
+	int emit2D(const int &emitterID, SoundEffect &loadedSoundFile, const EmissionOptions &emissionOptions) const;
 
-	int emit3D(const SoundEffect &loadedSoundFile, const Vec2f &emitterPosition, const Vec2f &listenerPosition,
+	int emit3D(const int &emitterID, SoundEffect &loadedSoundFile, const Vec2f &emitterPosition, const Vec2f &listenerPosition,
 	           const EmissionOptions &emissionOptions) const;
 
 	void pauseStream() const;
@@ -74,22 +73,15 @@ class Audio {
 	// IN SDL_Mixer we can query the volume of the currently playing music object but not the stream channel, stupido
 	//int getStreamVolume() const;
 
-	bool isChannelPlaying(const int channelId) const;
+	
+	bool isChannelPlaying(const int channelId) const; //remove this from api as handled by channel manager
 
 	// grouping not touched for, will be implemented when/if deemed necessary
 
   private:
 	Sint16 calculateAudioAngle(const Vec2f &emitterPosition,
-	                           const Vec2f &listenerPosition) const; // let´s talk about const before body again please
+	                           const Vec2f &listenerPosition) const;
 	int calculateAudioDistance(const Vec2f &emitterPosition, const Vec2f &listenerPosition) const;
 
-	struct ChannelData {
-		int emitterID;
-		std::shared_ptr<SoundEffect> activeTrack_Ptr; // pointer of contention
-		int volume;
-		int assingedGroup; // stays as int
-	};
-
-
-	std::array<ChannelData, VIRTUAL_CHANNELS> channelManagementList_;
+	ChannelManager channelManager_;
 };

@@ -2,22 +2,19 @@
 #include <cmath>
 #include <numbers>
 
-Audio::Audio(int virtualChannels) 
+Audio::Audio() : channelManager_()
 {
 
 	// I will start wrapping SDL_mixer here. I want to discuss where to place what as I am still unsure but that should
 	// not deter me from starting the work now
 
 	SDL_Init(SDL_INIT_AUDIO);
-	if (Mix_OpenAudioDevice(FREQUENCY, MIXER_FORMAT, STEREO, AUDIO_DEVICE_CHUNK_SIZE, NULL,
+	if (Mix_OpenAudioDevice(AudioConfig::FREQUENCY, AudioConfig::MIXER_FORMAT, AudioConfig::STEREO,
+	                        AudioConfig::AUDIO_DEVICE_CHUNK_SIZE, NULL,
 	                        SDL_AUDIO_ALLOW_FORMAT_CHANGE | SDL_AUDIO_ALLOW_SAMPLES_CHANGE)
 	    < 0)
 		fprintf(stderr, "Audio initialization failed: %s\n", Mix_GetError());
-	Mix_AllocateChannels(virtualChannels);
-
-	for (int index = 0; index < VIRTUAL_CHANNELS; index++) {
-		channelManagementList_[index] = {-1, nullptr, 0, -1};
-	}
+	Mix_AllocateChannels(AudioConfig::VIRTUAL_CHANNELS);
 }
 
 Audio::~Audio()
@@ -32,7 +29,7 @@ Music Audio::loadMusicFile(const std::string &pathToSoundFile) const // make a t
 	return Music(cStrPath);
 }
 
-SoundEffect Audio::loadSoundEffectFile(const std::string &pathToSoundFile) const // please rate my constant consting
+SoundEffect Audio::loadSoundEffectFile(const std::string &pathToSoundFile) const 
 {
 	const char *cStrPath = pathToSoundFile.c_str();
 	return SoundEffect(cStrPath);
@@ -44,38 +41,51 @@ void Audio::streamMusic(const Music &loadedSoundFile, int loops, int fadeMs) con
 	if (fadeMs > 0) {
 		Mix_FadeInMusic(SDL_MusicType, loops, fadeMs);
 
+
+
 	} else {
 		Mix_PlayMusic(SDL_MusicType, loops);
 	}
 }
 
-int Audio::emit2D(const SoundEffect &loadedSoundFile, const const EmissionOptions &emissionOptions) const
+int Audio::emit2D(const int &emitterID, SoundEffect &loadedSoundFile, const EmissionOptions &emissionOptions) const
 {
-	Mix_Chunk *SDL_ChunkType = loadedSoundFile.getSoundEffect(); // we need error handling here.
-	if (emissionOptions.fadeMs > 0) {
-		return Mix_FadeInChannel(emissionOptions.channelToPlay, SDL_ChunkType, emissionOptions.loops,
-		                         emissionOptions.fadeMs);
-	} else {
-		return Mix_PlayChannel(emissionOptions.channelToPlay, SDL_ChunkType, emissionOptions.loops);
+	int channelChosen;
+	std::shared_ptr<SoundEffect> trackPtr = std::make_shared<SoundEffect>(std::move(loadedSoundFile));
+	if (!channelManager_.isEmitterPlayingThis(emitterID, trackPtr)) {
+		Mix_Chunk *SDL_ChunkType = loadedSoundFile.getSoundEffect();
+		if (emissionOptions.fadeMs > 0) {
+			channelChosen = Mix_FadeInChannel(-1, SDL_ChunkType, emissionOptions.loops,
+			                         emissionOptions.fadeMs);
+		} else {
+			channelChosen = Mix_PlayChannel(-1, SDL_ChunkType, emissionOptions.loops);
+			
+		}
+		channelManager_.setChannelData(channelChosen, emitterID, trackPtr, AudioConfig::DEFAULT_VOLUME, -1) //object type is const error
 	}
+	return channelManager_.whereIsEmitterPlayingThis(emitterID, trackPtr);
 }
 
-int Audio::emit3D(const SoundEffect &loadedSoundFile, const Vec2f &emitterPosition, const Vec2f &listenerPosition,
+int Audio::emit3D(const int &emitterID, SoundEffect &loadedSoundFile, const Vec2f &emitterPosition, const Vec2f &listenerPosition,
                   const EmissionOptions &emissionOptions) const
 {
-	int channelChosen; // TODO return emit2D directly not with this variable
-	if (!Mix_Playing(30)) {
-		channelChosen = emit2D(loadedSoundFile, emissionOptions);
-	}
-	Sint16 angle = Audio::calculateAudioAngle(emitterPosition, listenerPosition);
-	int distance = Audio::calculateAudioDistance(emitterPosition, listenerPosition);
-	if (distance <= 255) { // normalize distance
-		if (getVolume(30) == 0) {
-			setVolume(30, DEFAULT_VOLUME);
-		}
-		Mix_SetPosition(30, angle, static_cast<Uint8>(distance));
+	int channelChosen; // TODO return emit2D directly not with this variable -> I cannot?!
+	std::shared_ptr<SoundEffect> trackPtr = std::make_shared<SoundEffect>(std::move(loadedSoundFile));
+	if (!channelManager_.isEmitterPlayingThis(emitterID, trackPtr)) 
+	{
+		channelChosen = emit2D(emitterID, loadedSoundFile, emissionOptions);
 	} else {
-		setVolume(30, 0);
+		channelChosen = channelManager_.whereIsEmitterPlayingThis(emitterID, trackPtr);
+	}
+	Sint16 angle = calculateAudioAngle(emitterPosition, listenerPosition);
+	int distance = calculateAudioDistance(emitterPosition, listenerPosition);
+	if (distance <= 255) { // normalize distance --> why though, I have to feed it into setposition here anyhow
+		if (getVolume(channelChosen) == 0) {
+			setVolume(channelChosen, AudioConfig::DEFAULT_VOLUME);
+		}
+		Mix_SetPosition(channelChosen, angle, static_cast<Uint8>(distance));
+	} else {
+		setVolume(channelChosen, 0);
 	}
 	return channelChosen;
 }

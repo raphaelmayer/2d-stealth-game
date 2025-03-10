@@ -12,7 +12,7 @@ class AudioSystem final : public System {
 		footStep_ = audioDevice_.loadSoundEffectFile(SFX_FOOTSTEP);
 		sniperShot_ = audioDevice_.loadSoundEffectFile(SFX_SNIPER_SHOT_AND_RELOAD);
 
-		audioDevice_.setVolume(-1, DEFAULT_VOLUME);
+		audioDevice_.setVolume(-1, AudioConfig::DEFAULT_VOLUME);
 	};
 
 	void update(ECSManager &ecs, const double deltaTime) override
@@ -41,58 +41,29 @@ class AudioSystem final : public System {
 				}
 			}
 		}
-		int counter = 0;
-		int channelChosen;
-		bool alreadyPlaying = false;
 		for (const Entity &entity : entities) {
 
 			if (ecs.hasComponent<SoundEmitter>(entity)) {
 				SoundEmitter soundEffect = ecs.getComponent<SoundEmitter>(entity);
 				Vec2f &emitterPosition = ecs.getComponent<Positionable>(entity).position;
 				Vec2f listenerPosition = camera_.getPosition() + (Utils::toFloat(engine_.getScreenSize()) / 2);
-
-				for (ChannelData channel : channelManagementList_) {
-					if (channel.emitterID == entity && soundEffect.soundFile_Ptr == channel.activeTrack_Ptr) {
-						alreadyPlaying = true;
-						break;
-					}
+				if (soundEffect.soundFile_Ptr == footStep_Ptr_) 
+				{
+					audioDevice_.emit2D(entity, footStep_, {});
+				} else if (soundEffect.soundFile_Ptr == sniperShot_Ptr_) 
+				{
+					audioDevice_.emit2D(entity, sniperShot_, {});
 				}
-
-				if (!alreadyPlaying) { // remove 2nd check here, just exists for testing 3d!
-					if (soundEffect.soundFile_Ptr == footStep_Ptr_) {
-						channelChosen = audioDevice_.emit2D(footStep_, {});
-						channelManagementList_[channelChosen] = {entity, footStep_Ptr_, DEFAULT_VOLUME, 0};
-					} else if (soundEffect.soundFile_Ptr == sniperShot_Ptr_) {
-						channelChosen = audioDevice_.emit2D(sniperShot_, {});
-						channelManagementList_[channelChosen] = {entity, sniperShot_Ptr_, DEFAULT_VOLUME, 0};
-					}
-				}
+			}
 				//if (entity == PLAYER) {
 				//	audioDevice_.emit3D(footStep_, emitterPosition, listenerPosition, 0);
 				//}
-				ecs.removeComponent<SoundEmitter>(entity);
-			}
-		}
-		for (int i = 0; i < channelManagementList_.size(); i++) {
-			if (!audioDevice_.isChannelPlaying(i)) {
-				ChannelData &openedChannelData = channelManagementList_[i];
-				openedChannelData.emitterID = -1;
-				openedChannelData.activeTrack_Ptr = nullptr;
-				openedChannelData.volume = 0;
-			}
+			ecs.removeComponent<SoundEmitter>(entity);
+			
 		}
 	}
 
   private:
-	// we test channel management here and see if we need to bring some to the engine
-	struct ChannelData {
-		uint32_t emitterID;
-		std::shared_ptr<SoundEffect> activeTrack_Ptr; // pointer of contention
-		int volume;
-		int assingedGroup; //stays as int
-	};
-
-	std::array<ChannelData, VIRTUAL_CHANNELS> channelManagementList_ = {};
 
 	const Engine &engine_;
 	const Audio &audioDevice_ =
