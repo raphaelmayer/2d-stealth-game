@@ -16,4 +16,4 @@ namespace AudioConfig {
 													// as an option
     constexpr int DEFAULT_VOLUME = 50;				// arbitrary
 
-} 
+}  

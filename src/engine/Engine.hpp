@@ -84,7 +84,9 @@ class Engine {
 
 	double getFPS() const { return fpsCounter_.getFPS(); }
 
-	const Audio &getAudioDevice() const { return audioDevice_; }
+	Audio &getAudioDevice() { return audioDevice_; } 
+
+	const Audio &getAudioDevice() const { return audioDevice_; } 
 
 	virtual bool onStart() = 0;
 	virtual bool onUpdate(double deltaTime) = 0;

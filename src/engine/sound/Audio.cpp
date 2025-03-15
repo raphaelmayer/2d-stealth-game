@@ -23,6 +23,11 @@ Audio::~Audio()
 	Mix_Quit(); // if we need Mix_Init(), we also need to call this
 }
 
+void Audio::update()
+{
+	channelManager_.resetChannels();
+}
+
 Music Audio::loadMusicFile(const std::string &pathToSoundFile) const // make a type for music and chunks
 {
 	const char *cStrPath = pathToSoundFile.c_str();
@@ -40,42 +45,40 @@ void Audio::streamMusic(const Music &loadedSoundFile, int loops, int fadeMs) con
 	Mix_Music *SDL_MusicType = loadedSoundFile.getMusic();
 	if (fadeMs > 0) {
 		Mix_FadeInMusic(SDL_MusicType, loops, fadeMs);
-
-
-
 	} else {
 		Mix_PlayMusic(SDL_MusicType, loops);
 	}
 }
 
-int Audio::emit2D(const int &emitterID, SoundEffect &loadedSoundFile, const EmissionOptions &emissionOptions) const
+int Audio::emit2D(
+    const int &emitterID, const std::shared_ptr<SoundEffect> &soundEffect_Ptr,
+    const EmissionOptions &emissionOptions) // should prolly be const and setting of channel data happen somewhere else
 {
 	int channelChosen;
-	std::shared_ptr<SoundEffect> trackPtr = std::make_shared<SoundEffect>(std::move(loadedSoundFile));
-	if (!channelManager_.isEmitterPlayingThis(emitterID, trackPtr)) {
-		Mix_Chunk *SDL_ChunkType = loadedSoundFile.getSoundEffect();
+	if (!channelManager_.isEmitterPlayingThis(emitterID, soundEffect_Ptr)) {
+		SoundEffect& soundEffect = *soundEffect_Ptr; 
+		Mix_Chunk* SDL_ChunkType = soundEffect.getSoundEffect(); 
 		if (emissionOptions.fadeMs > 0) {
 			channelChosen = Mix_FadeInChannel(-1, SDL_ChunkType, emissionOptions.loops,
 			                         emissionOptions.fadeMs);
 		} else {
 			channelChosen = Mix_PlayChannel(-1, SDL_ChunkType, emissionOptions.loops);
-			
 		}
-		channelManager_.setChannelData(channelChosen, emitterID, trackPtr, AudioConfig::DEFAULT_VOLUME, -1) //object type is const error
+		channelManager_.setChannelData(channelChosen, emitterID, soundEffect_Ptr, AudioConfig::DEFAULT_VOLUME, -1); 
 	}
-	return channelManager_.whereIsEmitterPlayingThis(emitterID, trackPtr);
+	return channelManager_.whereIsEmitterPlayingThis(emitterID, soundEffect_Ptr);
 }
 
-int Audio::emit3D(const int &emitterID, SoundEffect &loadedSoundFile, const Vec2f &emitterPosition, const Vec2f &listenerPosition,
-                  const EmissionOptions &emissionOptions) const
+int Audio::emit3D(const int &emitterID, const std::shared_ptr<SoundEffect> &soundEffect_Ptr,
+                  const Vec2f &emitterPosition, const Vec2f &listenerPosition,
+                  const EmissionOptions &emissionOptions)
 {
 	int channelChosen; // TODO return emit2D directly not with this variable -> I cannot?!
-	std::shared_ptr<SoundEffect> trackPtr = std::make_shared<SoundEffect>(std::move(loadedSoundFile));
-	if (!channelManager_.isEmitterPlayingThis(emitterID, trackPtr)) 
+	if (!channelManager_.isEmitterPlayingThis(emitterID, soundEffect_Ptr)) 
 	{
-		channelChosen = emit2D(emitterID, loadedSoundFile, emissionOptions);
+		channelChosen = emit2D(emitterID, soundEffect_Ptr, emissionOptions);
 	} else {
-		channelChosen = channelManager_.whereIsEmitterPlayingThis(emitterID, trackPtr);
+		channelChosen = channelManager_.whereIsEmitterPlayingThis(emitterID, soundEffect_Ptr);
 	}
 	Sint16 angle = calculateAudioAngle(emitterPosition, listenerPosition);
 	int distance = calculateAudioDistance(emitterPosition, listenerPosition);
@@ -137,7 +140,7 @@ void Audio::stopAllAudio() const
 	Mix_HaltChannel(-1);
 }
 
-void Audio::setVolume(const int &channel, const int &volume) const
+void Audio::setVolume(const int &volume, const int &channel) const
 {
 	Mix_Volume(channel, volume);
 }

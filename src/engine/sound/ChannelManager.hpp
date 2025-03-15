@@ -32,11 +32,7 @@ public:
 		int assingedGroup;
 	};
 
-	// consitency question: I would probalby name this cleanup. set, get and isplaying will be used in Audio. CLeanup
-	// will be placed in the engine as this is where other engine modules update.
-	// Audio does not need an update but just for being clean we could put this update into the audio update and run
-	// that in the engine?
-	void update()
+	void resetChannels() 
 	{
 		for (int index = 0; index < channelManagementList_.size(); index++) {
 			if (!isChannelPlaying(index)) {
@@ -46,10 +42,13 @@ public:
 		}
 	}
 
-	void setChannelData(const int channelID, const int emitterID, const std::shared_ptr<SoundEffect> activeTrack_Ptr, const int volume, const int assingedGroup)
+	void setChannelData(const int channelID, const int emitterID, const std::shared_ptr<SoundEffect> activeTrack_Ptr,
+	                    const int volume, const int assingedGroup)
 	{
-		ChannelData nowPlaying = { emitterID, activeTrack_Ptr, volume, assingedGroup };
-		channelManagementList_[channelID] = nowPlaying;
+		if (channelID != -1) {
+			ChannelData nowPlaying = {emitterID, activeTrack_Ptr, volume, assingedGroup};
+			channelManagementList_[channelID] = nowPlaying;
+		}
 	}
 
 	ChannelData getChannelData(const int channelID) const { return channelManagementList_[channelID]; }
@@ -92,7 +91,7 @@ public:
 				return index;
 			}
 		}
-		return -1; //tbd
+		return -1; //we could think about custom type
 	}
 
   private:

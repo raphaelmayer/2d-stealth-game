@@ -26,6 +26,8 @@ class Audio {
 		int fadeMs = 0;
 	};
 
+	void update();
+
 	Music loadMusicFile(const std::string &pathToSoundFile) const;
 
 	SoundEffect loadSoundEffectFile(const std::string &pathToSoundFile) const;
@@ -33,10 +35,11 @@ class Audio {
 	void streamMusic(const Music &loadedSoundFile, int loops, int fadeMs = 0) const;
 
 	// plays specified file on any channel, or a specified one
-	int emit2D(const int &emitterID, SoundEffect &loadedSoundFile, const EmissionOptions &emissionOptions) const;
+	int emit2D(const int &emitterID, const std::shared_ptr<SoundEffect> &soundEffect_Ptr, const EmissionOptions &emissionOptions);
 
-	int emit3D(const int &emitterID, SoundEffect &loadedSoundFile, const Vec2f &emitterPosition, const Vec2f &listenerPosition,
-	           const EmissionOptions &emissionOptions) const;
+	int emit3D(const int &emitterID, const std::shared_ptr<SoundEffect> &soundEffect_Ptr, const Vec2f &emitterPosition,
+	           const Vec2f &listenerPosition,
+	           const EmissionOptions &emissionOptions);
 
 	void pauseStream() const;
 
@@ -62,8 +65,8 @@ class Audio {
 	// difference between stop and pause
 	void stopAllAudio() const;
 
-	// maximum volume is 128
-	void setVolume(const int &channel, const int &volume) const;
+	// sets Volume on specified channels, leave empty for all channels, maximum volume is 128
+	void setVolume(const int &volume, const int &channel = -1) const;
 	
 	// maximum volume is 128, sets Volume for stream and all channels
 	void setAllVolume(const int &volume) const;
