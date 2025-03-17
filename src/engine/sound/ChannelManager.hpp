@@ -8,9 +8,7 @@
 #include <filesystem>
 #include <string>
 #include "Audio.hpp"
-#include <array> //lets discuss include clarity and also import std option (c++ 20)
-
-
+#include <array> 
 
 class ChannelManager {
 public:
@@ -99,31 +97,4 @@ public:
 	std::array<ChannelData, AudioConfig::VIRTUAL_CHANNELS> channelManagementList_;
 
 };
-
-//		int counter = 0;
-//int channelChosen;
-//bool alreadyPlaying = false;
-//for (const Entity &entity : entities) {
-//
-//	if (ecs.hasComponent<SoundEmitter>(entity)) {
-//		SoundEmitter soundEffect = ecs.getComponent<SoundEmitter>(entity);
-//		Vec2f &emitterPosition = ecs.getComponent<Positionable>(entity).position;
-//		Vec2f listenerPosition = camera_.getPosition() + (Utils::toFloat(engine_.getScreenSize()) / 2);
-//
-//		for (ChannelData channel : channelManagementList_) {
-//			if (channel.emitterID == entity && soundEffect.soundFile_Ptr == channel.activeTrack_Ptr) {
-//				alreadyPlaying = true;
-//				break;
-//			}
-//		}
-//
-//		if (!alreadyPlaying) { // remove 2nd check here, just exists for testing 3d!
-//			if (soundEffect.soundFile_Ptr == footStep_Ptr_) {
-//				channelChosen = audioDevice_.emit2D(footStep_, {});
-//				channelManagementList_[channelChosen] = {entity, footStep_Ptr_, DEFAULT_VOLUME, 0};
-//			} else if (soundEffect.soundFile_Ptr == sniperShot_Ptr_) {
-//				channelChosen = audioDevice_.emit2D(sniperShot_, {});
-//				channelManagementList_[channelChosen] = {entity, sniperShot_Ptr_, DEFAULT_VOLUME, 0};
-//			}
-//		}
 

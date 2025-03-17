@@ -17,7 +17,7 @@ class AudioSystem final : public System {
 		// Start Background Music at Start of Game loop
 		if (!backgroundMusic_) {
 			backgroundMusic_ = audioDevice_.loadMusicFile(BACKGROUND_MUSIC_1);
-			audioDevice_.streamMusic(backgroundMusic_, -1);
+			//audioDevice_.streamMusic(backgroundMusic_, -1);
 		}
 
 
