@@ -1,5 +1,8 @@
 #pragma once 
 
+#include <SDL.h>
+#include <SDL_mixer.h>
+
 namespace AudioConfig {
 
 	constexpr int FREQUENCY = 44100;
