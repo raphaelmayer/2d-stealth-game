@@ -45,8 +45,14 @@ class Audio {
 	//loads file from specified path in proprietary format. only accepts WAV
 	SoundEffect loadSoundEffectFile(const std::string &pathToSoundFile) const;
 
+	int playSoundEffect_(const std::shared_ptr<SoundEffect> soundEffect_Ptr, const EmissionOptions &emissionOptions) const;
+
 	// plays specified SoundEffect file on any free channel
 	int emit2D(const int &emitterID, const std::shared_ptr<SoundEffect> &soundEffect_Ptr, const EmissionOptions &emissionOptions);
+
+	int applySpatialization_(const int &emitterID, const std::shared_ptr<SoundEffect> &soundEffect_Ptr,
+	                         const Vec2f &emitterPosition, const Vec2f &listenerPosition,
+	                         const EmissionOptions &emissionOptions) const;
 
 	// plays specified SoundEffect file on any free channel using a simple 3d spacialization effect, use the distance modifier
 	// emission option to influence cut off (higher modifier decreases distance for cut off. i.e. 2 = half the distance)

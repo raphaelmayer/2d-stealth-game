@@ -67,23 +67,49 @@ SoundEffect Audio::loadSoundEffectFile(const std::string &pathToSoundFile) const
 	return SoundEffect(cStrPath);
 }
 
+int Audio::playSoundEffect_(const std::shared_ptr<SoundEffect> soundEffect_Ptr, const EmissionOptions &emissionOptions) const
+{
+	Mix_Chunk *SDL_ChunkType = soundEffect_Ptr->getSoundEffect();
+	if (emissionOptions.fadeMs > 0) {
+		return Mix_FadeInChannel(-1, SDL_ChunkType, emissionOptions.loops, emissionOptions.fadeMs);
+	} else {
+		return Mix_PlayChannel(-1, SDL_ChunkType, emissionOptions.loops);
+	}
+}
+
 int Audio::emit2D(
     const int &emitterID, const std::shared_ptr<SoundEffect> &soundEffect_Ptr,
     const EmissionOptions &emissionOptions) // should prolly be const and setting of channel data happen somewhere else
 {
-	int channelChosen;
 	if (!channelManager_.isEmitterPlayingThis(emitterID, soundEffect_Ptr)) {
 		Mix_Chunk *SDL_ChunkType = soundEffect_Ptr->getSoundEffect();
-		if (emissionOptions.fadeMs > 0) {
-			channelChosen = Mix_FadeInChannel(-1, SDL_ChunkType, emissionOptions.loops, emissionOptions.fadeMs);
-		} else {
-			channelChosen = Mix_PlayChannel(-1, SDL_ChunkType, emissionOptions.loops);
-		}
+
+		int channelChosen = playSoundEffect_(soundEffect_Ptr, emissionOptions);
+
 		channelManager_.setChannelData(channelChosen, emitterID, soundEffect_Ptr, AudioConfig::DEFAULT_VOLUME,
 		                               -1); 
 	}
 	return channelManager_.whereIsEmitterPlayingThis(emitterID, soundEffect_Ptr);
 }
+
+int Audio::applySpatialization_(const int &emitterID, const std::shared_ptr<SoundEffect> &soundEffect_Ptr,
+                                const Vec2f &emitterPosition, const Vec2f &listenerPosition,
+                                const EmissionOptions &emissionOptions) const{
+
+    Sint16 angle = calculateAudioAngle(emitterPosition, listenerPosition);
+	int distance = calculateAudioDistance(emitterPosition, listenerPosition, emissionOptions.distance_modifier);
+	int channel = channelManager_.whereIsEmitterPlayingThis(emitterID, soundEffect_Ptr);
+	if (distance <= 255) { // normalize distance --> why though, I have to feed it into setposition here anyhow
+		if (getVolume(channel) == 0) {
+			setVolume(AudioConfig::DEFAULT_VOLUME, channel);
+		}
+		Mix_SetPosition(channel, angle, static_cast<Uint8>(distance));
+	} else {
+		setVolume(channel, 0);
+	}
+	return channel;
+}
+
 
 int Audio::emit3D(const int &emitterID, const std::shared_ptr<SoundEffect> &soundEffect_Ptr,
                   const Vec2f &emitterPosition, const Vec2f &listenerPosition, const EmissionOptions &emissionOptions)
@@ -94,18 +120,12 @@ int Audio::emit3D(const int &emitterID, const std::shared_ptr<SoundEffect> &soun
 	} else {
 		channelChosen = channelManager_.whereIsEmitterPlayingThis(emitterID, soundEffect_Ptr);
 	}
-	Sint16 angle = calculateAudioAngle(emitterPosition, listenerPosition);
-	int distance = calculateAudioDistance(emitterPosition, listenerPosition, emissionOptions.distance_modifier);
-	if (distance <= 255) { // normalize distance --> why though, I have to feed it into setposition here anyhow
-		if (getVolume(channelChosen) == 0) {
-			setVolume(AudioConfig::DEFAULT_VOLUME, channelChosen);
-		}
-		Mix_SetPosition(channelChosen, angle, static_cast<Uint8>(distance));
-	} else {
-		setVolume(channelChosen, 0);
-	}
+	applySpatialization_(emitterID, soundEffect_Ptr, emitterPosition, listenerPosition, emissionOptions);
+
 	return channelChosen;
 }
+
+
 
 void Audio::pauseEmission(const int channelToPause) const
 {
