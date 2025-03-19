@@ -21,7 +21,7 @@ Audio::~Audio()
 
 void Audio::update()
 {
-	channelManager_.resetChannels();
+	channelManager_.resetChannels(); 
 }
 
 Music Audio::loadMusicFile(const std::string &pathToSoundFile) const // make a type for music and chunks
@@ -80,7 +80,7 @@ int Audio::emit2D(
 			channelChosen = Mix_PlayChannel(-1, SDL_ChunkType, emissionOptions.loops);
 		}
 		channelManager_.setChannelData(channelChosen, emitterID, soundEffect_Ptr, AudioConfig::DEFAULT_VOLUME,
-		                               -1); // TODO -> UNderstand volume and related bugs
+		                               -1); 
 	}
 	return channelManager_.whereIsEmitterPlayingThis(emitterID, soundEffect_Ptr);
 }

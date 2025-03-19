@@ -15,13 +15,18 @@ configure_file(
     COPYONLY
 )
 configure_file(
-    ${CMAKE_SOURCE_DIR}/assets/overworld_char_mapping.csv
-    ${CMAKE_BINARY_DIR}/assets/overworld_char_mapping.csv
+    ${CMAKE_SOURCE_DIR}/assets/overworld_map_background.txt
+    ${CMAKE_BINARY_DIR}/assets/overworld_map_background.txt
     COPYONLY
 )
 configure_file(
-    ${CMAKE_SOURCE_DIR}/assets/weapon_data.csv
-    ${CMAKE_BINARY_DIR}/assets/weapon_data.csv
+    ${CMAKE_SOURCE_DIR}/assets/overworld_map_objects.txt
+    ${CMAKE_BINARY_DIR}/assets/overworld_map_objects.txt
+    COPYONLY
+)
+configure_file(
+    ${CMAKE_SOURCE_DIR}/assets/overworld_char_mapping.csv
+    ${CMAKE_BINARY_DIR}/assets/overworld_char_mapping.csv
     COPYONLY
 )
 configure_file(
@@ -35,32 +40,19 @@ configure_file(
     COPYONLY
 )
 
-
-
 # Add your main.cpp and lib.cpp files if they are not already included
 add_executable(${PROJECT_NAME} main.cpp 
 	engine/Engine.cpp
-  "engine/sound/Audio.cpp")
+    engine/sound/Audio.cpp
+ )
 
 # SYSTEM symbol suppresses warnings for specified directory
-include_directories(SYSTEM 
-    ${CMAKE_SOURCE_DIR}/include
-    ${sdl2_SOURCE_DIR}/include
-    ${sdl2_image_SOURCE_DIR}/include
-    ${sdl2_ttf_SOURCE_DIR}/include
-    ${sdl2_mixer_SOURCE_DIR}/include
-)
+include_directories(SYSTEM ${CMAKE_SOURCE_DIR}/include)
 
 # Link the necessary libraries, including SDL
-target_link_libraries(${PROJECT_NAME} PRIVATE 
-    SDL2main
-    SDL2-static
-    SDL2_image
-    SDL2_ttf
-    SDL2_mixer
-    BT::behaviortree_cpp
-    easys
-)
+target_link_libraries(${PROJECT_NAME} PRIVATE ${SDL_LIBRARIES})
+target_link_libraries(${PROJECT_NAME} PRIVATE BT::behaviortree_cpp)
+target_link_libraries(${PROJECT_NAME} PRIVATE easys)
 
 # Enable warnings if supported by the compiler
 target_compile_options(${PROJECT_NAME} PRIVATE

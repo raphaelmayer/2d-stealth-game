@@ -26,15 +26,6 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 include(FetchContent)
 include(CTest)
 
-# Set SDL2 main flag
-set(SDL_MAIN_NEEDED ON CACHE BOOL "Build SDL2main" FORCE)
-
-
-set(SDL2TTF_INSTALL OFF)
-set(SDL2IMAGE_INSTALL OFF)
-set(SDL2MIXER_INSTALL OFF)
-set(BUILD_SHARED_LIBS FALSE)
-
 # add dependencies here
 FetchContent_Declare(
     SDL2
@@ -48,6 +39,10 @@ FetchContent_Declare(
 #)
 
 
+set(SDL2TTF_INSTALL OFF)
+set(SDL2IMAGE_INSTALL OFF)
+set(SDL2MIXER_INSTALL OFF)
+set(BUILD_SHARED_LIBS FALSE)
 FetchContent_Declare(
     SDL2_IMAGE
     GIT_REPOSITORY  https://github.com/libsdl-org/SDL_image
@@ -67,6 +62,7 @@ FetchContent_Declare(
     GIT_PROGRESS    TRUE
 )
 FetchContent_MakeAvailable(SDL2 SDL2_IMAGE SDL2_TTF SDL2_MIXER)
+set(SDL_LIBRARIES ${SDL_LIBRARIES} SDL2main SDL2-static SDL2_image SDL2_ttf SDL2_mixer)
 
 # Fetch BehaviorTree.CPP
 FetchContent_Declare(

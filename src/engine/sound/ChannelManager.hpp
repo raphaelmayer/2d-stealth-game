@@ -30,6 +30,7 @@ public:
 		int assingedGroup;
 	};
 
+	//TODO --> Exchange with callback function
 	void resetChannels() 
 	{
 		for (int index = 0; index < channelManagementList_.size(); index++) {
