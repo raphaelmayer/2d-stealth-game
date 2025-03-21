@@ -10,17 +10,12 @@ Engine::Engine(const std::string title, const Vec2i screenSize, const Vec2i pixe
 		fprintf(stderr, "could not init SDL2_image: %s\n", IMG_GetError());
 	if (TTF_Init() != 0)
 		fprintf(stderr, "SDL_ttf initialization failed: %s\n", TTF_GetError());
-	// Mix_Init(); // automatically called when opening a music file
-	if (Mix_OpenAudio(22050, MIX_DEFAULT_FORMAT, 2, 4096) < 0)
-		fprintf(stderr, "Audio initialization failed: %s\n", Mix_GetError());
 
 	font_ = std::unique_ptr<TTF_Font, SDL_Deleter>(TTF_OpenFontDPI(FONT_ARIAL, 8, 100, 200));
 }
 
 Engine::~Engine()
 {
-	Mix_CloseAudio();
-	Mix_Quit();      // if we need Mix_Init(), we also need to call this
 	font_.release(); // font needs to be released before TTF_Quit(), otherwise throws
 	TTF_Quit();
 	IMG_Quit();
@@ -52,6 +47,7 @@ void Engine::start()
 		frameTimer.update();
 		keyboard_.reset();
 		mouse_.reset();
+		audioDevice_.update();
 
 		SDL_Event event;
 		while (SDL_PollEvent(&event)) {

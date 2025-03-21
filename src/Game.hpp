@@ -96,7 +96,8 @@ class Game : public Engine {
 			// otherwise same input might close just opened dialogue.
 			menuStack.update();
 
-			// audioSystem->update(ecs, deltaTime);
+			audioSystem->update(ecs, deltaTime);
+			//progressSystem->update(ecs, deltaTime);
 			debugSystem->update(ecs, deltaTime);
 			projectileSystem->update(ecs, deltaTime);
 
@@ -124,7 +125,7 @@ class Game : public Engine {
 		aiSystem = std::make_unique<AISystem>(btManager, mapManager);
 		physicsSystem = std::make_unique<PhysicsSystem>(mapManager);
 		renderSystem = std::make_unique<RenderSystem>(*this, mapManager, camera);
-		// audioSystem = std::make_unique<AudioSystem>(PLAYER);
+		audioSystem = std::make_unique<AudioSystem>(*this, camera);
 		debugSystem = std::make_unique<DebugSystem>(*this, mapManager, camera);
 		pathfindingSystem = std::make_unique<PathfindingSystem>(mapManager);
 		projectileSystem = std::make_unique<ProjectileSystem>(mapManager);

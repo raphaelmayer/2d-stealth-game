@@ -9,6 +9,7 @@
 #include "frame/FrameTimer.hpp"
 #include "input/Keyboard.hpp"
 #include "input/Mouse.hpp"
+#include "sound/Audio.hpp" 
 #include "types.hpp"
 #include <SDL.h>
 #include <SDL_image.h>
@@ -86,6 +87,10 @@ class Engine {
 
 	double getFPS() const { return fpsCounter_.getFPS(); }
 
+	Audio &getAudioDevice() { return audioDevice_; } 
+
+	const Audio &getAudioDevice() const { return audioDevice_; } 
+
 	virtual bool onStart() = 0;
 	virtual bool onUpdate(double deltaTime) = 0;
 	virtual bool onDestroy() = 0;
@@ -94,6 +99,7 @@ class Engine {
 	std::unique_ptr<SDL_Window, SDL_Deleter> window_;
 	std::unique_ptr<SDL_Renderer, SDL_Deleter> renderer_;
 	std::unique_ptr<TTF_Font, SDL_Deleter> font_;
+
 
 	const std::string title_;
 	Vec2i screenSize_;
@@ -106,4 +112,5 @@ class Engine {
 	Mouse mouse_;
 	FPSCounter fpsCounter_;
 	FrameRateLimiter frameRateLimiter_;
+	Audio audioDevice_;
 };

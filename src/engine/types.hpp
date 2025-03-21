@@ -10,3 +10,5 @@
 #include "types/TextureFlip.hpp"
 #include "types/Vec2f.hpp"
 #include "types/Vec2i.hpp"
+#include "types/Music.hpp"
+#include "types/SoundEffect.hpp"

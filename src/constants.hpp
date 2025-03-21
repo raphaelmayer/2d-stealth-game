@@ -17,9 +17,7 @@ enum Rotation{NORTH, EAST, SOUTH, WEST };
 #define LEVEL_1_EAST_BORDER 40
 #define LEVEL_2_WEST_BORDER 43
 
-#define COMPONENT_TYPES \
-	Animatable, Audio, Collectable, Collider, Consumable, Controllable, Interactable, Inventory, Positionable, \
-	    Renderable, RigidBody, Rotatable, Stats, Tombstone
+#define COMPONENT_TYPES Positionable
 
 // SpriteSheet addresses
 #define PLAYER_SPRITE_SHEET_Y_WHITE 720
@@ -34,6 +32,8 @@ enum Rotation{NORTH, EAST, SOUTH, WEST };
 #define ANIMATION_UPDATE_RATE_IN_SECONDS 0.075 //(WALK_SPEED)
 #define PLAYER_STANDING_ANIMATION_NUMBER 1
 #define PLAYER_NUMBER_ANIMATIONS 4
+
+
 
 // Asset File Addresses
 // Data
@@ -51,6 +51,7 @@ enum Rotation{NORTH, EAST, SOUTH, WEST };
 #define SFX_COLLECT_ITEM "../assets/audio/sfx/item_collect.wav"
 #define SFX_REMOVE_ITEM "../assets/audio/sfx/pop.wav"
 #define SFX_FOOTSTEP "../assets/audio/sfx/grass_footstep.wav"
+#define SFX_SNIPER_SHOT_AND_RELOAD "../assets/audio/sfx/sniper_shot_and_reload.wav"
 #define BACKGROUND_MUSIC_1 "../assets/audio/music/background_1.mp3"
 #define BACKGROUND_MUSIC_2 "../assets/audio/music/background_2.mp3"
 // Behavior trees

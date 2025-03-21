@@ -66,6 +66,8 @@ class InputSystem final : public System {
 				const Target targetComponent{entities[0]};
 				ecs.addComponent<Target>(entity, targetComponent);
 				ecs.addComponent<Pathfinding>(entity, {}); // cancel current path
+				bool& isShooting = ecs.getComponent<RigidBody>(entity).isShooting; //should be put into target component
+				isShooting = true; // isShooting to put Soundemitter assingment into audiosystem
 			}
 
 			else {

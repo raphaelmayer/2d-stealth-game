@@ -15,13 +15,18 @@ configure_file(
     COPYONLY
 )
 configure_file(
-    ${CMAKE_SOURCE_DIR}/assets/overworld_char_mapping.csv
-    ${CMAKE_BINARY_DIR}/assets/overworld_char_mapping.csv
+    ${CMAKE_SOURCE_DIR}/assets/overworld_map_background.txt
+    ${CMAKE_BINARY_DIR}/assets/overworld_map_background.txt
     COPYONLY
 )
 configure_file(
-    ${CMAKE_SOURCE_DIR}/assets/weapon_data.csv
-    ${CMAKE_BINARY_DIR}/assets/weapon_data.csv
+    ${CMAKE_SOURCE_DIR}/assets/overworld_map_objects.txt
+    ${CMAKE_BINARY_DIR}/assets/overworld_map_objects.txt
+    COPYONLY
+)
+configure_file(
+    ${CMAKE_SOURCE_DIR}/assets/overworld_char_mapping.csv
+    ${CMAKE_BINARY_DIR}/assets/overworld_char_mapping.csv
     COPYONLY
 )
 configure_file(
@@ -38,6 +43,7 @@ configure_file(
 # Add your main.cpp and lib.cpp files if they are not already included
 add_executable(${PROJECT_NAME} main.cpp 
 	engine/Engine.cpp
+    engine/sound/Audio.cpp
  )
 
 # SYSTEM symbol suppresses warnings for specified directory
