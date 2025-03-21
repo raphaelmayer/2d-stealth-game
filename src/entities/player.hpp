@@ -6,6 +6,7 @@
 #include "../components/EquippedWeapon.hpp"
 #include "../components/Interactable.hpp"
 #include "../components/Inventory.hpp"
+#include "../components/Pathfinding.hpp"
 #include "../components/Positionable.hpp"
 #include "../components/Renderable.hpp"
 #include "../components/RigidBody.hpp"
@@ -23,7 +24,7 @@ Entity instantiatePlayerEntity(ECSManager &ecs, Vec2i positionInTiles, Rotation 
 	ecs.addComponent(player,
 	                 Positionable{{(float)(positionInTiles.x * TILE_SIZE), (float)(positionInTiles.y * TILE_SIZE)}});
 	ecs.addComponent(player, Rotatable{rotation});
-	ecs.addComponent(player, RigidBody{false, false, positionInTiles, positionInTiles, 0, 0});
+	ecs.addComponent(player, RigidBody{false, false, positionInTiles * TILE_SIZE, positionInTiles * TILE_SIZE, 0, 0});
 	ecs.addComponent(player, Animatable{PLAYER_STANDING_ANIMATION_NUMBER,
 	                                    {playerSpriteSheetY, playerSpriteSheetY + PLAYER_SIZE_Y,
 	                                     playerSpriteSheetY + 2 * PLAYER_SIZE_Y, playerSpriteSheetY + PLAYER_SIZE_Y}});
@@ -31,7 +32,8 @@ Entity instantiatePlayerEntity(ECSManager &ecs, Vec2i positionInTiles, Rotation 
 	ecs.addComponent(player, Collider{});
 	ecs.addComponent(player, Controllable{});
 	ecs.addComponent(player, Inventory{});
-	ecs.addComponent(player, EquippedWeapon{2,5}); // assault rifle with full mag
+	ecs.addComponent(player, EquippedWeapon{1, 30}); // assault rifle with full mag
+	ecs.addComponent(player, Pathfinding{});
 
 	return player;
 }

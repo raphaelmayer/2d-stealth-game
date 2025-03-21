@@ -1,4 +1,4 @@
-#include "../components/AI.hpp"
+#include "../components/Pathfinding.hpp"
 #include "../components/Collider.hpp"
 #include "../components/Positionable.hpp"
 #include "../components/RigidBody.hpp"
@@ -26,50 +26,50 @@ class PathfindingSystem final : public System {
 				// against itself.
 				auto walkableView = populateWalkableView(ecs, entity, mapManager_.getWalkableMapView());
 
-				if (ecs.hasComponent<AI>(entity)) {
-					auto &ai = ecs.getComponent<AI>(entity);
-					handleAIPathfinding(position, rigidBody, ai, walkableView);
+				if (ecs.hasComponent<Pathfinding>(entity)) {
+					auto &pf = ecs.getComponent<Pathfinding>(entity);
+					handleAIPathfinding(position, rigidBody, pf, walkableView);
 				}
 			}
 		}
 	}
 
   private:
-	void handleAIPathfinding(Vec2f &position, RigidBody &rigidBody, AI &ai, auto walkableView)
+	void handleAIPathfinding(Vec2f &position, RigidBody &rigidBody, Pathfinding &pf, auto walkableView) const
 	{
-		if (ai.targetPosition != Vec2i{-1, -1} && ai.targetPosition != Utils::toInt(position)) {
+		if (pf.targetPosition != Vec2i{-1, -1} && pf.targetPosition != Utils::toInt(position)) {
 			// TODO: We need to check, if targetPosition is reachable. If not, we could use a couple of strategies like
 			// finding the nearest reachable tile.
 
 			// If path does not point to target position, calculate a new one
-			if (ai.path.empty() || ai.targetPosition != ai.path[ai.path.size() - 1]) {
-				std::cout << "Recalculating path. pathIndex=" << ai.pathIndex << ", pos x: " << position.x
+			if (pf.path.empty() || pf.targetPosition != pf.path[pf.path.size() - 1]) {
+				std::cout << "Recalculating path. pathIndex=" << pf.pathIndex << ", pos x: " << position.x
 				          << ", pos y: " << position.y << ", tarpos x: " << position.x << ", tarpos y: " << position.y
 				          << "\n";
 				auto intpath =
-				    AStar::findPath(walkableView, Utils::toTileSize(position), Utils::toTileSize(ai.targetPosition));
-				ai.path = {};
+				    AStar::findPath(walkableView, Utils::toTileSize(position), Utils::toTileSize(pf.targetPosition));
+				pf.path = {};
 				for (auto &waypoint : intpath) // A* works in tile space, so we transform back to pixel space.
-					ai.path.push_back(waypoint * TILE_SIZE);
-				ai.pathIndex = 0;
+					pf.path.push_back(waypoint * TILE_SIZE);
+				pf.pathIndex = 0;
 			}
 
 			// If we reach an intermediate position on our path, increment to next path position.
-			if (ai.path[ai.pathIndex] == Utils::toInt(position)) {
-				if (ai.pathIndex < ai.path.size() - 1) {
-					ai.pathIndex += 1;
-					rigidBody.endPosition = ai.path[ai.pathIndex];
+			if (pf.path[pf.pathIndex] == Utils::toInt(position)) {
+				if (pf.pathIndex < pf.path.size() - 1) {
+					pf.pathIndex += 1;
+					rigidBody.nextPosition = pf.path[pf.pathIndex];
 					// resetCurrentMovementParams(position, rigidBody);
 				}
 			} else {
-				rigidBody.endPosition = ai.path[ai.pathIndex];
+				rigidBody.nextPosition = pf.path[pf.pathIndex];
 			}
 		}
 	}
 
 	// TODO: Replace auto type, as soon as we decided on how to define and share a view.
 	// This function adds collidable entities to our walkable map view.
-	auto populateWalkableView(ECSManager &ecs, Entity entity, auto walkableView)
+	auto populateWalkableView(ECSManager &ecs, Entity entity, auto walkableView) const
 	{
 		for (const auto &other : ecs.getEntities()) {
 			if (ecs.hasComponent<Collider>(other) && ecs.hasComponent<Positionable>(other) && entity != other) {

@@ -10,7 +10,9 @@ struct EquippedWeapon {
 
 	int magazineSize = 0; // tracks the amount of bullets in a magazine
 
-	float warmupAccumulator = 0;// accumulator for the weapon's warmup phase
-	float firerateAccumulator = 0;// fire rate control enforcing a delay between shots
-	float reloadTimeAccumulator = 0;//tracks the reload duration
+	float warmupAccumulator = 0;     // accumulator for the weapon's warmup phase
+	float firerateAccumulator = 0;   // fire rate control enforcing a delay between shots
+	float reloadTimeAccumulator = 0; // tracks the reload duration
+
+	bool isTriggerHeld = false;
 };

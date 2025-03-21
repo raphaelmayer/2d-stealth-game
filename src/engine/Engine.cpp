@@ -79,6 +79,11 @@ Vec2i Engine::getWindowSize() const
 {
 	return windowSize_;
 }
+// TODO:
+// should this even exist? (since window size is derived from screen size). Should setScreenSize exist?.
+// We definitely need to adjust all functions here to set all related values when setting a single value.
+// A resizeWindow implementation is also necessary and might just be the best first step to figuring this out\
+// and it might just be enough. No need for those setters.
 void Engine::setWindowSize(Vec2i windowSize)
 {
 	windowSize_ = windowSize;
@@ -90,6 +95,7 @@ Vec2i Engine::getScreenSize() const
 void Engine::setScreenSize(Vec2i screenSize)
 {
 	screenSize_ = screenSize;
+	windowSize_ = screenSize * pixelSize_;
 }
 void Engine::setRenderScale(Vec2i pixelSize)
 {
@@ -135,50 +141,30 @@ void Engine::drawLine(const Vec2f &start, const Vec2f &end, const ColorRGBA &col
 	SDL_RenderDrawLineF(renderer_.get(), start.x, start.y, end.x, end.y);
 }
 
-void Engine::fillRectangle(const Vec2i &pos, const int &width, const int &height, const ColorRGBA &color) const
+void Engine::fillRectangle(const Recti &rect, const ColorRGBA &color) const
 {
-	SDL_Rect r;
-	r.x = pos.x;
-	r.y = pos.y;
-	r.w = width;
-	r.h = height;
-
+	SDL_Rect r = rect.toSDLRect();
 	SDL_SetRenderDrawColor(renderer_.get(), color.r, color.g, color.b, color.a);
 	SDL_RenderFillRect(renderer_.get(), &r);
 }
 
-void Engine::fillRectangle(const Vec2f &pos, const float &width, const float &height, const ColorRGBA &color) const
+void Engine::fillRectangle(const Rectf &rect, const ColorRGBA &color) const
 {
-	SDL_FRect r;
-	r.x = pos.x;
-	r.y = pos.y;
-	r.w = width;
-	r.h = height;
-
+	SDL_FRect r = rect.toSDLRect();
 	SDL_SetRenderDrawColor(renderer_.get(), color.r, color.g, color.b, color.a);
 	SDL_RenderFillRectF(renderer_.get(), &r);
 }
 
-void Engine::drawRectangle(const Vec2i &pos, const int &width, const int &height, const ColorRGBA &color) const
+void Engine::drawRectangle(const Recti &rect, const ColorRGBA &color) const
 {
-	SDL_Rect r;
-	r.x = pos.x;
-	r.y = pos.y;
-	r.w = width;
-	r.h = height;
-
+	SDL_Rect r = rect.toSDLRect();
 	SDL_SetRenderDrawColor(renderer_.get(), color.r, color.g, color.b, color.a);
 	SDL_RenderDrawRect(renderer_.get(), &r);
 }
 
-void Engine::drawRectangle(const Vec2f &pos, const float &width, const float &height, const ColorRGBA &color) const
+void Engine::drawRectangle(const Rectf &rect, const ColorRGBA &color) const
 {
-	SDL_FRect r;
-	r.x = pos.x;
-	r.y = pos.y;
-	r.w = width;
-	r.h = height;
-
+	SDL_FRect r = rect.toSDLRect();
 	SDL_SetRenderDrawColor(renderer_.get(), color.r, color.g, color.b, color.a);
 	SDL_RenderDrawRectF(renderer_.get(), &r);
 }
@@ -403,4 +389,14 @@ void Engine::drawText(const Rectf &dst, const std::string &text) const
 
 	SDL_DestroyTexture(textTexture);
 	SDL_FreeSurface(textSurface);
+}
+
+// We might want to allow more fine-grained control over blending in the future.
+void Engine::enableAlphaBlending()
+{
+	SDL_SetRenderDrawBlendMode(renderer_.get(), SDL_BLENDMODE_BLEND);
+}
+void Engine::disableAlphaBlending()
+{
+	SDL_SetRenderDrawBlendMode(renderer_.get(), SDL_BLENDMODE_NONE);
 }

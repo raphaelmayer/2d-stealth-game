@@ -2,6 +2,7 @@
 
 #include "../constants.hpp"
 #include "../engine/Engine.hpp"
+#include "../engine/types/Recti.hpp"
 #include "../engine/types/Vec2i.hpp"
 #include "ListItem.hpp"
 #include "UIElement.hpp"
@@ -109,12 +110,18 @@ class ListDialog : public UIElement {
 
 		// Highlight selection
 		if (index_ >= top_ && index_ < top_ + maxVisibleItems_) {
-			game_.fillRectangle(Vec2i{itemX + 2, itemHeight_ * (index_ - top_) + PADDING + position_.y + 1},
-			                    itemWidth_ - 4, itemHeight_ - 2, {240, 240, 240, 0});
-			game_.drawRectangle(Vec2i{itemX + 2, itemHeight_ * (index_ - top_) + PADDING + position_.y + 1},
-			                    itemWidth_ - 4, itemHeight_ - 2, {40, 40, 40, 0});
-			game_.drawRectangle(Vec2i{itemX + 3, itemHeight_ * (index_ - top_) + PADDING + position_.y + 2},
-			                    itemWidth_ - 6, itemHeight_ - 4, {100, 100, 100, 0});
+			int itemY = itemHeight_ * (index_ - top_) + PADDING + position_.y + 1;
+			int rectWidth = itemWidth_ - 4;
+			int rectHeight = itemHeight_ - 2;
+
+			// Fill the rectangle with a light gray color
+			game_.fillRectangle(Recti{itemX + 2, itemY, rectWidth, rectHeight}, {240, 240, 240, 255});
+
+			// Draw the outer rectangle with a dark gray color
+			game_.drawRectangle(Recti{itemX + 2, itemY, rectWidth, rectHeight}, {40, 40, 40, 255});
+
+			// Draw the inner rectangle with a lighter gray color
+			game_.drawRectangle(Recti{itemX + 3, itemY + 1, rectWidth - 2, rectHeight - 2}, {100, 100, 100, 255});
 		}
 
 		for (size_t i = 0; i < maxVisibleItems_ && top_ + i < items_.size(); ++i) {

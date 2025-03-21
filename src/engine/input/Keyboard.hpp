@@ -12,7 +12,7 @@ class Keyboard {
 	const std::array<KeyState, SDL_NUM_SCANCODES> &getKeyStates() const { return keyStates_; }
 
 	// Returns the state of a specific key.
-	const KeyState getKeyState(const SDL_Scancode key) const { return keyStates_[key]; }
+	const KeyState &getKeyState(const SDL_Scancode key) const { return keyStates_[key]; }
 
 	// Updates the key states based on the SDL event.
 	void update(const SDL_Event &event)

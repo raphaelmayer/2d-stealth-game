@@ -1,3 +1,4 @@
+#include "../components/Pathfinding.hpp"
 #include "../components/Positionable.hpp"
 #include "../components/RigidBody.hpp"
 #include "../constants.hpp"
@@ -7,9 +8,20 @@
 #include <cmath>
 #include <set>
 
+/*
+ * This system manages entity movement, collision detection, and rotation updates, ensuring accurate position
+ * transitions and resolving path obstructions. To improve modularity, it could be split into separate services for
+ * movement handling, collision detection, and rotation adjustments.
+ *
+ * TODO: Consider splitting this system into dedicated services (e.g., MovementService, CollisionService, and
+ *		 RotationService) to improve separation of concerns and maintainability.
+ */
+
 class PhysicsSystem final : public System {
   public:
-	PhysicsSystem(const MapManager &mapManager) : mapManager_(mapManager) {}
+	PhysicsSystem(const MapManager &mapManager) : mapManager_(mapManager)
+	{
+	}
 
 	void update(ECSManager &ecs, double deltaTime) override
 	{
@@ -21,131 +33,125 @@ class PhysicsSystem final : public System {
 			}
 
 			auto &rigidBody = ecs.getComponent<RigidBody>(entity);
-			auto &currentPosition = ecs.getComponent<Positionable>(entity).position; // in pixels (float)
+			auto &currentPos = ecs.getComponent<Positionable>(entity).position; // in pixels (float)
+			Vec2f nextPos = Utils::toFloat(rigidBody.nextPosition);
 
-			// If this entity is not trying to move anywhere, skip.
-			// if (!rigidBody.isMoving) {
-			if (Utils::toFloat(rigidBody.endPosition) == currentPosition) {
+			if (isTargetReached(currentPos, nextPos)) {
 				continue;
 			}
 
-			rigidBody.isMoving = true; // set flag for other systems
+			rigidBody.isMoving = true;                                         // set flag for other systems
+			Movement move = calculateMovement(currentPos, nextPos, deltaTime); // Tentatively compute new position
 
-			Vec2f endPosPx = Utils::toFloat(rigidBody.endPosition);
-			Vec2f startPosPx = Utils::toFloat(rigidBody.startPosition);
-			Vec2f toTarget = endPosPx - currentPosition;
-			float distToTarget = toTarget.length();
-
-			// If we are "close enough" to the target, just clamp and reset.
-			if (distToTarget < 0.01f) {
-				currentPosition = endPosPx;
-				resetCurrentMovementParams(rigidBody, currentPosition);
-				continue;
-			}
-
-			Vec2f direction = toTarget.norm();
-			float maxMoveThisFrame = WALK_SPEED * static_cast<float>(deltaTime);
-			// If the required distance is less than what we plan to move, clamp so that we land exactly on the tile.
-			float moveDist = std::min(distToTarget, maxMoveThisFrame);
-			Vec2f newPosition = currentPosition + direction * moveDist; // Tentatively compute new position
-
-			// TODO?: We currently do a next tile check with endPosition. We might want to switch to a bounding box
-			// approach, where we use newPosition to check, if the move is valid and only then apply it.
-			if (wouldCollide(ecs, entity, rigidBody)) {
-				// Clear path if AI, or do something else:
-				if (ecs.hasComponent<AI>(entity)) {
-					ecs.getComponent<AI>(entity).path.clear();
+			if (wouldCollide(ecs, entity, nextPos)) {
+				if (ecs.hasComponent<Pathfinding>(entity)) {
+					ecs.getComponent<Pathfinding>(entity).path.clear();
 				}
-				resetCurrentMovementParams(rigidBody, currentPosition);
+				resetCurrentMovementParams(rigidBody, currentPos);
 				continue;
 			}
 
-			currentPosition = newPosition; // Update actual position if valid.
+			currentPos = move.newPosition; // Update actual position if valid.
+			handleRotation(ecs, entity, move.direction);
 
-			if (ecs.hasComponent<Rotatable>(entity)) {
-				applyRotation(direction, ecs.getComponent<Rotatable>(entity));
-			}
-
-			// If we’ve reached the end tile, finalize. Currently redundant check?
-			distToTarget = (endPosPx - currentPosition).length();
+			// If we’ve reached the end tile, finalize. Redundant check, since we also do this in calculateMovement?
+			float distToTarget = (nextPos - currentPos).length();
 			if (distToTarget < 0.01f) {
-				currentPosition = endPosPx;
-				resetCurrentMovementParams(rigidBody, currentPosition);
-				
+				currentPos = nextPos;
+				resetCurrentMovementParams(rigidBody, currentPos);
 			}
 		}
 	}
 
   private:
-	void resetCurrentMovementParams(RigidBody &rigidBody, const Vec2f &currentPosPx)
+	struct Movement {
+		Vec2f newPosition;
+		Vec2f direction;
+		float distance;
+	};
+
+	Movement calculateMovement(const Vec2f &currentPos, const Vec2f &nextPos, double deltaTime) const
 	{
-		rigidBody.isMoving = false;
+		Vec2f toTarget = nextPos - currentPos;
+		float distToTarget = toTarget.length();
 
-		Vec2i newPosition = Utils::toInt(Utils::round(currentPosPx / TILE_SIZE)) * TILE_SIZE;
+		// If we are "close enough" to the target, just clamp and reset.
+		if (distToTarget < 0.01f) {
+			return {nextPos, {0.0f, 0.0f}, 0.0f};
+		}
 
-		rigidBody.startPosition = newPosition;
-		rigidBody.endPosition = newPosition;
+		Vec2f direction = toTarget.norm();
+		float maxMoveThisFrame = WALK_SPEED * static_cast<float>(deltaTime);
+		// If the required distance is less than what we plan to move, clamp so that we land exactly on the tile.
+		float moveDist = std::min(distToTarget, maxMoveThisFrame);
+		Vec2f newPosition = currentPos + direction * moveDist; // Tentatively compute new position
+
+		return {newPosition, direction, distToTarget};
 	}
 
-	// TODO: reduce potential O(N²) collision checks
-	bool wouldCollide(ECSManager &ecs, Entity entity, RigidBody &rigidBody)
+	bool isTargetReached(const Vec2f &currentPos, const Vec2f &nextPos) const
 	{
-		const Vec2i tileSizedEndPos = Utils::toTileSize(rigidBody.endPosition);
-		// const Tile endTile = mapManager_.getTile(tileSizedEndPos.x, tileSizedEndPos.y);
+		return nextPos == currentPos;
+	}
+
+	void resetCurrentMovementParams(RigidBody &rigidBody, const Vec2f &currentPos) const
+	{
+		rigidBody.isMoving = false;
+		Vec2i newPosition = Utils::toInt(Utils::round(currentPos / TILE_SIZE)) * TILE_SIZE;
+		rigidBody.startPosition = newPosition;
+		rigidBody.nextPosition = newPosition;
+	}
+
+	bool wouldCollide(ECSManager &ecs, Entity entity, const Vec2f &nextPos) const
+	{
+		const Vec2i tileSizedEndPos = Utils::toTileSize(nextPos);
 
 		if (ecs.hasComponent<Collider>(entity)) {
-			// check if any collidable entity occupies the tile we are trying to move on
-			for (const Entity &other : ecs.getEntities()) {
-				if (entity != other && ecs.hasComponent<Collider>(other) && ecs.hasComponent<Positionable>(other)) {
-					const auto &otherPosition = ecs.getComponent<Positionable>(other).position;
-					if (Utils::toInt(Utils::round(otherPosition)) == rigidBody.endPosition) {
-						return true;
-					}
-					// Entities might move onto the same tile at the same time.
-					if (ecs.hasComponent<RigidBody>(other)) {
-						const auto &otherEndPosition = ecs.getComponent<RigidBody>(other).endPosition;
-						if (otherEndPosition == rigidBody.endPosition) {
-							return true;
-						}
-					}
-				}
+			// check map tiles separately, because they are not entities
+			if (mapManager_.getWalkableMapView()[tileSizedEndPos.y][tileSizedEndPos.x]) {
+				return true;
 			}
 
-			// check map tiles separately, because they are not entities
-			// TODO: improve collision detection between player and map, as soon as map loading is sorted
-			return mapManager_.getWalkableMapView()[tileSizedEndPos.y][tileSizedEndPos.x];
-			//if (endTile.objectId == 0) // id 0 implies no/empty tile. temporary fix.
-			//	return !mapManager_.getTileData(endTile.backgroundId).walkable;
-			//else
-			//	return !mapManager_.getTileData(endTile.objectId).walkable;
-
-			//std::cout << mapManager_.getTileData(endTile.objectId).walkable << "\n";
+			if (wouldCollideWithEntity(ecs, entity, nextPos)) {
+				return true;
+			}
 		}
 
 		return false;
 	}
 
-	void applyRotation(const Vec2f &moveDir, Rotatable &rotatable) const
+	// Check if any collidable entity occupies the tile we are trying to move on.
+	// TODO?: We currently do a next tile check with nextPosition. We might want to switch to a bounding box
+	// approach, where we use newPosition to check, if the move is valid and only then apply it.
+	bool wouldCollideWithEntity(ECSManager &ecs, Entity entity, const Vec2f &nextPos) const
 	{
-		// Because we used "toTarget.norm()" it could have any angle,
-		// but we only handle 4 directions, so pick the largest axis.
-		if (std::fabs(moveDir.x) > std::fabs(moveDir.y)) {
-			// Horizontal movement
-			if (moveDir.x > 0.f) {
-				rotatable.rotation = Rotation::EAST;
-			} else {
-				rotatable.rotation = Rotation::WEST;
+		// TODO: reduce potential O(N²) collision checks
+		for (const Entity &other : ecs.getEntities()) {
+			if (entity != other && ecs.hasComponent<Collider>(other) && ecs.hasComponent<Positionable>(other)) {
+				const auto &otherPosition = ecs.getComponent<Positionable>(other).position;
+				if (Utils::round(otherPosition) == nextPos) {
+					return true;
+				}
+				// Entities might move onto the same tile at the same time.
+				if (ecs.hasComponent<RigidBody>(other)) {
+					const Vec2i &otherEndPosition = ecs.getComponent<RigidBody>(other).nextPosition;
+					if (Utils::toFloat(otherEndPosition) == nextPos) {
+						return true;
+					}
+				}
 			}
-		} else {
-			// Vertical movement
-			if (moveDir.y > 0.f) {
-				rotatable.rotation = Rotation::SOUTH;
-			} else {
-				rotatable.rotation = Rotation::NORTH;
-			}
+		}
+
+		return false;
+	}
+
+	void handleRotation(ECSManager &ecs, const Entity entity, const Vec2f &direction) const
+	{
+		if (ecs.hasComponent<Rotatable>(entity)) {
+			auto &rotatable = ecs.getComponent<Rotatable>(entity);
+			rotatable.rotation = Utils::vec2fToRotation(direction);
 		}
 	}
 
-  private:
 	const MapManager &mapManager_;
 };

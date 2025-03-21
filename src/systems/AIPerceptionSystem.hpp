@@ -60,28 +60,17 @@ class AIPerceptionSystem : public System {
 	}
 
   private:
-	int calculateDistance(Vec2f start, Vec2f end)
-	{
-		Vec2f dirVector = end - start;
-		return static_cast<int>(sqrt(dirVector.x * dirVector.x + dirVector.y * dirVector.y));
-	}
-
 	// Function to calculate whether an entity is within the view cone
 	bool isWithinViewCone(const Vec2f &sourcePos, const Vec2f &targetPos, Rotation rotation, float visionRange,
 	                      float visionAngle) const
 	{
-		// Map Rotation to forward direction vectors
-		Vec2f forwardDirection = rotationToVec2f(rotation);
-
-		// Calculate vector to the target
+		Vec2f forwardDirection = Utils::rotationToVec2f(rotation);
 		Vec2f toEntity = {(float)(targetPos.x - sourcePos.x), (float)(targetPos.y - sourcePos.y)};
-		float distance = std::sqrt(toEntity.x * toEntity.x + toEntity.y * toEntity.y);
+		const float distance = toEntity.length();
 
-		// Check distance
 		if (distance > visionRange)
 			return false;
 
-		// Normalize vectors
 		forwardDirection = forwardDirection.norm();
 		toEntity = toEntity.norm();
 
@@ -91,26 +80,6 @@ class AIPerceptionSystem : public System {
 
 		// Check if within vision angle
 		return angleToEntity <= (visionAngle / 2);
-	}
-
-	Vec2f rotationToVec2f(Rotation rotation) const
-	{
-
-		switch (rotation) {
-		case NORTH:
-			return {0, -1};
-			break;
-		case EAST:
-			return {1, 0};
-			break;
-		case SOUTH:
-			return {0, 1};
-			break;
-		case WEST:
-			return {-1, 0};
-			break;
-		}
-		return {0, 0};
 	}
 
 	const MapManager &mapManager_;

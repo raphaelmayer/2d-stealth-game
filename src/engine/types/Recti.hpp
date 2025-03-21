@@ -1,6 +1,6 @@
 #pragma once
 
-#include<SDL.h>
+#include <SDL.h>
 
 struct Recti {
 	int x, y, w, h;
