@@ -188,10 +188,13 @@ class Game : public Engine {
 		}
 
 		for (const Entity &e : selection) {
-			auto pos = ecs.getComponent<Positionable>(e).position;
-			const Rectf rect = {pos.x, pos.y, TILE_SIZE, TILE_SIZE};
-			const Rectf dst = camera.rectToScreen(rect);
-			drawRectangle(dst, {66, 135, 245, 255});
+			if (ecs.hasComponent<Positionable>(e)) {
+				auto pos = ecs.getComponent<Positionable>(e).position;
+				const Rectf rect = {pos.x, pos.y, TILE_SIZE, TILE_SIZE};
+				const Rectf dst = camera.rectToScreen(rect);
+				drawRectangle(dst, {66, 135, 245, 255});
+			}
+
 		}
 	}
 
