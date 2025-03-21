@@ -67,13 +67,14 @@ SoundEffect Audio::loadSoundEffectFile(const std::string &pathToSoundFile) const
 	return SoundEffect(cStrPath);
 }
 
-int Audio::playSoundEffect_(const std::shared_ptr<SoundEffect> soundEffect_Ptr, const EmissionOptions &emissionOptions) const
+int Audio::playSoundEffect(const std::shared_ptr<SoundEffect> soundEffect_Ptr, const EmissionOptions &emissionOptions) const
 {
 	Mix_Chunk *SDL_ChunkType = soundEffect_Ptr->getSoundEffect();
 	if (emissionOptions.fadeMs > 0) {
-		return Mix_FadeInChannel(-1, SDL_ChunkType, emissionOptions.loops, emissionOptions.fadeMs);
+		return Mix_FadeInChannel(AudioConfig::ANY_CHANNEL, SDL_ChunkType, emissionOptions.loops,
+		                         emissionOptions.fadeMs);
 	} else {
-		return Mix_PlayChannel(-1, SDL_ChunkType, emissionOptions.loops);
+		return Mix_PlayChannel(AudioConfig::ANY_CHANNEL, SDL_ChunkType, emissionOptions.loops);
 	}
 }
 
@@ -84,7 +85,7 @@ int Audio::emit2D(
 	if (!channelManager_.isEmitterPlayingThis(emitterID, soundEffect_Ptr)) {
 		Mix_Chunk *SDL_ChunkType = soundEffect_Ptr->getSoundEffect();
 
-		int channelChosen = playSoundEffect_(soundEffect_Ptr, emissionOptions);
+		int channelChosen = playSoundEffect(soundEffect_Ptr, emissionOptions);
 
 		channelManager_.setChannelData(channelChosen, emitterID, soundEffect_Ptr, AudioConfig::DEFAULT_VOLUME,
 		                               -1); 
@@ -92,18 +93,18 @@ int Audio::emit2D(
 	return channelManager_.whereIsEmitterPlayingThis(emitterID, soundEffect_Ptr);
 }
 
-int Audio::applySpatialization_(const int &emitterID, const std::shared_ptr<SoundEffect> &soundEffect_Ptr,
+int Audio::applySpatialization(const int &emitterID, const std::shared_ptr<SoundEffect> &soundEffect_Ptr,
                                 const Vec2f &emitterPosition, const Vec2f &listenerPosition,
                                 const EmissionOptions &emissionOptions) const{
 
-    Sint16 angle = calculateAudioAngle(emitterPosition, listenerPosition);
+    int angle = calculateAudioAngle(emitterPosition, listenerPosition);
 	int distance = calculateAudioDistance(emitterPosition, listenerPosition, emissionOptions.distance_modifier);
 	int channel = channelManager_.whereIsEmitterPlayingThis(emitterID, soundEffect_Ptr);
 	if (distance <= 255) { // normalize distance --> why though, I have to feed it into setposition here anyhow
 		if (getVolume(channel) == 0) {
 			setVolume(AudioConfig::DEFAULT_VOLUME, channel);
 		}
-		Mix_SetPosition(channel, angle, static_cast<Uint8>(distance));
+		Mix_SetPosition(channel, static_cast<Sint16>(angle), static_cast<Uint8>(distance));
 	} else {
 		setVolume(channel, 0);
 	}
@@ -120,7 +121,7 @@ int Audio::emit3D(const int &emitterID, const std::shared_ptr<SoundEffect> &soun
 	} else {
 		channelChosen = channelManager_.whereIsEmitterPlayingThis(emitterID, soundEffect_Ptr);
 	}
-	applySpatialization_(emitterID, soundEffect_Ptr, emitterPosition, listenerPosition, emissionOptions);
+	applySpatialization(emitterID, soundEffect_Ptr, emitterPosition, listenerPosition, emissionOptions);
 
 	return channelChosen;
 }
@@ -144,7 +145,7 @@ void Audio::resumeEmission(const int channelToResume) const
 
 void Audio::setAllVolume(const int &volume) const
 {
-	Mix_Volume(-1, volume);
+	Mix_Volume(AudioConfig::ANY_CHANNEL, volume);
 	Mix_VolumeMusic(volume);
 }
 
@@ -155,18 +156,18 @@ int Audio::getVolume(const int &channel) const
 
 void Audio::pauseAllAudio() const // newer function Mix_PauseAudio available in Mixer 2.8.0
 {
-	Mix_Pause(-1);
+	Mix_Pause(AudioConfig::ANY_CHANNEL);
 }
 
 void Audio::stopAllAudio() const
 {
 	Mix_HaltMusic();
-	Mix_HaltChannel(-1);
+	Mix_HaltChannel(AudioConfig::ANY_CHANNEL);
 }
 
 void Audio::resumeAllAudio() const
 {
-	Mix_Resume(-1);
+	Mix_Resume(AudioConfig::ANY_CHANNEL);
 	Mix_ResumeMusic();
 }
 
@@ -175,13 +176,13 @@ void Audio::setVolume(const int &volume, const int &channel) const
 	Mix_Volume(channel, volume);
 }
 
-Sint16 Audio::calculateAudioAngle(const Vec2f &emitterPosition, const Vec2f &listenerPosition) const
+int Audio::calculateAudioAngle(const Vec2f &emitterPosition, const Vec2f &listenerPosition) const
 {
 	float adjacent = emitterPosition.x - listenerPosition.x;
 	float opposite = emitterPosition.y - listenerPosition.y;
 	float angleInRadians = std::atan2(opposite, adjacent);
 	float angleInDegrees = angleInRadians * 180 / std::numbers::pi;
-	return angleInDegrees;
+	return static_cast<int>(angleInDegrees);
 }
 
 int Audio::calculateAudioDistance(const Vec2f &emitterPosition, const Vec2f &listenerPosition,

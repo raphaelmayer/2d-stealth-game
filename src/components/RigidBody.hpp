@@ -9,7 +9,7 @@
 // If the entity is moving, end position equals the immediate next tile.
 struct RigidBody {
 	bool isMoving = false;
-	bool isShooting = false; // added it here because I think you need a body to shot and for now this is the easieast way for me. We can change it!
+	bool isShooting = false; // rigidBody is missleading so this should not be here but stays here for now as we need to change to statemachine anyway
 	Vec2i startPosition; // in pixel space. unused as of now, but might be handy in the future
 	Vec2i endPosition;   // in pixel space
 	// TODO: Remove progress and accumulator as they are no longer used.

@@ -19,4 +19,6 @@ namespace AudioConfig {
 													// as an option
     constexpr int DEFAULT_VOLUME = 50;				// arbitrary
 
+	constexpr int ANY_CHANNEL = -1;					// wrapping SDL_mixers -1 for all channels
+
 }  

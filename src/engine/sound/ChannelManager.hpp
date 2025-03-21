@@ -27,7 +27,7 @@ public:
 		int emitterID;
 		std::shared_ptr<SoundEffect> activeTrack_Ptr;
 		int volume;
-		int assingedGroup;
+		int assingedGroup; //TODO --> necessary functions to get groups
 	};
 
 	//TODO --> Exchange with callback function
@@ -44,7 +44,7 @@ public:
 	void setChannelData(const int channelID, const int emitterID, const std::shared_ptr<SoundEffect> activeTrack_Ptr,
 	                    const int volume, const int assingedGroup)
 	{
-		if (channelID != -1) {
+		if (channelID != AudioConfig::ANY_CHANNEL) {
 			ChannelData nowPlaying = {emitterID, activeTrack_Ptr, volume, assingedGroup};
 			channelManagementList_[channelID] = nowPlaying;
 		}
