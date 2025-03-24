@@ -2,6 +2,8 @@
 #include <cmath>
 #include <numbers>
 
+ChannelManager *ChannelManager::channelManager_ = nullptr;
+
 Audio::Audio() : channelManager_()
 {
 	SDL_Init(SDL_INIT_AUDIO);
@@ -19,10 +21,10 @@ Audio::~Audio()
 	Mix_Quit(); // if we need Mix_Init(), we also need to call this
 }
 
-void Audio::update()
-{
-	channelManager_.resetChannels(); 
-}
+//void Audio::update()
+//{
+	//channelManager_.resetChannels(); 
+//}
 
 Music Audio::loadMusicFile(const std::string &pathToSoundFile) const // make a type for music and chunks
 {
@@ -100,7 +102,7 @@ int Audio::applySpatialization(const int &emitterID, const std::shared_ptr<Sound
     int angle = calculateAudioAngle(emitterPosition, listenerPosition);
 	int distance = calculateAudioDistance(emitterPosition, listenerPosition, emissionOptions.distance_modifier);
 	int channel = channelManager_.whereIsEmitterPlayingThis(emitterID, soundEffect_Ptr);
-	if (distance <= 255) { // normalize distance --> why though, I have to feed it into setposition here anyhow
+	if (distance <= 255) { 
 		if (getVolume(channel) == 0) {
 			setVolume(AudioConfig::DEFAULT_VOLUME, channel);
 		}
@@ -115,7 +117,7 @@ int Audio::applySpatialization(const int &emitterID, const std::shared_ptr<Sound
 int Audio::emit3D(const int &emitterID, const std::shared_ptr<SoundEffect> &soundEffect_Ptr,
                   const Vec2f &emitterPosition, const Vec2f &listenerPosition, const EmissionOptions &emissionOptions)
 {
-	int channelChosen; // TODO return emit2D directly not with this variable -> I cannot?!
+	int channelChosen; 
 	if (!channelManager_.isEmitterPlayingThis(emitterID, soundEffect_Ptr)) {
 		channelChosen = emit2D(emitterID, soundEffect_Ptr, emissionOptions);
 	} else {

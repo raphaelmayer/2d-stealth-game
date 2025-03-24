@@ -19,8 +19,14 @@ public:
 		for (int index = 0; index < AudioConfig::VIRTUAL_CHANNELS; index++) {
 			channelManagementList_[index] = { -1, nullptr, 0, -1 };
 		}
+		channelManager_ = this;
 	};
-	~ChannelManager() {};
+	~ChannelManager() 
+	{
+		if (channelManager_ == this) {
+			channelManager_ = nullptr;
+		}
+	};
 
 	//debating to add this to private but then i cant get it in audio later
 	struct ChannelData {
@@ -30,7 +36,14 @@ public:
 		int assingedGroup; //TODO --> necessary functions to get groups
 	};
 
-	//TODO --> Exchange with callback function
+	void resetChannel(const int &channelID)
+	{
+		if (!isChannelPlaying(channelID)) {
+			ChannelData &openedChannelData = channelManagementList_[channelID];
+			openedChannelData = {-1, nullptr, 0, -1};
+		}		
+	}
+
 	void resetChannels() 
 	{
 		for (int index = 0; index < channelManagementList_.size(); index++) {
@@ -47,7 +60,9 @@ public:
 		if (channelID != AudioConfig::ANY_CHANNEL) {
 			ChannelData nowPlaying = {emitterID, activeTrack_Ptr, volume, assingedGroup};
 			channelManagementList_[channelID] = nowPlaying;
+			setCallback(channelID);
 		}
+		
 	}
 
 	ChannelData getChannelData(const int channelID) const { return channelManagementList_[channelID]; }
@@ -95,7 +110,19 @@ public:
 
   private:
 
+	static ChannelManager* channelManager_;
+
+	void setCallback(const int& channelID)
+	{
+		Mix_ChannelFinished(Callback);
+	}
+
+	// either outside of class or a static member function. Problem then is the resetChannel method. -> check fix above (is the singleton approach correct?)
+	static void Callback(int channelID)
+	{
+		channelManager_->resetChannel(channelID);
+	}
+	
 	std::array<ChannelData, AudioConfig::VIRTUAL_CHANNELS> channelManagementList_;
 
 };
-
