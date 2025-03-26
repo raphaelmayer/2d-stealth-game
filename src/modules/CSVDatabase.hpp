@@ -37,6 +37,10 @@ class CSVDatabase {
 
 	std::size_t size() const { return db.size(); }
 
+	// TODO: could we try something like this, where we let the user override an abstract parse function instead of passing a function of type RowParserType?
+	// Technically this should probably be overwritten for the CSVParser, if we keep CSVParser separate.
+	// static std::pair<KeyType, ElementType> parse(const std::vector<std::string> &tokens) = 0;
+
   private:
 	std::unordered_map<KeyType, ElementType> db;
 };

@@ -65,6 +65,18 @@ class Camera {
 		position += (visibleAreaBefore - visibleAreaAfter) / 2;
 	}
 
+	Vec2f vecToScreen(const Vec2i &vec) const
+	{
+		const Vec2f dst = {static_cast<float>(vec.x), static_cast<float>(vec.y)};
+		return vecToScreen(dst);
+	}
+
+	Vec2f vecToScreen(const Vec2f &vec) const
+	{
+		Vec2f dst = (Vec2f{vec.x, vec.y} - position) * zoom;
+		return dst;
+	}
+
 	Rectf rectToScreen(const Recti &rect) const
 	{
 		const Rectf dst = {static_cast<float>(rect.x), static_cast<float>(rect.y), static_cast<float>(rect.w),
@@ -74,7 +86,7 @@ class Camera {
 
 	Rectf rectToScreen(const Rectf &rect) const
 	{
-		Vec2f screenPos = (Vec2f{rect.x, rect.y} - position) * zoom;
+		Vec2f screenPos = vecToScreen(Vec2f{rect.x, rect.y});
 		Vec2f size = Vec2f{rect.w, rect.h} * zoom;
 		Rectf camAdjustedDst{screenPos.x, screenPos.y, size.x, size.y};
 		return camAdjustedDst;

@@ -42,6 +42,7 @@ enum Rotation{NORTH, EAST, SOUTH, WEST };
 #define WEAPONDATA_PATH "../assets/weapon_data.csv"
 // Graphics
 #define SPRITE_SHEET "../assets/overworld_spritesheet.png"
+#define HERO_SHEET "../assets/hero-spritesheet.png"
 #define MAP_CHAR_MAPPING "../assets/overworld_char_mapping.csv"
 #define MAP_BACKGROUND "../assets/overworld_map_background.txt"
 #define MAP_OBJECTS "../assets/overworld_map_objects.txt"

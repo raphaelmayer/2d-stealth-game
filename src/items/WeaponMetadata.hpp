@@ -1,5 +1,7 @@
 #pragma once
 
+#include <string>
+
 using WeaponID = int;
 
 struct WeaponMetadata {

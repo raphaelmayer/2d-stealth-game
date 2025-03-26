@@ -1,5 +1,6 @@
 #pragma once
 
+#include "../ecs/Entity.hpp"
 #include "../engine/types/Vec2f.hpp"
 #include "../items/WeaponMetadata.hpp"
 
@@ -9,8 +10,10 @@
 struct Projectile {
 	Vec2f startPosition;
 	Vec2f targetPosition;
-	float velocity;
 
-	Entity shooter;		// entity id of the entity that shot the weapon
-	WeaponID weapon;	// weapon id of the weapon that was shot
+	float velocity;
+	int damage;
+
+	Entity shooter;  // entity id of the entity that shot the weapon
+	WeaponID weapon; // weapon id of the weapon that was shot
 };

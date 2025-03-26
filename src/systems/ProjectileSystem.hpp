@@ -1,5 +1,6 @@
 #include "../components/Positionable.hpp"
 #include "../components/Projectile.hpp"
+#include "../components/Tombstone.hpp"
 #include "../ecs/ECSManager.hpp"
 #include "../ecs/Entity.hpp"
 #include "../map/MapManager.hpp"
@@ -28,42 +29,42 @@ class ProjectileSystem final : public System {
 				const Vec2f toTarget = targetPosition - position;
 				const float moveDistance = std::min(toTarget.length(), velocity * static_cast<float>(deltaTime));
 				const Vec2f newPosition = position + (toTarget.norm() * moveDistance);
+				const std::optional<CollisionResult> collision = wouldCollide(ecs, entity, newPosition);
 
-				if (wouldCollide(ecs, entity, newPosition)) {
-					// TODO: apply damage or register hit and let another system handle damage
-					toRemove.push_back(entity);
+				if (collision) {
+					applyDamage(ecs, *collision);
+					ecs.addComponent<Tombstone>(entity, Tombstone{}); // mark projectile to be removed
 				}
 
 				if (toTarget.length() < 0.01) {
 					position = targetPosition;
-					toRemove.push_back(entity);
+					ecs.addComponent<Tombstone>(entity, Tombstone{});
 				} else {
 					position = newPosition;
 				}
 			}
 		}
-
-		for (auto &entity : toRemove) {
-			ecs.removeEntity(entity);
-		}
-		toRemove.clear();
 	}
 
   private:
 	const MapManager &mapmanager_;
-	std::vector<Entity> toRemove;
 
-	bool wouldCollide(ECSManager &ecs, const Entity entity, const Vec2f &position) const
+	struct CollisionResult {
+		// bool didCollide = false; // TODO: probably need something like this, since we always generate a collision
+		// event.
+		//  but do we need to or could we solve this differently?
+		Entity a = 0;   // entity initiating collision
+		Entity b = 0;   // entity we are colliding with
+		Vec2f position; // position of collision (wrt. a)
+	};
+
+	std::optional<CollisionResult> wouldCollide(ECSManager &ecs, const Entity entity, const Vec2f &position) const
 	{
 		if (checkCollisionsWithMap(ecs, entity, position)) {
-			return true;
+			return CollisionResult{entity, entity, position}; // TODO: use special entity value if collision with map
 		}
 
-		if (checkCollisionsWithEntities(ecs, entity, position)) {
-			return true;
-		}
-
-		return false;
+		return checkCollisionsWithEntities(ecs, entity, position);
 	}
 
 	bool checkCollisionsWithMap(ECSManager &ecs, const Entity entity, const Vec2f &position) const
@@ -75,7 +76,8 @@ class ProjectileSystem final : public System {
 		return false;
 	}
 
-	bool checkCollisionsWithEntities(ECSManager &ecs, const Entity entity, const Vec2f &position) const
+	std::optional<CollisionResult> checkCollisionsWithEntities(ECSManager &ecs, const Entity entity,
+	                                                           const Vec2f &position) const
 	{
 		const Entity shooter = ecs.getComponent<Projectile>(entity).shooter;
 
@@ -90,16 +92,33 @@ class ProjectileSystem final : public System {
 
 			if (ecs.hasComponent<Collider>(otherEntity)) {
 				const Vec2f otherPosition = ecs.getComponent<Positionable>(otherEntity).position;
-				// TODO: read entity size from component
-				const Rectf projectileBoundingBox{position.x, position.y, 3, 3};
+				const int size = 3; // TODO: read entity size from component
+				const Rectf projectileBoundingBox{position.x, position.y, size, size};
 				const Rectf otherBoundingBox{otherPosition.x, otherPosition.y, TILE_SIZE, TILE_SIZE};
 
 				if (AABB::checkCollision(projectileBoundingBox, otherBoundingBox)) {
-					return true;
+					return CollisionResult{entity, otherEntity, position};
 				}
 			}
 		}
 
-		return false;
+		return std::nullopt;
+	}
+
+	void applyDamage(ECSManager &ecs, const CollisionResult &collisionResult)
+	{
+		Projectile prj = ecs.getComponent<Projectile>(collisionResult.a);
+		int amount = prj.damage;
+		Entity targetEntity = collisionResult.b;
+		DamageEvent dmgEvent{collisionResult.a, amount};
+
+		if (ecs.hasComponent<DamageBuffer>(targetEntity)) {
+			DamageBuffer &dmgBuffer = ecs.getComponent<DamageBuffer>(targetEntity);
+			dmgBuffer.damageEvents.push_back(dmgEvent);
+		} else {
+			DamageBuffer dmgBuffer;
+			dmgBuffer.damageEvents.push_back(dmgEvent);
+			ecs.addComponent<DamageBuffer>(targetEntity, dmgBuffer);
+		}
 	}
 };

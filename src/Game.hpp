@@ -1,8 +1,6 @@
 #pragma once
 
 #include "SDL_mixer.h"
-#include "components/AI.hpp"
-#include "components/Pathfinding.hpp"
 #include "components/Patrol.hpp"
 #include "components/Projectile.hpp"
 #include "constants.hpp"
@@ -22,6 +20,8 @@
 #include "systems/AISystem.hpp"
 #include "systems/AnimationSystem.hpp"
 #include "systems/AudioSystem.hpp"
+#include "systems/CleanupSystem.hpp"
+#include "systems/DamageSystem.hpp"
 #include "systems/DebugSystem.hpp"
 #include "systems/FiringSystem.hpp"
 #include "systems/InputSystem.hpp"
@@ -85,6 +85,7 @@ class Game : public Engine {
 			pathfindingSystem->update(ecs, deltaTime);
 			firingSystem->update(ecs, deltaTime);
 			physicsSystem->update(ecs, deltaTime);
+			damageSystem->update(ecs, deltaTime);
 
 			// camera.focus(ecs.getComponent<Positionable>(PLAYER).position);
 
@@ -100,6 +101,8 @@ class Game : public Engine {
 			//progressSystem->update(ecs, deltaTime);
 			debugSystem->update(ecs, deltaTime);
 			projectileSystem->update(ecs, deltaTime);
+
+			cleanupSystem->update(ecs, deltaTime);
 
 			// TODO: render selection rectangle and entities in render system.
 			renderSelectionRectangle();
@@ -131,14 +134,13 @@ class Game : public Engine {
 		projectileSystem = std::make_unique<ProjectileSystem>(mapManager);
 		firingSystem = std::make_unique<FiringSystem>(*this);
 		animationSystem = std::make_unique<AnimationSystem>(*this, mapManager, camera);
+		damageSystem = std::make_unique<DamageSystem>();
+		cleanupSystem = std::make_unique<CleanupSystem>();
 	}
 
 	void createTestEntity(const Vec2i &position, const std::vector<PatrolPoint> &waypoints)
 	{
 		Entity e = instantiateNPCEntity(ecs, position);
-		ecs.addComponent<Vision>(e, Vision{});
-		ecs.addComponent<AI>(e, AI{position});
-		ecs.addComponent<Pathfinding>(e, Pathfinding{});
 		ecs.addComponent<Patrol>(e, Patrol{waypoints});
 		btManager.createTreeForEntity(e, "MainTree");
 	}
@@ -217,4 +219,6 @@ class Game : public Engine {
 	std::unique_ptr<ProjectileSystem> projectileSystem;
 	std::unique_ptr<FiringSystem> firingSystem;
 	std::unique_ptr<AnimationSystem> animationSystem;
+	std::unique_ptr<DamageSystem> damageSystem;
+	std::unique_ptr<CleanupSystem> cleanupSystem;
 };

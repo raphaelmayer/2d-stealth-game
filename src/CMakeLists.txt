@@ -35,6 +35,11 @@ configure_file(
     COPYONLY
 )
 configure_file(
+    ${CMAKE_SOURCE_DIR}/assets/hero-spritesheet.png
+    ${CMAKE_BINARY_DIR}/assets/hero-spritesheet.png
+    COPYONLY
+)
+configure_file(
     ${CMAKE_SOURCE_DIR}/assets/ai/trees/MainTree.xml
     ${CMAKE_BINARY_DIR}/assets/ai/trees/MainTree.xml
     COPYONLY

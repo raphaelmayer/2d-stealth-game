@@ -36,9 +36,10 @@ Entity instantiateItemEntity(ECSManager &ecs, const Vec2i position, const Vec2i 
 
 	ecs.addComponent(item, Positionable{Utils::toFloat(position) * TILE_SIZE});
 	ecs.addComponent(item,
-	                 Renderable{{spriteSheetPos.x * SPRITE_SIZE, ITEMS_SPRITESHEET_Y + spriteSheetPos.y * SPRITE_SIZE},
+	                 Renderable{SPRITE_SHEET,
+	                            {spriteSheetPos.x * SPRITE_SIZE, ITEMS_SPRITESHEET_Y + spriteSheetPos.y * SPRITE_SIZE},
 	                            {SPRITE_SIZE, SPRITE_SIZE},
-	                            0});
+	                            {SPRITE_SIZE, SPRITE_SIZE}});
 	ecs.addComponent(item, Collider{});
 
 	return item;

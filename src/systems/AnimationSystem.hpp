@@ -28,10 +28,10 @@ class AnimationSystem final : public System {
 		const std::set<Entity> &entities = ecs.getEntities();
 		for (const Entity &entity : entities) {
 			if (ecs.hasComponent<Animatable>(entity) && ecs.hasComponent<Renderable>(entity)) {
-				auto &spriteSrc = ecs.getComponent<Renderable>(entity).spriteSrc;
+				auto &sourcePosition = ecs.getComponent<Renderable>(entity).sourcePosition;
 				auto &animatable = ecs.getComponent<Animatable>(entity);
 				animatable.timeElapsed += deltaTime;
-				handleAnimation(ecs, entity, animatable, spriteSrc.y);
+				handleAnimation(ecs, entity, animatable, sourcePosition.y);
 			}
 		}
 	}

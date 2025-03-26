@@ -80,12 +80,6 @@ cmake -S . -B xbuild -GXcode
 cmake --open xbuild
 ```
 
-#### Joshua Meyer
-- AudioSystem.hpp
-- InteractionSystem.hpp
-- ProgressSystem.hpp
- - AudioSystem.hpp
-
 ## TODO
 - Switch to new ECS version
 	- Load ECS dynamically from Github with CMake [x]
@@ -99,9 +93,9 @@ cmake --open xbuild
 - Cancelling player movement by clicking on a impassable tile resets player. depending on direction he walks back to 
   the previous tile or finishes the current movement to endPosition. This is most likely due to our A* algorithm.
   If it does not find a path it returns the start position. Solution: return empty path and handle appropriately in `PathfindingSystem`. 
+- remove entity id 0 as a possible entity id so we can more easily have a default wrong value
 
 ### Features 
-- Implement dedicated sound engine wrapping sdl as part of our engine.
 - implement actual AI state machine
 - create and switch to a new testing map 
 - Sprint feature
@@ -123,6 +117,7 @@ cmake --open xbuild
 	- AI alert state
 	- ...
 - Still using SDL specific types for mouse and keycodes.
+- integrate ImGUI?
 
 ## Ideas for sound engine
 - add SoundLibrary class to hold all sound chunks (in game context)

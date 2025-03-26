@@ -1,5 +1,6 @@
 #include "../components/AI.hpp"
 #include "../components/Animatable.hpp"
+#include "../components/Health.hpp"
 #include "../components/Positionable.hpp"
 #include "../components/Renderable.hpp"
 #include "../components/RigidBody.hpp"
@@ -15,16 +16,16 @@
 #include <functional>
 #include <iostream>
 
-constexpr int TILESET_COLUMNS = 9; // TODO: Read from actual tileset data
-
 // The RenderSystem is responsible for rendering the map and all entities with Renderable components.
 // It performs visibility culling using the camera's position to avoid unnecessary rendering.
 class RenderSystem final : public System {
   public:
 	RenderSystem(const Engine &engine, const MapManager &mapManager, const Camera &camera)
-	    : engine_(engine), mapManager_(mapManager), camera_(camera), spritesheet_(engine_.loadTexture(SPRITE_SHEET)),
-	      weaponTexture(engine_.loadTexture(M4A1))
+	    : engine_(engine), mapManager_(mapManager), camera_(camera)
 	{
+		textures.emplace(SPRITE_SHEET, engine_.loadTexture(SPRITE_SHEET));
+		textures.emplace(M4A1, engine_.loadTexture(M4A1));
+		textures.emplace(HERO_SHEET, engine_.loadTexture(HERO_SHEET));
 	}
 
 	void update(ECSManager &ecs, const double deltaTime) override
@@ -48,6 +49,7 @@ class RenderSystem final : public System {
 	void renderMap(const Rectf &camView) const
 	{
 		const LevelMap &map = mapManager_.getLevelMap();
+		constexpr int TILESET_COLUMNS = 9; // TODO: Read from actual tileset data
 
 		// Calculate the range of visible tiles to selectively render based on the camera's position.
 		int startX = std::max(0, static_cast<int>(camView.x / TILE_SIZE));
@@ -64,7 +66,7 @@ class RenderSystem final : public System {
 					const Recti src = {srcPos.x, srcPos.y, TILE_SIZE, TILE_SIZE};
 					const Recti dst = {x * TILE_SIZE, y * TILE_SIZE, TILE_SIZE, TILE_SIZE};
 					const Rectf camAdjustedDst = camera_.rectToScreen(dst);
-					engine_.drawTexture(spritesheet_, src, camAdjustedDst);
+					engine_.drawTexture(getSpritesheet(SPRITE_SHEET), src, camAdjustedDst);
 				}
 			}
 		}
@@ -80,33 +82,46 @@ class RenderSystem final : public System {
 		return dst.x >= leftBound && dst.x < rightBound && dst.y >= topBound && dst.y < bottomBound;
 	}
 
+	const Texture &getSpritesheet(const std::string filename) const
+	{
+		return textures.at(filename);
+	}
+
 	void renderEntity(ECSManager &ecs, Entity entity, const Rectf &camView) const
 	{
 		auto &position = ecs.getComponent<Positionable>(entity).position;
 		auto &renderable = ecs.getComponent<Renderable>(entity);
-
-		Vec2i spriteSrc = renderable.spriteSrc;
-		Vec2i size = renderable.size;
-		int offset_y = renderable.offset_y;
+		Vec2i sourcePosition = renderable.sourcePosition;
+		Vec2i size = renderable.sourceSize;
+		Vec2i targetSize = renderable.targetSize;
 
 		if (ecs.hasComponent<Rotatable>(entity)) {
 			const auto rotation = ecs.getComponent<Rotatable>(entity).rotation;
 			// due to how the spritesheet and the Rotation enum are laid out
 			// this corresponds to the sprite for the current direction
-			spriteSrc.x = rotation * 2 * size.x;
+			sourcePosition.x = rotation * 2 * size.x;
 		}
 
-		Recti src = {spriteSrc.x, spriteSrc.y, size.x, size.y};
-		Recti dst = {position.x, position.y + offset_y, size.x, size.y};
+		Recti src = {sourcePosition.x, sourcePosition.y, size.x, size.y};
+		// we need to offset the draw position in the y-axis, since we draw from top left but entity position is the
+		// logical position in world space, i.e. where it stands.
+		Vec2i sizeAdjusted = Utils::toInt(position) - (targetSize - TILE_SIZE);
+		Recti dst = {position.x, sizeAdjusted.y, targetSize.x, targetSize.y};
 
 		// Perform visibility culling before rendering the entity.
 		if (isVisibleOnScreen(dst, camView)) {
+			const Texture &spritesheet = getSpritesheet(renderable.filename);
 			Rectf camAdjustedDst = camera_.rectToScreen(dst);
-			engine_.drawTexture(spritesheet_, src, camAdjustedDst);
+			engine_.drawTexture(spritesheet, src, camAdjustedDst);
 
 			if (ecs.hasComponent<AI>(entity)) {
 				const AI &ai = ecs.getComponent<AI>(entity);
 				renderAlertnessLevel(position, ai);
+			}
+
+			if (ecs.hasComponent<Health>(entity)) {
+				const Health &health = ecs.getComponent<Health>(entity);
+				renderHealthbar(position, health);
 			}
 
 			if (ecs.hasComponent<EquippedWeapon>(entity)) {
@@ -159,6 +174,18 @@ class RenderSystem final : public System {
 		renderLoadingBar(Rectf{position.x, position.y, TILE_SIZE, 4}, fillPercent);
 	}
 
+	void renderHealthbar(const Vec2f &position, const Health &health) const
+	{
+		if (health.health <= 0) {
+			return;
+		}
+
+		float fillPercent = health.health / health.maxHealth;
+		// renderLoadingBar(Rectf{position.x, position.y, TILE_SIZE, 8}, fillPercent);
+		Vec2f dst = camera_.vecToScreen(position);
+		engine_.drawLine(dst, {dst.x + TILE_SIZE * camera_.getZoom() * fillPercent, dst.y}, {255, 120, 80, 255});
+	}
+
 	void renderWarmupVisual(const Vec2f &position, const EquippedWeapon &ew) const
 	{
 		const WeaponMetadata wdata = WeaponDatabase::getInstance().get(ew.weaponId);
@@ -209,6 +236,8 @@ class RenderSystem final : public System {
 	const Engine &engine_;
 	const MapManager &mapManager_;
 	const Camera &camera_;
-	const Texture spritesheet_;
-	const Texture weaponTexture;
+
+	// we do not have a dedicated resource manager as of now, so we load textures here in the constructor and store them
+	// in this map. we index textures by their respective file paths.
+	std::unordered_map<std::string, Texture> textures;
 };

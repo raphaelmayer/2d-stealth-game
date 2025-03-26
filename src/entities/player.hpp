@@ -4,6 +4,7 @@
 #include "../components/Collider.hpp"
 #include "../components/Controllable.hpp"
 #include "../components/EquippedWeapon.hpp"
+#include "../components/Health.hpp"
 #include "../components/Interactable.hpp"
 #include "../components/Inventory.hpp"
 #include "../components/Pathfinding.hpp"
@@ -14,22 +15,14 @@
 #include "../constants.hpp"
 #include "../ecs/ECSManager.hpp"
 #include "../engine/types/Vec2i.hpp"
+#include "entity.hpp"
 
 // for playerSpriteSheetY use one of the constants PLAYER_{RED|BLUE|WHITE}_SPRITE_SHEET_Y
 Entity instantiatePlayerEntity(ECSManager &ecs, Vec2i positionInTiles, Rotation rotation = SOUTH,
                                int playerSpriteSheetY = PLAYER_SPRITE_SHEET_Y_RED)
 {
-	Entity player = ecs.addEntity();
+	Entity player = instantiateBaseEntity(ecs, positionInTiles, rotation);
 
-	ecs.addComponent(player,
-	                 Positionable{{(float)(positionInTiles.x * TILE_SIZE), (float)(positionInTiles.y * TILE_SIZE)}});
-	ecs.addComponent(player, Rotatable{rotation});
-	ecs.addComponent(player, RigidBody{false, false, positionInTiles * TILE_SIZE, positionInTiles * TILE_SIZE, 0, 0});
-	ecs.addComponent(player, Animatable{PLAYER_STANDING_ANIMATION_NUMBER,
-	                                    {playerSpriteSheetY, playerSpriteSheetY + PLAYER_SIZE_Y,
-	                                     playerSpriteSheetY + 2 * PLAYER_SIZE_Y, playerSpriteSheetY + PLAYER_SIZE_Y}});
-	ecs.addComponent(player, Renderable{{2 * PLAYER_SIZE_X, playerSpriteSheetY}, {PLAYER_SIZE_X, PLAYER_SIZE_Y}, -8});
-	ecs.addComponent(player, Collider{});
 	ecs.addComponent(player, Controllable{});
 	ecs.addComponent(player, Inventory{});
 	ecs.addComponent(player, EquippedWeapon{1, 30}); // assault rifle with full mag
