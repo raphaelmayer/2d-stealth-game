@@ -10,14 +10,16 @@ class AudioSystem final : public System {
 	explicit AudioSystem(Engine &engine, const Camera &camera) : engine_(engine), camera_(camera)
 	{
 		audioDevice_.setVolume(50);
+		//assumes that game starts in main menu
+		audioDevice_.streamMusic(mainMenuMusic_, -1);
 	};
 
 	void update(ECSManager &ecs, const double deltaTime) override
 	{
-		// Start Background Music at Start of Game loop
+		// Start Ingame Background Music at Start of Game loop 
 		if (!backgroundMusic_) {
-			backgroundMusic_ = audioDevice_.loadMusicFile(BACKGROUND_MUSIC_1);
-			//audioDevice_.streamMusic(backgroundMusic_, -1);
+			backgroundMusic_ = audioDevice_.loadMusicFile(BACKGROUND_JUNGLE_AMBIENCE);
+			audioDevice_.streamMusic(backgroundMusic_, -1);
 		}
 
 
@@ -67,6 +69,7 @@ class AudioSystem final : public System {
 	const Camera &camera_;
 
 	// internal types and pointers
+	Music mainMenuMusic_ = audioDevice_.loadMusicFile(BACKGROUND_MAIN_MENU);
 	Music backgroundMusic_;
 	std::shared_ptr<SoundEffect> footStep_Ptr_ =
 	    std::make_shared<SoundEffect>(audioDevice_.loadSoundEffectFile(SFX_FOOTSTEP));	//probably SoundEffect should be a pointer by itself?
