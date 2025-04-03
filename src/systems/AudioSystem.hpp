@@ -17,10 +17,10 @@ class AudioSystem final : public System {
 	void update(ECSManager &ecs, const double deltaTime) override
 	{
 		// Start Ingame Background Music at Start of Game loop 
-		if (!backgroundMusic_) {
+		/* if (!backgroundMusic_) {
 			backgroundMusic_ = audioDevice_.loadMusicFile(BACKGROUND_JUNGLE_AMBIENCE);
 			audioDevice_.streamMusic(backgroundMusic_, -1);
-		}
+		}*/
 
 
 		// testing to check for isMoving here or not could work well
@@ -52,7 +52,7 @@ class AudioSystem final : public System {
 					audioDevice_.emit3D(entity, footStep_Ptr_, emitterPosition, listenerPosition, {});
 				} else if (soundEffect.soundFile_Ptr == akShot_Ptr_) 
 				{
-					audioDevice_.emit2D(entity, akShot_Ptr_, {});
+					audioDevice_.emit3D(entity, akShot_Ptr_, emitterPosition, listenerPosition, {});
 				}
 			}
 			ecs.removeComponent<SoundEmitter>(entity);

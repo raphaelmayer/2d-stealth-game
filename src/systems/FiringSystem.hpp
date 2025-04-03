@@ -91,7 +91,7 @@ class FiringSystem final : public System {
 			Vec2f start = ecs.getComponent<Positionable>(entity).position + (TILE_SIZE / 2);
 			Vec2f targetPos = ecs.getComponent<Positionable>(targetComp.entity).position + (TILE_SIZE / 2);
 			spawnProjectile(ecs, start, targetPos, entity, ew.weaponId);
-			isShooting = true;
+			isShooting = true; //why is this also setting while reloading?
 			
 		}
 	}
