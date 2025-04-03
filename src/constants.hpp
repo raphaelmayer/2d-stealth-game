@@ -53,6 +53,7 @@ enum Rotation{NORTH, EAST, SOUTH, WEST };
 #define SFX_REMOVE_ITEM "../assets/audio/sfx/pop.wav"
 #define SFX_FOOTSTEP "../assets/audio/sfx/grass_footstep.wav"
 #define SFX_SNIPER_SHOT_AND_RELOAD "../assets/audio/sfx/sniper_shot_and_reload.wav"
+#define SFX_AK_SHOT_FULL_AUTO_LONG "../assets/audio/sfx/ak_shot_full-auto_long.wav"
 #define BACKGROUND_JUNGLE_AMBIENCE "../assets/audio/music/background_jungle_ambience.mp3"
 #define BACKGROUND_MAIN_MENU "../assets/audio/music/background_main_menu.mp3"
 // Behavior trees

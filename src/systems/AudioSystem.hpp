@@ -35,7 +35,7 @@ class AudioSystem final : public System {
 				}
 				if (rigidBody.isShooting) {
 					if (!ecs.hasComponent<SoundEmitter>(entity)) {
-						ecs.addComponent<SoundEmitter>(entity, {sniperShot_Ptr_}); //TODO --> MOVE TO RELEVANT SYSTEM
+						ecs.addComponent<SoundEmitter>(entity, {akShot_Ptr_}); //TODO --> MOVE TO RELEVANT SYSTEM
 						rigidBody.isShooting = false; // move to input system or whereever
 					}
 				}
@@ -50,9 +50,9 @@ class AudioSystem final : public System {
 				if (soundEffect.soundFile_Ptr == footStep_Ptr_ && entity == PLAYER) 
 				{
 					audioDevice_.emit3D(entity, footStep_Ptr_, emitterPosition, listenerPosition, {});
-				} else if (soundEffect.soundFile_Ptr == sniperShot_Ptr_) 
+				} else if (soundEffect.soundFile_Ptr == akShot_Ptr_) 
 				{
-					audioDevice_.emit2D(entity, sniperShot_Ptr_, {});
+					audioDevice_.emit2D(entity, akShot_Ptr_, {});
 				}
 			}
 			ecs.removeComponent<SoundEmitter>(entity);
@@ -73,6 +73,6 @@ class AudioSystem final : public System {
 	Music backgroundMusic_;
 	std::shared_ptr<SoundEffect> footStep_Ptr_ =
 	    std::make_shared<SoundEffect>(audioDevice_.loadSoundEffectFile(SFX_FOOTSTEP));	//probably SoundEffect should be a pointer by itself?
-	std::shared_ptr<SoundEffect> sniperShot_Ptr_ =
-	    std::make_shared<SoundEffect>(audioDevice_.loadSoundEffectFile(SFX_SNIPER_SHOT_AND_RELOAD));
+	std::shared_ptr<SoundEffect> akShot_Ptr_ =
+	    std::make_shared<SoundEffect>(audioDevice_.loadSoundEffectFile(SFX_AK_SHOT_FULL_AUTO_LONG));
 };

@@ -64,6 +64,7 @@ class FiringSystem final : public System {
 		}
 
 		bool isMoving = ecs.getComponent<RigidBody>(entity).isMoving;
+		bool& isShooting = ecs.getComponent<RigidBody>(entity).isShooting;
 		if (ecs.hasComponent<Target>(entity) && !isMoving) {
 			Target targetComp = ecs.getComponent<Target>(entity);
 
@@ -90,6 +91,8 @@ class FiringSystem final : public System {
 			Vec2f start = ecs.getComponent<Positionable>(entity).position + (TILE_SIZE / 2);
 			Vec2f targetPos = ecs.getComponent<Positionable>(targetComp.entity).position + (TILE_SIZE / 2);
 			spawnProjectile(ecs, start, targetPos, entity, ew.weaponId);
+			isShooting = true;
+			
 		}
 	}
 };
