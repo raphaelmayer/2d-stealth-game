@@ -41,7 +41,7 @@ class MainMenu final : public ListDialog {
   private:
 	const Engine &engine;
 	const Texture background;
-	static constexpr int menuWidth_ = 300;
-	static constexpr int x = WINDOW_WIDTH * PIXEL_SIZE - menuWidth_ - 20;
-	static constexpr int y = 218;
+	static constexpr int menuWidth_ = 200;
+	static constexpr int x = WINDOW_WIDTH * PIXEL_SIZE - menuWidth_;
+	static constexpr int y = 700;
 };

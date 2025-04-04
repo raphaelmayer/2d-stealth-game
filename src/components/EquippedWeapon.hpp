@@ -15,4 +15,5 @@ struct EquippedWeapon {
 	float reloadTimeAccumulator = 0; // tracks the reload duration
 
 	bool isTriggerHeld = false;
+	bool isReloading = false; // flag is being set in firing system
 };

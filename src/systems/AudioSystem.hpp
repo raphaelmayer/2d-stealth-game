@@ -10,14 +10,16 @@ class AudioSystem final : public System {
 	explicit AudioSystem(Engine &engine, const Camera &camera) : engine_(engine), camera_(camera)
 	{
 		audioDevice_.setVolume(50);
+		//assumes that game starts in main menu
+		audioDevice_.streamMusic(mainMenuMusic_, -1);
 	};
 
 	void update(ECSManager &ecs, const double deltaTime) override
 	{
-		// Start Background Music at Start of Game loop
+		// Start Ingame Background Music at Start of Game loop 
 		if (!backgroundMusic_) {
-			backgroundMusic_ = audioDevice_.loadMusicFile(BACKGROUND_MUSIC_1);
-			//audioDevice_.streamMusic(backgroundMusic_, -1);
+			backgroundMusic_ = audioDevice_.loadMusicFile(BACKGROUND_JUNGLE_AMBIENCE);
+			audioDevice_.streamMusic(backgroundMusic_, -1);
 		}
 
 
@@ -33,9 +35,17 @@ class AudioSystem final : public System {
 				}
 				if (rigidBody.isShooting) {
 					if (!ecs.hasComponent<SoundEmitter>(entity)) {
-						ecs.addComponent<SoundEmitter>(entity, {sniperShot_Ptr_}); //TODO --> MOVE TO RELEVANT SYSTEM
+						ecs.addComponent<SoundEmitter>(entity, {akShot_Ptr_}); //TODO --> MOVE TO RELEVANT SYSTEM
 						rigidBody.isShooting = false; // move to input system or whereever
 					}
+				}
+				//this part stops emission of shot sounds when reloading -> Hack, TODO --> enable loading and randomizing
+				if (ecs.hasComponent<EquippedWeapon>(entity)) {
+					if (ecs.getComponent<EquippedWeapon>(entity).isReloading) {
+						int channelToHalt = audioDevice_.getChannelManager().whereIsEmitterPlayingThis(entity, akShot_Ptr_);
+						audioDevice_.stopEmission(channelToHalt);
+					}
+
 				}
 			}
 		}
@@ -48,9 +58,9 @@ class AudioSystem final : public System {
 				if (soundEffect.soundFile_Ptr == footStep_Ptr_ && entity == PLAYER) 
 				{
 					audioDevice_.emit3D(entity, footStep_Ptr_, emitterPosition, listenerPosition, {});
-				} else if (soundEffect.soundFile_Ptr == sniperShot_Ptr_) 
+				} else if (soundEffect.soundFile_Ptr == akShot_Ptr_) 
 				{
-					audioDevice_.emit2D(entity, sniperShot_Ptr_, {});
+					audioDevice_.emit3D(entity, akShot_Ptr_, emitterPosition, listenerPosition, {});
 				}
 			}
 			ecs.removeComponent<SoundEmitter>(entity);
@@ -67,9 +77,10 @@ class AudioSystem final : public System {
 	const Camera &camera_;
 
 	// internal types and pointers
+	Music mainMenuMusic_ = audioDevice_.loadMusicFile(BACKGROUND_MAIN_MENU);
 	Music backgroundMusic_;
 	std::shared_ptr<SoundEffect> footStep_Ptr_ =
 	    std::make_shared<SoundEffect>(audioDevice_.loadSoundEffectFile(SFX_FOOTSTEP));	//probably SoundEffect should be a pointer by itself?
-	std::shared_ptr<SoundEffect> sniperShot_Ptr_ =
-	    std::make_shared<SoundEffect>(audioDevice_.loadSoundEffectFile(SFX_SNIPER_SHOT_AND_RELOAD));
+	std::shared_ptr<SoundEffect> akShot_Ptr_ =
+	    std::make_shared<SoundEffect>(audioDevice_.loadSoundEffectFile(SFX_AK_SHOT_FULL_AUTO_LONG));
 };

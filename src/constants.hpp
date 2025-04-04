@@ -10,8 +10,8 @@ enum Rotation{NORTH, EAST, SOUTH, WEST };
 // In Tile domain (multiply with Tile Size to get pixel values):
 #define MAP_SIZE_X 90
 #define MAP_SIZE_Y 30
-#define WINDOW_WIDTH 220
-#define WINDOW_HEIGHT 140
+#define WINDOW_WIDTH 440
+#define WINDOW_HEIGHT 280
 #define PIXEL_SIZE 3
 
 #define LEVEL_1_EAST_BORDER 40
@@ -53,8 +53,9 @@ enum Rotation{NORTH, EAST, SOUTH, WEST };
 #define SFX_REMOVE_ITEM "../assets/audio/sfx/pop.wav"
 #define SFX_FOOTSTEP "../assets/audio/sfx/grass_footstep.wav"
 #define SFX_SNIPER_SHOT_AND_RELOAD "../assets/audio/sfx/sniper_shot_and_reload.wav"
-#define BACKGROUND_MUSIC_1 "../assets/audio/music/background_1.mp3"
-#define BACKGROUND_MUSIC_2 "../assets/audio/music/background_2.mp3"
+#define SFX_AK_SHOT_FULL_AUTO_LONG "../assets/audio/sfx/ak_shot_full-auto_long.wav"
+#define BACKGROUND_JUNGLE_AMBIENCE "../assets/audio/music/background_jungle_ambience.mp3"
+#define BACKGROUND_MAIN_MENU "../assets/audio/music/mainmenu_background_lttz.mp3"
 // Behavior trees
 #define BT_DIRECTORY "../assets/ai/trees"
 //Fonts
