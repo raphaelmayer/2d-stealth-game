@@ -17,10 +17,10 @@ class AudioSystem final : public System {
 	void update(ECSManager &ecs, const double deltaTime) override
 	{
 		// Start Ingame Background Music at Start of Game loop 
-		/* if (!backgroundMusic_) {
+		if (!backgroundMusic_) {
 			backgroundMusic_ = audioDevice_.loadMusicFile(BACKGROUND_JUNGLE_AMBIENCE);
 			audioDevice_.streamMusic(backgroundMusic_, -1);
-		}*/
+		}
 
 
 		// testing to check for isMoving here or not could work well
@@ -38,6 +38,14 @@ class AudioSystem final : public System {
 						ecs.addComponent<SoundEmitter>(entity, {akShot_Ptr_}); //TODO --> MOVE TO RELEVANT SYSTEM
 						rigidBody.isShooting = false; // move to input system or whereever
 					}
+				}
+				//this part stops emission of shot sounds when reloading -> Hack, TODO --> enable loading and randomizing
+				if (ecs.hasComponent<EquippedWeapon>(entity)) {
+					if (ecs.getComponent<EquippedWeapon>(entity).isReloading) {
+						int channelToHalt = audioDevice_.getChannelManager().whereIsEmitterPlayingThis(entity, akShot_Ptr_);
+						audioDevice_.stopEmission(channelToHalt);
+					}
+
 				}
 			}
 		}

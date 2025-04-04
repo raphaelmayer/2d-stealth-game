@@ -89,6 +89,9 @@ class Audio {
 	// maximum volume is 128, sets Volume for stream and all channels
 	void setAllVolume(const int &volume) const;
 
+	const ChannelManager& getChannelManager() const;
+
+
   private:
 	ChannelManager channelManager_;
 

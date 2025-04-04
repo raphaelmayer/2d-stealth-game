@@ -41,6 +41,8 @@ class FiringSystem final : public System {
 		EquippedWeapon &ew = ecs.getComponent<EquippedWeapon>(entity);
 		WeaponMetadata wdata = WeaponDatabase::getInstance().get(ew.weaponId);
 
+		bool &isReloading = ecs.getComponent<EquippedWeapon>(entity).isReloading;
+
 		if (ew.firerateAccumulator > wdata.firerate) {
 			ew.firerateAccumulator = 0.f;
 		}
@@ -50,6 +52,7 @@ class FiringSystem final : public System {
 		}
 
 		if (ew.reloadTimeAccumulator >= wdata.reloadTime) {
+			isReloading = false;
 			ew.magazineSize = wdata.magazineSize;
 			ew.reloadTimeAccumulator = 0.f;
 		}
@@ -72,6 +75,7 @@ class FiringSystem final : public System {
 
 			if (ew.magazineSize == 0) {
 				ew.reloadTimeAccumulator += static_cast<float>(deltaTime);
+				isReloading = true;
 				return;
 			}
 
@@ -91,7 +95,7 @@ class FiringSystem final : public System {
 			Vec2f start = ecs.getComponent<Positionable>(entity).position + (TILE_SIZE / 2);
 			Vec2f targetPos = ecs.getComponent<Positionable>(targetComp.entity).position + (TILE_SIZE / 2);
 			spawnProjectile(ecs, start, targetPos, entity, ew.weaponId);
-			isShooting = true; //why is this also setting while reloading?
+			isShooting = true; 
 			
 		}
 	}

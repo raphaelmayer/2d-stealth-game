@@ -192,3 +192,8 @@ int Audio::calculateAudioDistance(const Vec2f &emitterPosition, const Vec2f &lis
 
 	return static_cast<int>(distance);
 }
+
+const ChannelManager &Audio::getChannelManager() const
+{
+	return channelManager_;
+}
