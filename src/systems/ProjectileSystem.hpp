@@ -37,8 +37,8 @@ class ProjectileSystem final : public System {
 				}
 
 				if (toTarget.length() < 0.01) {
-					position = targetPosition;
-					ecs.addComponent<Tombstone>(entity, Tombstone{});
+					//position = targetPosition;
+					//ecs.addComponent<Tombstone>(entity, Tombstone{});
 				} else {
 					position = newPosition;
 				}

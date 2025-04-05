@@ -118,6 +118,7 @@ cmake --open xbuild
 	- ...
 - Still using SDL specific types for mouse and keycodes.
 - integrate ImGUI?
+- Engine::getRenderScale() should probably be a scalar instead of a vector? This means that Engine::pixelSize_ should also be a scalar.
 
 ## Ideas for sound engine
 - add SoundLibrary class to hold all sound chunks (in game context)
