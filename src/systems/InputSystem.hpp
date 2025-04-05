@@ -109,11 +109,18 @@ class InputSystem final : public System {
 	{
 		std::vector<Entity> entities{};
 		for (const auto &entity : ecs.getEntities()) {
-			const Vec2f pos = ecs.getComponent<Positionable>(entity).position;
-			Rectf entityRectangle{pos.x, pos.y, TILE_SIZE, TILE_SIZE}; // TODO: read size from component
+			if (ecs.hasComponent<Collider>(entity) && ecs.hasComponent<Positionable>(entity)) {
+			
+				const Vec2f pos = ecs.getComponent<Positionable>(entity).position;
+				const Vec2f size = Utils::toFloat(ecs.getComponent<Collider>(entity).size);
+				std::cout << "entity size x: " << size.x << "entity y: " << size.y << "\n";
+				// manipulating pos.y here because currently it is the top left of the bottom tile of any entity, basically where the feet are´.
+				// TODO -> find out where "selection overlay" is and decide if we want to change that
+				Rectf entityRectangle{pos.x, pos.y - (size.y - TILE_SIZE), size.x, size.y}; 
 
-			if (AABB::checkCollision(rect, entityRectangle)) {
-				entities.push_back(entity);
+				if (AABB::checkCollision(rect, entityRectangle)) {
+					entities.push_back(entity);
+				}
 			}
 		}
 
