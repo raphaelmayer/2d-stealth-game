@@ -113,9 +113,7 @@ class InputSystem final : public System {
 			
 				const Vec2f pos = ecs.getComponent<Positionable>(entity).position;
 				const Vec2f size = Utils::toFloat(ecs.getComponent<Collider>(entity).size);
-				std::cout << "entity size x: " << size.x << "entity y: " << size.y << "\n";
 				// manipulating pos.y here because currently it is the top left of the bottom tile of any entity, basically where the feet are´.
-				// TODO -> find out where "selection overlay" is and decide if we want to change that
 				Rectf entityRectangle{pos.x, pos.y - (size.y - TILE_SIZE), size.x, size.y}; 
 
 				if (AABB::checkCollision(rect, entityRectangle)) {
