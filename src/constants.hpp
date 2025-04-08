@@ -8,6 +8,7 @@ enum Rotation{NORTH, EAST, SOUTH, WEST };
 #define PLAYER_SIZE_Y 24
 
 // In Tile domain (multiply with Tile Size to get pixel values):
+#define BASE_ENTITY_HEIGHT 2
 #define MAP_SIZE_X 90
 #define MAP_SIZE_Y 30
 #define WINDOW_WIDTH 440
