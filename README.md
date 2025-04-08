@@ -1,6 +1,6 @@
-# Ants & Islands
+# Tactical Squad
 
-Ants & Islands is an RPG exploration game, that is built with C++, CMake, SDL2 and Catch2.
+Tactical Squad is an top down tactical shooter game, that is built with C++, CMake, SDL2 and Catch2.
 
 ![alt text for screen readers](/assets/mainmenu_background.png "Text to show on mouseover")
 
@@ -8,9 +8,10 @@ Ants & Islands is an RPG exploration game, that is built with C++, CMake, SDL2 a
 
 | Action                                                                                          | Key(s)     |
 |-------------------------------------------------------------------------------------------------|------------|
-| Movement / Navigating menus                                                                     | W, A, S, D |
+| Movement			                                                                  | MOUSE      |
+| Navigating menus                                                                     		  | W, A, S, D |
 | Toggle in-game menu                                                                             | ESCAPE     |
-| Select menu item / Advance text <br/> Interact / Collect item <br/> Consume item from inventory | ENTER      |
+| Select menu item / Advance text <br/> 							  | ENTER      |
 
 
 ## How to build
