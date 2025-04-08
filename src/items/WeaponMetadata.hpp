@@ -9,7 +9,7 @@ struct WeaponMetadata {
 	std::string name;
 	std::string description;
 
-	float velocity = 0;
+	float speed = 0;
 	float range = 0;
 
 	int damage = 0; // if we don't do different ammunition. otherwise we need a caliber member

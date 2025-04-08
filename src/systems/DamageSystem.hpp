@@ -20,9 +20,10 @@ class DamageSystem : System {
 
 			for (const DamageEvent &de : dmgBuffer.damageEvents) {
 				health.health = std::max(0, health.health - de.amount);
-				// TODO: add tombstone or remove components or something
-				//ecs.removeComponent<AI>(entity);
-				//ecs.removeComponent<Controllable>(entity);
+				
+				if (health.health <= 0) {
+					ecs.addComponent<Tombstone>(entity, {});
+				}
 			}
 
 			ecs.removeComponent<DamageBuffer>(entity);

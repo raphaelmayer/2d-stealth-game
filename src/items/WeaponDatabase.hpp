@@ -35,7 +35,7 @@ class WeaponDatabase : public CSVDatabase<WeaponID, WeaponMetadata> {
 			wdata.id = static_cast<WeaponID>(std::stoi(tokens[0]));
 			wdata.name = tokens[1];
 			wdata.description = tokens[2];
-			wdata.velocity = std::stof(tokens[3]);
+			wdata.speed = std::stof(tokens[3]);
 			wdata.range = std::stoi(tokens[4]);
 			wdata.damage = std::stoi(tokens[5]);
 			wdata.warmup = std::stof(tokens[6]);

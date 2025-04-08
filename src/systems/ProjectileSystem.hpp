@@ -23,12 +23,9 @@ class ProjectileSystem final : public System {
 				Vec2f &position = ecs.getComponent<Positionable>(entity).position;
 				const Projectile &projectile = ecs.getComponent<Projectile>(entity);
 				const Vec2f startPosition = projectile.startPosition;
-				const Vec2f targetPosition = projectile.targetPosition;
-				const float velocity = projectile.velocity;
+				const Vec2f velocity = projectile.velocity;
 
-				const Vec2f toTarget = targetPosition - position;
-				const float moveDistance = std::min(toTarget.length(), velocity * static_cast<float>(deltaTime));
-				const Vec2f newPosition = position + (toTarget.norm() * moveDistance);
+				const Vec2f newPosition = position += velocity * deltaTime;
 				const std::optional<CollisionResult> collision = wouldCollide(ecs, entity, newPosition);
 
 				if (collision) {
@@ -36,9 +33,8 @@ class ProjectileSystem final : public System {
 					ecs.addComponent<Tombstone>(entity, Tombstone{}); // mark projectile to be removed
 				}
 
-				if (toTarget.length() < 0.01) {
-					//position = targetPosition;
-					//ecs.addComponent<Tombstone>(entity, Tombstone{});
+				if ((position - startPosition).length() > projectile.range * TILE_SIZE) { // could save a sqrt op here
+					ecs.addComponent<Tombstone>(entity, Tombstone{});
 				} else {
 					position = newPosition;
 				}

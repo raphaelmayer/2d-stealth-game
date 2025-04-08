@@ -36,7 +36,7 @@ class FiringSystem final : public System {
 	// StateMachine firingSM{std::make_unique<IdleNode>()};
 	// std::unordered_map<Entity, StateMachine> stateMachines;
 
-	Vec2f calculateLead(const Vec2f &shooterPosition, const float projectileVelocity, const Vec2f &targetPosition,
+	Vec2f calculateLead(const Vec2f &shooterPosition, const Vec2f &targetPosition, const float projectileVelocity,
 	                    const Vec2f &targetVelocity) const
 	{
 		Vec2f relativePosition = targetPosition - shooterPosition;
@@ -105,7 +105,12 @@ class FiringSystem final : public System {
 		if (ecs.hasComponent<Target>(entity) && !isMoving) {
 			Target targetComp = ecs.getComponent<Target>(entity);
 
-			// TODO: check weapon range and LOS. but probably somewhere else.
+			if (!ecs.hasEntity(targetComp.entity)) {
+				ecs.removeComponent<Target>(entity);
+			}
+
+			// TODO: Need to check weapon range and LOS. but probably somewhere else, since we then need to decide if we
+			// can even shoot or if we need to move to a appropriate position.
 
 			if (ew.magazineSize == 0) {
 				ew.reloadTimeAccumulator += static_cast<float>(deltaTime);
@@ -129,12 +134,11 @@ class FiringSystem final : public System {
 			Vec2f targetPos = ecs.getComponent<Positionable>(targetComp.entity).position + (TILE_SIZE / 2);
 
 			auto rb = ecs.getComponent<RigidBody>(targetComp.entity);
-			auto rot = (rb.nextPosition - rb.startPosition).norm();
-			auto targetVelocity = rot * WALK_SPEED; // * deltaTime;
-			Vec2f leadPos = calculateLead(start, wdata.velocity, targetPos, targetVelocity);
-			auto maxPos = start + (leadPos - start).norm() * wdata.range * TILE_SIZE; // projectiles should travel their max range
+			Vec2f targetVelocity = (rb.nextPosition - rb.startPosition).norm() * WALK_SPEED;
+			Vec2f leadPos = calculateLead(start, targetPos, wdata.speed, targetVelocity);
+			Vec2f projectileVelocity = (leadPos - start).norm() * wdata.speed;
 
-			spawnProjectile(ecs, start, maxPos, entity, ew.weaponId);
+			spawnProjectile(ecs, start, projectileVelocity, entity, ew.weaponId);
 		}
 	}
 };

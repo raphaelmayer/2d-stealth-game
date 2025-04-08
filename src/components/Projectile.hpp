@@ -9,9 +9,9 @@
 // We could name it something like KinematicBody.
 struct Projectile {
 	Vec2f startPosition;
-	Vec2f targetPosition;
+	Vec2f velocity; // might be better than having target position and needing to recalculate velocity.
 
-	float velocity;
+	float range;
 	int damage;
 
 	Entity shooter;  // entity id of the entity that shot the weapon
