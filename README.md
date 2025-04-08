@@ -6,12 +6,13 @@ Tactical Squad is an top down tactical shooter game, that is built with C++, CMa
 
 ## Controls
 
-| Action                                                                                          | Key(s)     |
-|-------------------------------------------------------------------------------------------------|------------|
-| Movement			                                                                  | MOUSE      |
-| Navigating menus                                                                     		  | W, A, S, D |
-| Toggle in-game menu                                                                             | ESCAPE     |
-| Select menu item / Advance text <br/> 							  | ENTER      |
+| Action                                                                                          | Key(s)      |
+|-------------------------------------------------------------------------------------------------|-------------|
+| Selection				                                                                          | LEFT MOUSE  |
+| Movement / Firing			                                                                      | RIGHT MOUSE |
+| Navigating menus                                                                     		      | W, A, S, D  |
+| Toggle in-game menu                                                                             | ESCAPE      |
+| Select menu item / Advance text <br/> 							                              | ENTER       |
 
 
 ## How to build
@@ -24,8 +25,8 @@ The basic requirements to build this project are:
 - Git
 
 The main CMake targets are:
-- ```Ants_And_Islands```: runs the main application
-- ```testing_app```: runs all test suites
+- ```Tactical_Squad```: runs the main application
+- ```Tactical_Squad_Tests```: runs all test suites
 - ```benchmark_ecs```: runs the ECS benchmarks
 
 ### Windows
@@ -69,8 +70,8 @@ cmake --build build
 To build specific target::
 
 ```bash
-cmake --build build --target Ants_And_Islands
-cmake --build build --target testing_app
+cmake --build build --target Tactical_Squad
+cmake --build build --target Tactical_Squad_Tests
 cmake --build build --target benchmark_ecs
 ```
 
@@ -82,37 +83,15 @@ cmake --open xbuild
 ```
 
 ## TODO
-- Switch to new ECS version
-	- Load ECS dynamically from Github with CMake [x]
-	- Change `ECSManager` to `ECS` to switch to new version.
-	- Remove old files.
-- Pathfinding & Movement:
-	- If `targetPosition` is blocked or unreachable we try to recalculate a path every iteration. 
-	  This leads to entities getting stuck and potentially dead lock each other, if they want to move onto each others position for example.
-	  We need to check, if `targetPosition` is reachable. If not, we could use a couple of strategies like finding the nearest reachable tile, resetting, etc.
-- switch to 8 directions
-- Cancelling player movement by clicking on a impassable tile resets player. depending on direction he walks back to 
-  the previous tile or finishes the current movement to endPosition. This is most likely due to our A* algorithm.
-  If it does not find a path it returns the start position. Solution: return empty path and handle appropriately in `PathfindingSystem`. 
-- remove entity id 0 as a possible entity id so we can more easily have a default wrong value
-
 ### Features 
 - implement actual AI state machine
-- create and switch to a new testing map 
 - Sprint feature
 - Stances? Crouch, Prone
 - design and implement a dedicated `AnimationSystem`
 - switch to bounding box collision?
-- damage system
-- cover mechanics
 - implement player AI for engaging? I.e. move into range and LOS
 
 ### Low priority
-- handle window resizing
-- UI rendering needs to be adjusted
-- Change CMake config for assets. Currently it is kind of cumbersome (see `src/CMakeLists.txt`)
-- The font should not be owned by engine, at least not hardcoded as it is right now.
-- Texture.hpp takes a SDL_Texture type. We have a function to create a SDL_Texture, so the user does not have to interact with sdl directly, but there is a better solution here. 
 - State machines: We need a generic state machine class to simplify a couple of areas:
 	- Weapon firing state
 	- AI alert state
