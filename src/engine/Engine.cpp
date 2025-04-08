@@ -24,7 +24,7 @@ Engine::~Engine()
 
 void Engine::start()
 {
-	windowSize_ = screenSize_ * pixelSize_;
+	windowSize_ = screenSize_ * pixelSize_.x;
 
 	// Initialize renderer and open window
 	window_ = std::unique_ptr<SDL_Window, SDL_Deleter>(
@@ -95,16 +95,17 @@ Vec2i Engine::getScreenSize() const
 void Engine::setScreenSize(Vec2i screenSize)
 {
 	screenSize_ = screenSize;
-	windowSize_ = screenSize * pixelSize_;
+	windowSize_ = screenSize * pixelSize_.x;
 }
 void Engine::setRenderScale(Vec2i pixelSize)
 {
 	pixelSize_ = pixelSize;
 	SDL_RenderSetScale(renderer_.get(), static_cast<float>(pixelSize_.x), static_cast<float>(pixelSize_.y));
 }
-Vec2i Engine::getRenderScale() const
+int Engine::getRenderScale() const
 {
-	return pixelSize_;
+	// TODO: Taking the x could lead to issues. should design this better. vector / vector division is not clearly defined.
+	return pixelSize_.x;
 }
 void Engine::resizeWindow(Vec2i pos, Vec2i size)
 {

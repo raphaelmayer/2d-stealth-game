@@ -36,6 +36,44 @@ class FiringSystem final : public System {
 	// StateMachine firingSM{std::make_unique<IdleNode>()};
 	// std::unordered_map<Entity, StateMachine> stateMachines;
 
+	Vec2f calculateLead(const Vec2f &shooterPosition, const Vec2f &targetPosition, const float projectileVelocity,
+	                    const Vec2f &targetVelocity) const
+	{
+		Vec2f relativePosition = targetPosition - shooterPosition;
+		Vec2f relativeVelocity = targetVelocity; // Change if shooter can move
+
+		float a = relativeVelocity.lengthSquared() - (projectileVelocity * projectileVelocity);
+		float b = 2.f * relativePosition.dot(relativeVelocity);
+		float c = relativePosition.lengthSquared();
+
+		float discriminant = b * b - 4.f * a * c;
+
+		// No solution case
+		if (discriminant < 0) {
+			return targetPosition;
+		}
+
+		float sqrtDiscriminant = std::sqrt(discriminant);
+		float t1 = (-b - sqrtDiscriminant) / (2.f * a);
+		float t2 = (-b + sqrtDiscriminant) / (2.f * a);
+
+		// Find the smallest positive time
+		float timeToImpact = -1.f;
+		if (t1 > 0 && t2 > 0) {
+			timeToImpact = std::min(t1, t2);
+		} else if (t1 > 0) {
+			timeToImpact = t1;
+		} else if (t2 > 0) {
+			timeToImpact = t2;
+		}
+
+		if (timeToImpact <= 0) {
+			return targetPosition; // No valid future impact
+		}
+
+		return targetPosition + targetVelocity * timeToImpact;
+	}
+
 	void handleFiring(ECSManager &ecs, const Entity &entity, const double deltaTime) const
 	{
 		EquippedWeapon &ew = ecs.getComponent<EquippedWeapon>(entity);
@@ -71,7 +109,12 @@ class FiringSystem final : public System {
 		if (ecs.hasComponent<Target>(entity) && !isMoving) {
 			Target targetComp = ecs.getComponent<Target>(entity);
 
-			// TODO: check weapon range and LOS. but probably somewhere else.
+			if (!ecs.hasEntity(targetComp.entity)) {
+				ecs.removeComponent<Target>(entity);
+			}
+
+			// TODO: Need to check weapon range and LOS. but probably somewhere else, since we then need to decide if we
+			// can even shoot or if we need to move to a appropriate position.
 
 			if (ew.magazineSize == 0) {
 				ew.reloadTimeAccumulator += static_cast<float>(deltaTime);
@@ -94,9 +137,14 @@ class FiringSystem final : public System {
 
 			Vec2f start = ecs.getComponent<Positionable>(entity).position + (TILE_SIZE / 2);
 			Vec2f targetPos = ecs.getComponent<Positionable>(targetComp.entity).position + (TILE_SIZE / 2);
-			spawnProjectile(ecs, start, targetPos, entity, ew.weaponId);
+
+			auto rb = ecs.getComponent<RigidBody>(targetComp.entity);
+			Vec2f targetVelocity = (rb.nextPosition - rb.startPosition).norm() * WALK_SPEED;
+			Vec2f leadPos = calculateLead(start, targetPos, wdata.speed, targetVelocity);
+			Vec2f projectileVelocity = (leadPos - start).norm() * wdata.speed;
+
+			spawnProjectile(ecs, start, projectileVelocity, entity, ew.weaponId);
 			isShooting = true; 
-			
 		}
 	}
 };

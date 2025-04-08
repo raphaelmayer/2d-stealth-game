@@ -36,8 +36,8 @@ class Engine {
 	void setWindowSize(Vec2i windowSize);
 	Vec2i getScreenSize() const;
 	void setScreenSize(Vec2i screenSize);
-	Vec2i getRenderScale() const;
-	void setRenderScale(Vec2i pixelSize);
+	int getRenderScale() const;
+	void setRenderScale(Vec2i pixelSize); // TODO: this render scale should be a scalar.
 	void resizeWindow(Vec2i pos, Vec2i size);
 
 	void clearWindow() const;
