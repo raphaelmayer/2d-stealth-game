@@ -135,7 +135,9 @@ void Audio::pauseEmission(const int channelToPause) const
 
 void Audio::stopEmission(int channelToStop)
 {
-	Mix_HaltChannel(channelToStop);
+	if (channelToStop >= 0) {
+		Mix_HaltChannel(channelToStop);
+	}
 }
 
 void Audio::resumeEmission(const int channelToResume) const
