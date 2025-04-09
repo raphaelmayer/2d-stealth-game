@@ -105,7 +105,7 @@ class FiringSystem final : public System {
 		}
 
 		bool isMoving = ecs.getComponent<RigidBody>(entity).isMoving;
-		bool& isShooting = ecs.getComponent<RigidBody>(entity).isShooting;
+		bool &isShooting = ecs.getComponent<RigidBody>(entity).isShooting;
 		if (ecs.hasComponent<Target>(entity) && !isMoving) {
 			Target targetComp = ecs.getComponent<Target>(entity);
 
@@ -135,8 +135,11 @@ class FiringSystem final : public System {
 			ew.firerateAccumulator += static_cast<float>(deltaTime);
 			--ew.magazineSize;
 
-			Vec2f start = ecs.getComponent<Positionable>(entity).position + (TILE_SIZE / 2);
-			Vec2f targetPos = ecs.getComponent<Positionable>(targetComp.entity).position + (TILE_SIZE / 2);
+			// size should be read from projectile. we could also offset the spawn position by size / 2 in
+			// spawnProjectile. There we would easily know the size.
+			constexpr float prjOffset = 3 / 2;
+			Vec2f start = ecs.getComponent<Positionable>(entity).position + (TILE_SIZE / 2) - prjOffset;
+			Vec2f targetPos = ecs.getComponent<Positionable>(targetComp.entity).position + (TILE_SIZE / 2) - prjOffset;
 
 			auto rb = ecs.getComponent<RigidBody>(targetComp.entity);
 			Vec2f targetVelocity = (rb.nextPosition - rb.startPosition).norm() * WALK_SPEED;
@@ -144,7 +147,7 @@ class FiringSystem final : public System {
 			Vec2f projectileVelocity = (leadPos - start).norm() * wdata.speed;
 
 			spawnProjectile(ecs, start, projectileVelocity, entity, ew.weaponId);
-			isShooting = true; 
+			isShooting = true;
 		}
 	}
 };

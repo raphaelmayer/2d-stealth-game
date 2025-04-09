@@ -25,7 +25,7 @@ class ProjectileSystem final : public System {
 				const Vec2f startPosition = projectile.startPosition;
 				const Vec2f velocity = projectile.velocity;
 
-				const Vec2f newPosition = position += velocity * deltaTime;
+				const Vec2f newPosition = position + velocity * deltaTime;
 				const std::optional<CollisionResult> collision = wouldCollide(ecs, entity, newPosition);
 
 				if (collision) {

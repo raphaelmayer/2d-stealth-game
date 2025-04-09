@@ -72,7 +72,7 @@ class RenderSystem final : public System {
 		}
 	}
 
-	bool isVisibleOnScreen(const Recti &dst, const Rectf &camView) const
+	bool isVisibleOnScreen(const Rectf &dst, const Rectf &camView) const
 	{
 		const float leftBound = camView.x - TILE_SIZE;
 		const float rightBound = camView.x + camView.w;
@@ -87,13 +87,24 @@ class RenderSystem final : public System {
 		return textures.at(filename);
 	}
 
+	// Adjust sprite draw position so it aligns with the entity's logical world position.
+	// Since sprites are drawn from the top-left corner, but positions represent ground contact points,
+	// we offset vertically by (size.y - TILE_SIZE) to anchor the sprite's feet correctly.
+	Vec2f offsetSpritePositionBySize(const Vec2f &pos, const Vec2f &size) const
+	{
+		if (size.y >= TILE_SIZE) {
+			return pos - (size - TILE_SIZE);
+		}
+		return pos;
+	}
+
 	void renderEntity(ECSManager &ecs, Entity entity, const Rectf &camView) const
 	{
 		auto &position = ecs.getComponent<Positionable>(entity).position;
 		auto &renderable = ecs.getComponent<Renderable>(entity);
 		Vec2i sourcePosition = renderable.sourcePosition;
 		Vec2i size = renderable.sourceSize;
-		Vec2i targetSize = renderable.targetSize;
+		Vec2f targetSize = Utils::toFloat(renderable.targetSize);
 
 		if (ecs.hasComponent<Rotatable>(entity)) {
 			const auto rotation = ecs.getComponent<Rotatable>(entity).rotation;
@@ -103,10 +114,8 @@ class RenderSystem final : public System {
 		}
 
 		Recti src = {sourcePosition.x, sourcePosition.y, size.x, size.y};
-		// we need to offset the draw position in the y-axis, since we draw from top left but entity position is the
-		// logical position in world space, i.e. where it stands.
-		Vec2i sizeAdjusted = Utils::toInt(position) - (targetSize - TILE_SIZE);
-		Recti dst = {position.x, sizeAdjusted.y, targetSize.x, targetSize.y};
+		Vec2f sizeAdjusted = offsetSpritePositionBySize(position, targetSize);
+		Rectf dst = {position.x, sizeAdjusted.y, targetSize.x, targetSize.y};
 
 		// Perform visibility culling before rendering the entity.
 		if (isVisibleOnScreen(dst, camView)) {
