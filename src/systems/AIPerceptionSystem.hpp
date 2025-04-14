@@ -44,7 +44,7 @@ class AIPerceptionSystem : public System {
 						// Perform obstacle check
 						bool didCollide = DDA::castRay(visionMap, Utils::toTileSize(pos), Utils::toTileSize(otherPos));
 						if (!didCollide) {
-							if (otherEntity == PLAYER) // Currently only player can be enemy. No notion of factions etc.
+							if (ecs.hasComponent<Controllable>(otherEntity))
 								vision.visibleEnemies.push_back(otherEntity);
 							else
 								vision.visibleAllies.push_back(otherEntity);

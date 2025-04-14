@@ -4,7 +4,7 @@
 #include <vector>
 
 struct Vision {
-	float range = 5 * TILE_SIZE; // in pixels
+	float range = 45 * TILE_SIZE; // in pixels
 	float angle = 180;           // FOV in degrees
 	std::vector<Entity> visibleEnemies = {};
 	std::vector<Entity> visibleAllies = {};
