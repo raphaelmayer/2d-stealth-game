@@ -24,6 +24,7 @@ class InGameMenu final : public ListDialog {
 		          {"STATS", [this, &game]() { pushMenu<StatsMenu>(game); }},
 		          {"SAVE", [this, &game]() { confirmAndSave(game); }},
 		          {"LOAD", [this, &game]() { confirmAndLoad(game); }},
+		          {"FULLSCREEN", [&game]() { game.setWindowFullscreen(); }},
 		          {"EXIT", [this, &game]() { confirmAndExit(game); }}});
 	}
 

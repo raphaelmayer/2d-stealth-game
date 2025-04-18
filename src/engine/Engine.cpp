@@ -88,6 +88,13 @@ void Engine::setWindowSize(Vec2i windowSize)
 {
 	windowSize_ = windowSize;
 }
+
+void Engine::setWindowFullscreen()
+{
+	SDL_SetWindowFullscreen(window_.get(), SDL_WINDOW_FULLSCREEN_DESKTOP);
+}
+
+
 Vec2i Engine::getScreenSize() const
 {
 	return screenSize_;
