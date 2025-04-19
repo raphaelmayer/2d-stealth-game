@@ -35,6 +35,7 @@ class Engine {
 	Vec2i getWindowSize() const;
 	void setWindowSize(Vec2i windowSize);
 	void setWindowFullscreen();
+	void setWindowWindowed(); //TODO -> IMPLEMENT
 	Vec2i getScreenSize() const;
 	void setScreenSize(Vec2i screenSize);
 	int getRenderScale() const;

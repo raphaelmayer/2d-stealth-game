@@ -28,6 +28,7 @@ class MainMenu final : public ListDialog {
 		                   menuStack.pop();
 	                   }},
 					  {"FULLSCREEN", [&game]() {game.setWindowFullscreen(); }},
+					  {"WINDOWED", [&game]() {game.setWindowWindowed(); }},
 	                  {"EXIT", [&game]() { game.stop(); }}},
 	                 Vec2i{x, y}, menuWidth_)
 	{
