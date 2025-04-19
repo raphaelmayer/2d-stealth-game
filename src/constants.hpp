@@ -3,7 +3,7 @@
 enum Rotation{NORTH, EAST, SOUTH, WEST }; 
 
 // In Pixel domain:
-#define TILE_SIZE 16
+#define TILE_SIZE 32
 #define PLAYER_SIZE_X 16
 #define PLAYER_SIZE_Y 24
 
@@ -34,6 +34,7 @@ enum Rotation{NORTH, EAST, SOUTH, WEST };
 #define PLAYER_STANDING_ANIMATION_NUMBER 1
 #define PLAYER_NUMBER_ANIMATIONS 4
 
+#define TILESET_COLUMNS 11 // TODO: Read from actual tileset data
 
 
 // Asset File Addresses
@@ -42,9 +43,9 @@ enum Rotation{NORTH, EAST, SOUTH, WEST };
 #define WORLD_DEFINITION_PATH "../assets/default_game.json"
 #define WEAPONDATA_PATH "../assets/weapon_data.csv"
 // Graphics
-#define SPRITE_SHEET "../assets/overworld_spritesheet.png"
+#define SPRITE_SHEET "../assets/jungle_full.png"
 #define HERO_SHEET "../assets/hero-spritesheet.png"
-#define MAP_CHAR_MAPPING "../assets/overworld_char_mapping.csv"
+#define MAP_CHAR_MAPPING "../assets/tile_properties.csv"
 #define MAP_BACKGROUND "../assets/overworld_map_background.txt"
 #define MAP_OBJECTS "../assets/overworld_map_objects.txt"
 #define MAINMENU_BACKGROUND "../assets/mainmenu_background.png"

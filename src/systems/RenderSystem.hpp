@@ -35,7 +35,7 @@ class RenderSystem final : public System {
 		Vec2f screenSize = Utils::toFloat(engine_.getScreenSize()) / camZoom;
 		Rectf camView{camPos.x, camPos.y, screenSize.x, screenSize.y};
 
-		renderMap(camView);
+		renderMap(camView, LayerID::BACKGROUND, LayerID::COSMETIC);
 
 		const std::set<Entity> &entities = ecs.getEntities();
 		for (const Entity &entity : entities) {
@@ -43,13 +43,14 @@ class RenderSystem final : public System {
 				renderEntity(ecs, entity, camView);
 			}
 		}
+
+		renderMap(camView, LayerID::FOREGROUND);
 	}
 
   private:
-	void renderMap(const Rectf &camView) const
+	void renderMap(const Rectf &camView, const LayerID start, const LayerID end = LayerID::NUM_LAYERS) const
 	{
 		const LevelMap &map = mapManager_.getLevelMap();
-		constexpr int TILESET_COLUMNS = 9; // TODO: Read from actual tileset data
 
 		// Calculate the range of visible tiles to selectively render based on the camera's position.
 		int startX = std::max(0, static_cast<int>(camView.x / TILE_SIZE));
@@ -57,7 +58,9 @@ class RenderSystem final : public System {
 		int endX = std::min(map.getWidth(), static_cast<int>((camView.x + camView.w) / TILE_SIZE) + 1);
 		int endY = std::min(map.getHeight(), static_cast<int>((camView.y + camView.h) / TILE_SIZE) + 1);
 
-		for (auto layer : map.getLayers()) {
+		for (int i = static_cast<int>(start); i < static_cast<int>(end); i++) {
+			// for (auto layer : map.getLayers()) {
+			auto layer = map.getLayers()[i];
 			for (int y = startY; y < endY; y++) {
 				for (int x = startX; x < endX; x++) {
 					const int tileIndex = Utils::to1d({x, y}, map.getWidth());

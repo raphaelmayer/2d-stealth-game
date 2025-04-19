@@ -74,8 +74,8 @@ class Game : public Engine {
 			}
 
 			if (!addedEntities) {
-				instantiatePlayerEntity(ecs, {17, 18});
-				instantiatePlayerEntity(ecs, {16, 18});
+				instantiatePlayerEntity(ecs, {2, 55});
+				instantiatePlayerEntity(ecs, {3, 55});
 				addTestEntities();
 				addedEntities = true;
 			}
@@ -98,7 +98,7 @@ class Game : public Engine {
 			menuStack.update();
 
 			audioSystem->update(ecs, deltaTime);
-			//progressSystem->update(ecs, deltaTime);
+			// progressSystem->update(ecs, deltaTime);
 			debugSystem->update(ecs, deltaTime);
 			projectileSystem->update(ecs, deltaTime);
 
@@ -147,18 +147,18 @@ class Game : public Engine {
 
 	void addTestEntities()
 	{
-		createTestEntity(
-		    {15, 6}, {{Vec2i{10, 3} * TILE_SIZE, Rotation::SOUTH, 2}, {Vec2i{2, 3} * TILE_SIZE, Rotation::SOUTH, 6}});
-		createTestEntity({2, 2}, {{Vec2i{9, 3} * TILE_SIZE, Rotation::SOUTH, 2},
-		                          {Vec2i{6, 2} * TILE_SIZE, Rotation::SOUTH, 6},
-		                          {Vec2i{5, 3} * TILE_SIZE, Rotation::SOUTH, 6}});
-		createTestEntity(
-		    {16, 7}, {{Vec2i{11, 5} * TILE_SIZE, Rotation::SOUTH, 5}, {Vec2i{11, 14} * TILE_SIZE, Rotation::NORTH, 5}});
-		createTestEntity({14, 7}, {{Vec2i{13, 11} * TILE_SIZE, Rotation::SOUTH, 60}});
-		createTestEntity({16, 6}, {{Vec2i{0, 6} * TILE_SIZE, Rotation::SOUTH, 0},
-		                           {Vec2i{9, 6} * TILE_SIZE, Rotation::NORTH, 0},
-		                           {Vec2i{9, 13} * TILE_SIZE, Rotation::EAST, 0},
-		                           {Vec2i{0, 13} * TILE_SIZE, Rotation::WEST, 0}});
+		createTestEntity({12, 28}, {{Vec2i{17, 32} * TILE_SIZE, Rotation::SOUTH, 6},
+		                            {Vec2i{12, 28} * TILE_SIZE, Rotation::SOUTH, 6}});
+		createTestEntity({19, 28}, {{Vec2i{30, 23} * TILE_SIZE, Rotation::EAST, 2},
+		                            {Vec2i{27, 28} * TILE_SIZE, Rotation::SOUTH, 6},
+		                            {Vec2i{19, 28} * TILE_SIZE, Rotation::SOUTH, 6}});
+		createTestEntity({24, 20}, {{Vec2i{27, 15} * TILE_SIZE, Rotation::EAST, 5},
+		                            {Vec2i{19, 15} * TILE_SIZE, Rotation::NORTH, 5}});
+		createTestEntity({21, 37}, {{Vec2i{21, 37} * TILE_SIZE, Rotation::SOUTH, 60}});
+		createTestEntity({12, 16}, {{Vec2i{6, 23} * TILE_SIZE, Rotation::SOUTH, 0},
+		                            {Vec2i{9, 31} * TILE_SIZE, Rotation::SOUTH, 0},
+		                            {Vec2i{19, 31} * TILE_SIZE, Rotation::SOUTH, 0},
+		                            {Vec2i{20, 24} * TILE_SIZE, Rotation::SOUTH, 0}});
 	}
 
 	// These two rendering functions are here temporarily so we can render the selection on top of everything. This is
@@ -196,7 +196,6 @@ class Game : public Engine {
 				const Rectf dst = camera.rectToScreen(rect);
 				drawRectangle(dst, {66, 135, 245, 255});
 			}
-
 		}
 	}
 

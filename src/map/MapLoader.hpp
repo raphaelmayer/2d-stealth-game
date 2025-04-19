@@ -16,7 +16,7 @@ class MapLoader {
 	LevelMap loadMap(const int levelId)
 	{
 		tson::Tileson t;
-		std::string path = "../assets/maps/01/map01.json"; // TODO: use levelId
+		std::string path = "../assets/map_jungle_01.json"; // TODO: use levelId
 		std::unique_ptr<tson::Map> tsonMap = t.parse(path);
 
 		if (tsonMap->getStatus() != tson::ParseStatus::OK) {

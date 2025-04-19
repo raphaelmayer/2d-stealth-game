@@ -27,7 +27,9 @@ class MapManager {
 	std::vector<std::vector<int>> createWalkableMapView(const LevelMap &map)
 	{
 		const Layer &backgroundLayer = map.getLayer(LayerID::BACKGROUND);
+		const Layer &background2Layer = map.getLayer(LayerID::BACKGROUND2);
 		const Layer &objectLayer = map.getLayer(LayerID::OBJECT);
+		const Layer &object2Layer = map.getLayer(LayerID::OBJECT2);
 		std::vector<std::vector<int>> walkableMapView;
 
 		for (int y = 0; y < map.getHeight(); y++) {
@@ -36,9 +38,16 @@ class MapManager {
 				int tileIndex = Utils::to1d({x, y}, map.getWidth());
 				TileMetadata backgroundData = getTileData(backgroundLayer[tileIndex]);
 				TileMetadata objectData = getTileData(objectLayer[tileIndex]);
+				TileMetadata background2Data = getTileData(background2Layer[tileIndex]);
+				TileMetadata object2Data = getTileData(object2Layer[tileIndex]);
 
-				if (objectData.id != 0)
+				// TODO: refactor and redesign
+				if (object2Data.id != 0)
+					walkableMapView[y].push_back(!object2Data.walkable);
+				else if (objectData.id != 0)
 					walkableMapView[y].push_back(!objectData.walkable);
+				else if (background2Data.id != 0)
+					walkableMapView[y].push_back(!background2Data.walkable);
 				else
 					walkableMapView[y].push_back(!backgroundData.walkable);
 				std::cout << walkableMapView[y][x];

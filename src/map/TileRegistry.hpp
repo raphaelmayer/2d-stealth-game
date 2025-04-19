@@ -10,13 +10,10 @@
 // Actual tile info
 struct TileMetadata {
 	int id = 0;
-	std::string description;
-	int spriteSheetX;
-	int spriteSheetY;
 	bool walkable;
 
-	TileMetadata(int id, const std::string &desc, int x, int y, bool isWalkable)
-	    : id(id), description(desc), spriteSheetX(x), spriteSheetY(y), walkable(isWalkable)
+	TileMetadata(int id, bool isWalkable)
+	    : id(id), walkable(isWalkable)
 	{
 	}
 
@@ -49,13 +46,16 @@ class TileRegistry {
 		std::getline(file, line); // Skip header
 		while (std::getline(file, line)) {
 			std::istringstream iss(line);
-			char id; // TODO: not used anymore. gotta remove all remains and rework overworld_char_mapping.csv.
-			std::string description;
-			int x, y;
-			bool walkable;
-			if (iss >> id >> description >> x >> y >> std::boolalpha >> walkable) {
-				int tileid = y * (9) + x + 1; // should read 9 from tileset width
-				tileMap.emplace(tileid, TileMetadata(tileid, description, x, y, walkable));
+			std::string idStr, walkableStr;
+
+			if (std::getline(iss, idStr, ',') && std::getline(iss, walkableStr)) {
+				try {
+					int id = std::stoi(idStr);
+					bool walkable = std::stoi(walkableStr) == 1;
+					tileMap.emplace(id, TileMetadata(id, walkable));
+				} catch (const std::exception &e) {
+					std::cerr << "Conversion error in line: " << line << " (" << e.what() << ")\n";
+				}
 			} else {
 				std::cerr << "Error parsing line: " << line << std::endl;
 			}
@@ -73,5 +73,5 @@ class TileRegistry {
 
   private:
 	std::map<int, TileMetadata> tileMap;
-	TileMetadata fallbackSprite{0, "empty", 8, 0, true}; // Default fallback sprite
+	TileMetadata fallbackSprite{0, true}; // Default fallback sprite
 };

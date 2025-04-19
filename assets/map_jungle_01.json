@@ -437,7 +437,7 @@
  "tilesets":[
         {
          "firstgid":1,
-         "source":"jungle_full.tsx"
+         "source":"jungle_full.tsj"
         }],
  "tilewidth":32,
  "type":"map",

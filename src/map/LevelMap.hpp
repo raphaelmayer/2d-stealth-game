@@ -9,6 +9,7 @@
 enum class LayerID {
 	// tile layers
 	BACKGROUND = 0,
+	BACKGROUND2,
 	OBJECT,
 	OBJECT2,
 	COSMETIC,
