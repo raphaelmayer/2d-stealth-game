@@ -20,6 +20,21 @@ configure_file(
     COPYONLY
 )
 configure_file(
+    ${CMAKE_SOURCE_DIR}/assets/ai/trees/DetectTree.xml
+    ${CMAKE_BINARY_DIR}/assets/ai/trees/DetectTree.xml
+    COPYONLY
+)
+configure_file(
+    ${CMAKE_SOURCE_DIR}/assets/ai/trees/EngageTree.xml
+    ${CMAKE_BINARY_DIR}/assets/ai/trees/EngageTree.xml
+    COPYONLY
+)
+configure_file(
+    ${CMAKE_SOURCE_DIR}/assets/ai/trees/IdleTree.xml
+    ${CMAKE_BINARY_DIR}/assets/ai/trees/IdleTree.xml
+    COPYONLY
+)
+configure_file(
     ${CMAKE_SOURCE_DIR}/assets/ai/trees/MainTree.xml
     ${CMAKE_BINARY_DIR}/assets/ai/trees/MainTree.xml
     COPYONLY

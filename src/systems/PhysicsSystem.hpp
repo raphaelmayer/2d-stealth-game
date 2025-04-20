@@ -46,6 +46,9 @@ class PhysicsSystem final : public System {
 			if (wouldCollide(ecs, entity, nextPos)) {
 				if (ecs.hasComponent<Pathfinding>(entity)) {
 					ecs.getComponent<Pathfinding>(entity).path.clear();
+					ecs.getComponent<Collider>(entity).didCollide = true;
+					ecs.getComponent<Collider>(entity).lastCollisionPosition = nextPos;
+
 				}
 				resetCurrentMovementParams(rigidBody, currentPos);
 				continue;

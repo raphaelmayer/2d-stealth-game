@@ -5,6 +5,7 @@
 #include "../ai/nodes/MoveTo.hpp"
 #include "../ai/nodes/PatrolTo.hpp"
 #include "../ai/nodes/RandomSelector.hpp"
+#include "../ai/nodes/ShootAt.hpp"
 #include "../ai/nodes/TurnTo.hpp"
 #include "../ai/nodes/WaitFor.hpp"
 #include "../constants.hpp"
@@ -29,7 +30,10 @@ class BTManager {
 		trees[entity] = std::move(tree);
 	}
 
-	void tickTree(Entity entity) { trees[entity].tickOnce(); }
+	void tickTree(Entity entity)
+	{
+		trees[entity].tickOnce();
+	}
 
 	// Set a value globally for every entity.
 	template <typename T>
@@ -46,11 +50,12 @@ class BTManager {
 		factory.registerNodeType<RandomSelector>("RandomSelector");
 
 		factory.registerNodeType<IsEnemyVisible>("IsEnemyVisible", std::ref(ecs));
-		factory.registerNodeType<TurnTo>("TurnTo", std::ref(ecs));
-		factory.registerNodeType<WaitFor>("WaitFor", std::ref(ecs));
+		factory.registerNodeType<IsInState>("IsInState", std::ref(ecs));
 		factory.registerNodeType<MoveTo>("MoveTo", std::ref(ecs));
 		factory.registerNodeType<PatrolTo>("PatrolTo", std::ref(ecs));
-		factory.registerNodeType<IsInState>("IsInState", std::ref(ecs));
+		factory.registerNodeType<ShootAt>("ShootAt", std::ref(ecs));
+		factory.registerNodeType<TurnTo>("TurnTo", std::ref(ecs));
+		factory.registerNodeType<WaitFor>("WaitFor", std::ref(ecs));
 	}
 
 	// Find all the XML files in a folder and register all of them.

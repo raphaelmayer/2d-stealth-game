@@ -1,6 +1,7 @@
 #pragma once
 
 #include "../components/AI.hpp"
+#include "../components/EquippedWeapon.hpp"
 #include "../components/Interactable.hpp"
 #include "../components/Pathfinding.hpp"
 #include "../components/Vision.hpp"
@@ -20,6 +21,7 @@ Entity instantiateNPCEntity(ECSManager &ecs, Vec2i positionInTiles, Rotation rot
 	ecs.addComponent<AI>(npc, AI{positionInTiles * TILE_SIZE});
 	ecs.addComponent<Pathfinding>(npc, Pathfinding{});
 	ecs.addComponent(npc, Interactable{text});
+	ecs.addComponent(npc, EquippedWeapon{1, 30}); // assault rifle with full mag
 
 	return npc;
 }

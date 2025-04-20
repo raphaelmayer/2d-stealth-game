@@ -1,6 +1,12 @@
 <root BTCPP_format="4" main_tree_to_execute="MainTree">
   <BehaviorTree ID="MainTree">
     <ReactiveFallback name="main_selector">
+      
+      <ReactiveSequence name="engage_check">
+        <IsInState state="3" entity="{entity}" />
+        <SubTree ID="EngageTree" entity="{entity}" deltaTime="{deltaTime}" />
+      </ReactiveSequence>
+
       <ReactiveSequence name="detect_check">
         <IsInState state="1" entity="{entity}" />
         <SubTree ID="DetectTree" entity="{entity}" deltaTime="{deltaTime}" />

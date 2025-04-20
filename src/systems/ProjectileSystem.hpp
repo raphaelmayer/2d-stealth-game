@@ -26,8 +26,13 @@ class ProjectileSystem final : public System {
 				const Vec2f velocity = projectile.velocity;
 
 				const Vec2f newPosition = position + velocity * deltaTime;
-				const std::optional<CollisionResult> collision = wouldCollide(ecs, entity, newPosition);
 
+				if (checkCollisionsWithMap(ecs, entity, position)) {
+					ecs.addComponent<Tombstone>(entity, Tombstone{}); // mark projectile to be removed
+					continue;
+				}
+
+				const std::optional<CollisionResult> collision = checkCollisionsWithEntities(ecs, entity, position);
 				if (collision) {
 					applyDamage(ecs, *collision);
 					ecs.addComponent<Tombstone>(entity, Tombstone{}); // mark projectile to be removed
@@ -53,15 +58,6 @@ class ProjectileSystem final : public System {
 		Entity b = 0;   // entity we are colliding with
 		Vec2f position; // position of collision (wrt. a)
 	};
-
-	std::optional<CollisionResult> wouldCollide(ECSManager &ecs, const Entity entity, const Vec2f &position) const
-	{
-		if (checkCollisionsWithMap(ecs, entity, position)) {
-			return CollisionResult{entity, entity, position}; // TODO: use special entity value if collision with map
-		}
-
-		return checkCollisionsWithEntities(ecs, entity, position);
-	}
 
 	bool checkCollisionsWithMap(ECSManager &ecs, const Entity entity, const Vec2f &position) const
 	{
