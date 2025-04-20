@@ -1,5 +1,5 @@
-#include "../components/Pathfinding.hpp"
 #include "../components/Collider.hpp"
+#include "../components/Pathfinding.hpp"
 #include "../components/Positionable.hpp"
 #include "../components/RigidBody.hpp"
 #include "../constants.hpp"
@@ -12,7 +12,9 @@
 
 class PathfindingSystem final : public System {
   public:
-	PathfindingSystem(const MapManager &mapManager) : mapManager_(mapManager) {}
+	PathfindingSystem(const MapManager &mapManager) : mapManager_(mapManager)
+	{
+	}
 
 	void update(ECSManager &ecs, const double deltaTime) override
 	{
@@ -24,9 +26,16 @@ class PathfindingSystem final : public System {
 				auto &rigidBody = ecs.getComponent<RigidBody>(entity);
 				// TODO: Should not happen for every entity, but currently this is how we omit checking an entity
 				// against itself.
-				auto walkableView = populateWalkableView(ecs, entity, mapManager_.getWalkableMapView());
+				// auto walkableView = populateWalkableView(ecs, entity, mapManager_.getWalkableMapView());
+				auto walkableView = mapManager_.getWalkableMapView();
 
 				if (ecs.hasComponent<Pathfinding>(entity)) {
+					Collider &collider = ecs.getComponent<Collider>(entity);
+					if (collider.didCollide) {
+						Vec2f lastCollideePosition = Utils::toFloat(Utils::toTileSize(collider.lastCollisionPosition));
+						walkableView[lastCollideePosition.y][lastCollideePosition.x] = 1;
+						collider.didCollide = false;
+					}
 					auto &pf = ecs.getComponent<Pathfinding>(entity);
 					handleAIPathfinding(position, rigidBody, pf, walkableView);
 				}

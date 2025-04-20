@@ -60,12 +60,18 @@ class InputSystem final : public System {
 			const Rectf r = {mousePos.x, mousePos.y, 1, 1};
 			const std::vector<Entity> entities = getCollidingEntities(ecs, r);
 
+			// we need to decide how we want to handle engagements for player characters. a small behaviour tree could
+			// be a good choice especially since we can reuse AI nodes.
+
 			if (!entities.empty()) {
 				// tile is occupied by entity -> handle engagement
-				// if (enemy)
-				const Target targetComponent{entities[0]};
-				ecs.addComponent<Target>(entity, targetComponent);
-				ecs.addComponent<Pathfinding>(entity, {}); // cancel current path
+				if (entity != entities[0]) { // don't allow suicide
+					const Target targetComponent{entities[0]};
+					ecs.addComponent<Target>(entity, targetComponent);
+
+					// cancel current path. currently done in firingsystem
+					//ecs.addComponent<Pathfinding>(entity, {});
+				}
 
 			}
 
@@ -110,12 +116,12 @@ class InputSystem final : public System {
 		std::vector<Entity> entities{};
 		for (const auto &entity : ecs.getEntities()) {
 			if (ecs.hasComponent<Collider>(entity) && ecs.hasComponent<Positionable>(entity)) {
-			
+
 				const Vec2f pos = ecs.getComponent<Positionable>(entity).position;
 				const Vec2f size = Utils::toFloat(ecs.getComponent<Collider>(entity).size);
 				// manipulating pos.y here because currently it is the top left of the bottom tile of any entity,
 				// basically where the feet are.
-				Rectf entityRectangle{pos.x, pos.y - (size.y - TILE_SIZE), size.x, size.y}; 
+				Rectf entityRectangle{pos.x, pos.y - (size.y - TILE_SIZE), size.x, size.y};
 
 				if (AABB::checkCollision(rect, entityRectangle)) {
 					entities.push_back(entity);

@@ -3,6 +3,8 @@
 #include "../engine/types/Vec2i.hpp"
 #include <vector>
 
+// TODO: We could make this a temporary component.
+
 // Entities with this component are picked up by the PathfindingSystem.
 // They receive a targetPosition as input and can move towards them on the grid.
 struct Pathfinding {

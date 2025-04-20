@@ -45,7 +45,8 @@ class IsEnemyVisible : public BT::SyncActionNode {
 		const Vec2f &position = ecs.getComponent<Positionable>(entity).position;
 		const Rotation &rotation = ecs.getComponent<Rotatable>(entity).rotation;
 		const Entity &otherEntity = vision.visibleEnemies[0];
-		const Vec2f &otherPosition = ecs.getComponent<Positionable>(otherEntity).position;
+		//const Vec2f &otherPosition = ecs.getComponent<Positionable>(otherEntity).position;
+		const Vec2f &otherPosition = Utils::toFloat(ecs.getComponent<RigidBody>(otherEntity).startPosition);
 
 		// TODO: Is this actually the best place to do this?
 		Rotation direction = calculateDirection(position, otherPosition, rotation);

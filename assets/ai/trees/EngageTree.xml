@@ -1,10 +1,12 @@
 <root BTCPP_format="4">
   <BehaviorTree ID="EngageTree">
-    <ReactiveSequence name="engage_sequence">
-      <IsEnemyVisible entity="{entity}" otherEntity="{otherEntity}" otherPosition="{otherPosition}" direction="{direction}" />
-      <!--<TurnTo entity="{entity}" direction="{direction}" />-->
-      <ShootAt entity="{entity}" otherEntity="{otherEntity}" />
-      <MoveTo entity="{entity}" position="{position}" />
-    </ReactiveSequence>
+    <ReactiveFallback name="engage_selector">
+      <ReactiveSequence name="engage_sequence">
+        <IsEnemyVisible entity="{entity}" otherEntity="{otherEntity}" otherPosition="{otherPosition}" direction="{direction}" />
+        <!--<TurnTo entity="{entity}" direction="{direction}" />-->
+        <ShootAt entity="{entity}" otherEntity="{otherEntity}" position="{position}" />
+      </ReactiveSequence>
+      <MoveTo entity="{entity}" position="{otherPosition}" />
+    </ReactiveFallback>
   </BehaviorTree>
 </root>

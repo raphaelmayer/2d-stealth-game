@@ -2,8 +2,8 @@
 
 #include <cstdint>
 
+// InputSystem looks for this component when deciding which entity to update
 struct Controllable {
-	// InputSystem looks for this component when deciding which entity to update
 
 	template <class Archive>
 	void serialize(Archive &archive)

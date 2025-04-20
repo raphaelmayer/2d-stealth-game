@@ -100,17 +100,18 @@ class FiringSystem final : public System {
 			return;
 		}
 
-		if (!ecs.hasComponent<Target>(entity)) {
+		const bool &isMoving = ecs.getComponent<RigidBody>(entity).isMoving;
+		if (!ecs.hasComponent<Target>(entity) || isMoving) {
 			ew.warmupAccumulator = 0.f;
 		}
 
-		bool isMoving = ecs.getComponent<RigidBody>(entity).isMoving;
 		bool &isShooting = ecs.getComponent<RigidBody>(entity).isShooting;
-		if (ecs.hasComponent<Target>(entity) && !isMoving) {
+		if (ecs.hasComponent<Target>(entity)/* && !isMoving*/) {
 			Target targetComp = ecs.getComponent<Target>(entity);
 
 			if (!ecs.hasEntity(targetComp.entity)) {
 				ecs.removeComponent<Target>(entity);
+				return;
 			}
 
 			// TODO: Need to check weapon range and LOS. but probably somewhere else, since we then need to decide if we
@@ -126,18 +127,26 @@ class FiringSystem final : public System {
 				return;
 			}
 
+			// stop moving (should this be in inputsystem / shootat node?)
+			ecs.addComponent<Pathfinding>(entity, {}); // clear any planned movement
+
+			if (isMoving) {
+				return;
+			}
+
+			// aim (warmup)
 			if (ew.warmupAccumulator < wdata.warmup) {
 				ew.warmupAccumulator += static_cast<float>(deltaTime);
 				return;
 			}
 
-			// shoot
+			// fire
 			ew.firerateAccumulator += static_cast<float>(deltaTime);
 			--ew.magazineSize;
 
 			// size should be read from projectile. we could also offset the spawn position by size / 2 in
 			// spawnProjectile. There we would easily know the size.
-			constexpr float prjOffset = 3 / 2;
+			constexpr float prjOffset = 3.f / 2.f;
 			Vec2f start = ecs.getComponent<Positionable>(entity).position + (TILE_SIZE / 2) - prjOffset;
 			Vec2f targetPos = ecs.getComponent<Positionable>(targetComp.entity).position + (TILE_SIZE / 2) - prjOffset;
 

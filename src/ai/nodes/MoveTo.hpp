@@ -31,24 +31,27 @@ class MoveTo : public BT::StatefulActionNode {
 
 	BT::NodeStatus onStart() override
 	{
-		// TODO
+		BT::Expected<Entity> expEntity = getInput<Entity>("entity");
+		BT::Expected<Vec2f> expPosition = getInput<Vec2f>("position");
+
+		if (!expEntity || !expPosition)
+			return BT::NodeStatus::FAILURE;
+
+		entity = expEntity.value();
+		targetPosition = expPosition.value();
+
+		Vec2i &position = ecs.getComponent<Pathfinding>(entity).targetPosition;
+		position = Utils::toInt(targetPosition);
+
 		return BT::NodeStatus::RUNNING;
 	}
 
 	BT::NodeStatus onRunning() override
 	{
-		BT::Expected<Entity> entity = getInput<Entity>("entity");
-		BT::Expected<Vec2f> pos = getInput<Vec2f>("position");
-
-		if (!entity)
-			return BT::NodeStatus::FAILURE;
-
-		auto &targetPosition = ecs.getComponent<Pathfinding>(entity.value()).targetPosition;
-		targetPosition = Utils::toInt(pos.value());
-
-		const Vec2f &position = ecs.getComponent<Positionable>(entity.value()).position;
-		if (position == Utils::toFloat(targetPosition))
+		const Vec2f &currentPosition = ecs.getComponent<Positionable>(entity).position;
+		if (currentPosition == targetPosition) {
 			return BT::NodeStatus::SUCCESS;
+		}
 
 		return BT::NodeStatus::RUNNING;
 	}
@@ -61,4 +64,7 @@ class MoveTo : public BT::StatefulActionNode {
 
   private:
 	ECSManager &ecs;
+
+	Entity entity;
+	Vec2f targetPosition;
 };
