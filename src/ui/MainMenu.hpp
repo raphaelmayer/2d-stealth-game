@@ -27,6 +27,8 @@ class MainMenu final : public ListDialog {
 		                   gameStateManager.setGameState(GameState::PLAYING);
 		                   menuStack.pop();
 	                   }},
+					  {"FULLSCREEN", [&game]() {game.setWindowFullscreen(); }},
+					  {"WINDOWED", [&game]() {game.setWindowWindowed(); }},
 	                  {"EXIT", [&game]() { game.stop(); }}},
 	                 Vec2i{x, y}, menuWidth_)
 	{
@@ -43,5 +45,5 @@ class MainMenu final : public ListDialog {
 	const Texture background;
 	static constexpr int menuWidth_ = 200;
 	static constexpr int x = WINDOW_WIDTH * PIXEL_SIZE - menuWidth_;
-	static constexpr int y = 700;
+	static constexpr int y = 650;
 };
