@@ -1,13 +1,13 @@
 #include "../components/DamageBuffer.hpp"
 #include "../components/Health.hpp"
-#include "../ecs/ECSManager.hpp"
 #include "System.hpp"
+#include <easys/easys.hpp>
 
 class DamageSystem : System {
   public:
 	DamageSystem() = default;
 
-	void update(ECSManager &ecs, double deltaTime)
+	void update(Easys::ECS &ecs, double deltaTime)
 	{
 		auto entities = ecs.getEntities();
 		for (const auto &entity : entities) {
@@ -20,7 +20,7 @@ class DamageSystem : System {
 
 			for (const DamageEvent &de : dmgBuffer.damageEvents) {
 				health.health = std::max(0, health.health - de.amount);
-				
+
 				if (health.health <= 0) {
 					ecs.addComponent<Tombstone>(entity, {});
 				}

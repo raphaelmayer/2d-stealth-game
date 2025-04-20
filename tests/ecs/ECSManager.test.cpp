@@ -12,7 +12,7 @@ TEST_CASE("ECSManager Tests", "[ECSManager]")
 		float value;
 	};
 
-	ECSManager ecs;
+	Easys::ECS ecs;
 
 	SECTION("Add Entity")
 	{
@@ -98,7 +98,7 @@ TEST_CASE("ECSManager Tests", "[ECSManager]")
 
 	SECTION("getEntityCount returns correct number of entities", "[ECSManager]")
 	{
-		ECSManager ecs;
+		Easys::ECS ecs;
 
 		REQUIRE(ecs.getEntityCount() == 0);
 
@@ -112,7 +112,7 @@ TEST_CASE("ECSManager Tests", "[ECSManager]")
 
 	SECTION("getComponentCount returns correct number of components", "[ECSManager]")
 	{
-		ECSManager ecs;
+		Easys::ECS ecs;
 		Entity entity = ecs.addEntity();
 
 		REQUIRE(ecs.getComponentCount() == 0);

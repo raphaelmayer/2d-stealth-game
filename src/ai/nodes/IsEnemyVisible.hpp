@@ -1,12 +1,13 @@
 #pragma once
 
+#include "../../components/Positionable.hpp"
+#include "../../components/Rotatable.hpp"
 #include "../../components/Vision.hpp"
-#include "../../ecs/ECSManager.hpp"
 #include "../../engine/types/Vec2f.hpp"
 #include "behaviortree_cpp/action_node.h"
 #include "behaviortree_cpp/basic_types.h" // ports etc
 #include "behaviortree_cpp/tree_node.h"   // NodeConfig
-
+#include <easys/easys.hpp>
 #include <string>
 
 // I guess we could set a vector of all visible enemies (or just a check, since we could reuse
@@ -16,7 +17,7 @@
 
 class IsEnemyVisible : public BT::SyncActionNode {
   public:
-	IsEnemyVisible(const std::string &name, const BT::NodeConfig &config, ECSManager &ecs_)
+	IsEnemyVisible(const std::string &name, const BT::NodeConfig &config, Easys::ECS &ecs_)
 	    : BT::SyncActionNode(name, config), ecs(ecs_)
 	{
 	}
@@ -25,8 +26,8 @@ class IsEnemyVisible : public BT::SyncActionNode {
 	{
 		// clang-format off
 		return {
-			BT::InputPort<Entity>("entity"),
-			BT::OutputPort<Entity>("otherEntity"),
+			BT::InputPort<Easys::Entity>("entity"),
+			BT::OutputPort<Easys::Entity>("otherEntity"),
 			BT::OutputPort<Vec2f>("otherPosition"),
 			BT::OutputPort<Rotation>("direction")
 		};
@@ -35,7 +36,7 @@ class IsEnemyVisible : public BT::SyncActionNode {
 
 	BT::NodeStatus tick() override
 	{
-		Entity entity = getInputOrThrow<Entity>("entity");
+		Easys::Entity entity = getInputOrThrow<Easys::Entity>("entity");
 		const Vision &vision = ecs.getComponent<Vision>(entity);
 
 		if (vision.visibleEnemies.empty()) {
@@ -44,14 +45,14 @@ class IsEnemyVisible : public BT::SyncActionNode {
 
 		const Vec2f &position = ecs.getComponent<Positionable>(entity).position;
 		const Rotation &rotation = ecs.getComponent<Rotatable>(entity).rotation;
-		const Entity &otherEntity = vision.visibleEnemies[0];
-		//const Vec2f &otherPosition = ecs.getComponent<Positionable>(otherEntity).position;
+		const Easys::Entity &otherEntity = vision.visibleEnemies[0];
+		// const Vec2f &otherPosition = ecs.getComponent<Positionable>(otherEntity).position;
 		const Vec2f &otherPosition = Utils::toFloat(ecs.getComponent<RigidBody>(otherEntity).startPosition);
 
 		// TODO: Is this actually the best place to do this?
 		Rotation direction = calculateDirection(position, otherPosition, rotation);
 
-		setOutput<Entity>("otherEntity", otherEntity);
+		setOutput<Easys::Entity>("otherEntity", otherEntity);
 		setOutput<Vec2f>("otherPosition", otherPosition);
 		setOutput<Rotation>("direction", direction);
 
@@ -93,5 +94,5 @@ class IsEnemyVisible : public BT::SyncActionNode {
 		}
 	}
 
-	ECSManager &ecs;
+	Easys::ECS &ecs;
 };

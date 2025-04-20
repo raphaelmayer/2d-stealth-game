@@ -1,8 +1,8 @@
 #pragma once
 
-#include "../ecs/Entity.hpp"
 #include "../engine/types/Vec2f.hpp"
 #include "../items/WeaponMetadata.hpp"
+#include <easys/easys.hpp>
 
 // Projectile is kind of a confusing name, since this is just a special component for  projectile-type entities. A
 // projectile still needs a position component, etc. But for now I don't have a better name, so it's just that.
@@ -14,6 +14,6 @@ struct Projectile {
 	float range;
 	int damage;
 
-	Entity shooter;  // entity id of the entity that shot the weapon
+	Easys::Entity shooter;  // entity id of the entity that shot the weapon
 	WeaponID weapon; // weapon id of the weapon that was shot
 };

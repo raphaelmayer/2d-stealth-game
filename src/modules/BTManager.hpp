@@ -9,19 +9,19 @@
 #include "../ai/nodes/TurnTo.hpp"
 #include "../ai/nodes/WaitFor.hpp"
 #include "../constants.hpp"
-#include "../ecs/ECSManager.hpp"
 #include "behaviortree_cpp/bt_factory.h"
+#include <easys/easys.hpp>
 #include <unordered_map>
 
 class BTManager {
   public:
-	explicit BTManager(ECSManager &ecs)
+	explicit BTManager(Easys::ECS &ecs)
 	{
 		registerNodes(ecs);
 		registerTreesFromDirectory(BT_DIRECTORY);
 	}
 
-	void createTreeForEntity(const Entity &entity, const std::string &treeName)
+	void createTreeForEntity(const Easys::Entity &entity, const std::string &treeName)
 	{
 		// TODO?: if entity has tree
 		auto tree = factory.createTree(treeName);
@@ -30,7 +30,7 @@ class BTManager {
 		trees[entity] = std::move(tree);
 	}
 
-	void tickTree(Entity entity)
+	void tickTree(Easys::Entity entity)
 	{
 		trees[entity].tickOnce();
 	}
@@ -39,13 +39,13 @@ class BTManager {
 	template <typename T>
 	void setGlobalTreeValue(const std::string &key, const T &value)
 	{
-		for (auto &[Entity, tree] : trees) {
+		for (auto &[entity, tree] : trees) {
 			tree.rootBlackboard()->set(key, value); // propagate deltaTime to all nodes
 		}
 	}
 
   private:
-	void registerNodes(ECSManager &ecs)
+	void registerNodes(Easys::ECS &ecs)
 	{
 		factory.registerNodeType<RandomSelector>("RandomSelector");
 
@@ -71,7 +71,7 @@ class BTManager {
 	}
 
 	BT::BehaviorTreeFactory factory;
-	std::unordered_map<Entity, BT::Tree> trees;
+	std::unordered_map<Easys::Entity, BT::Tree> trees;
 	// It might be preferable to store the tree in a component (dedicated or else) so we keep all game state within the
 	// ecs. This would make saving and loading (more) straight forward. Otherwise we would have to manually handle
 	// loading and saving the btmanager and pass a ref to some places (menus, savegamemanager).

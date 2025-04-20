@@ -4,13 +4,12 @@
 #include "../components/Positionable.hpp"
 #include "../components/Rotatable.hpp"
 #include "../components/Vision.hpp"
-#include "../ecs/ECSManager.hpp"
-#include "../ecs/Entity.hpp"
 #include "../engine/Engine.hpp"
 #include "../engine/types/Vec2f.hpp"
 #include "../map/MapManager.hpp"
 #include "../modules/Camera.hpp"
 #include "System.hpp"
+#include <easys/easys.hpp>
 
 class DebugSystem : public System {
   public:
@@ -19,14 +18,14 @@ class DebugSystem : public System {
 	{
 	}
 
-	void update(ECSManager &ecs, const double deltaTime) override
+	void update(Easys::ECS &ecs, const double deltaTime) override
 	{
 		renderVisionDebug(ecs);
 		renderPaths(ecs);
 	}
 
   private:
-	void renderVisionDebug(ECSManager &ecs) const
+	void renderVisionDebug(Easys::ECS &ecs) const
 	{
 		for (const auto &entity : ecs.getEntities()) {
 			if (ecs.hasComponent<Vision>(entity)) {
@@ -40,7 +39,7 @@ class DebugSystem : public System {
 		}
 	}
 
-	void drawLinesOfSight(ECSManager &ecs, const Entity &entity, const std::vector<Entity> &others,
+	void drawLinesOfSight(Easys::ECS &ecs, const Easys::Entity &entity, const std::vector<Easys::Entity> &others,
 	                      const ColorRGBA &color) const
 	{
 		const Vec2f &pos = ecs.getComponent<Positionable>(entity).position;
@@ -50,7 +49,7 @@ class DebugSystem : public System {
 		}
 	}
 
-	void drawViewCone(ECSManager &ecs, const Entity &entity) const
+	void drawViewCone(Easys::ECS &ecs, const Easys::Entity &entity) const
 	{
 		const auto &pos = ecs.getComponent<Positionable>(entity).position;
 		const auto &rot = ecs.getComponent<Rotatable>(entity).rotation;
@@ -90,7 +89,7 @@ class DebugSystem : public System {
 		return {vec.x * cosAngle - vec.y * sinAngle, vec.x * sinAngle + vec.y * cosAngle};
 	}
 
-	void renderPaths(ECSManager &ecs) const
+	void renderPaths(Easys::ECS &ecs) const
 	{
 		for (const auto &entity : ecs.getEntities()) {
 			if (ecs.hasComponent<Pathfinding>(entity)) {

@@ -1,13 +1,12 @@
 #include "../components/EquippedWeapon.hpp"
 #include "../components/Positionable.hpp"
 #include "../components/Target.hpp"
-#include "../ecs/ECSManager.hpp"
-#include "../ecs/Entity.hpp"
 #include "../engine/Engine.hpp"
 #include "../entities/projectile.hpp"
 #include "../modules/Camera.hpp"
 #include "../modules/StateMachine.hpp"
 #include "System.hpp"
+#include <easys/easys.hpp>
 #include <set>
 
 class FiringSystem final : public System {
@@ -16,12 +15,12 @@ class FiringSystem final : public System {
 	{
 	}
 
-	void update(ECSManager &ecs, const double deltaTime) override
+	void update(Easys::ECS &ecs, const double deltaTime) override
 	{
 		const Vec2i mousePos = engine_.getMousePosition();
-		const std::set<Entity> &entities = ecs.getEntities(); // no need to iterate over all entities
+		const std::set<Easys::Entity> &entities = ecs.getEntities(); // no need to iterate over all entities
 
-		for (const Entity &entity : entities) {
+		for (const Easys::Entity &entity : entities) {
 			if (ecs.hasComponent<EquippedWeapon>(entity) && ecs.hasComponent<Positionable>(entity)) {
 				handleFiring(ecs, entity, deltaTime);
 			}
@@ -34,7 +33,7 @@ class FiringSystem final : public System {
 	// we either need to store the SM within a component or we use a dedicated SMManager and just use entitiy ids to
 	// index the correct SM, like we are doing with e.g. BTManager.
 	// StateMachine firingSM{std::make_unique<IdleNode>()};
-	// std::unordered_map<Entity, StateMachine> stateMachines;
+	// std::unordered_map<Easys::Entity, StateMachine> stateMachines;
 
 	Vec2f calculateLead(const Vec2f &shooterPosition, const Vec2f &targetPosition, const float projectileVelocity,
 	                    const Vec2f &targetVelocity) const
@@ -74,7 +73,7 @@ class FiringSystem final : public System {
 		return targetPosition + targetVelocity * timeToImpact;
 	}
 
-	void handleFiring(ECSManager &ecs, const Entity &entity, const double deltaTime) const
+	void handleFiring(Easys::ECS &ecs, const Easys::Entity &entity, const double deltaTime) const
 	{
 		EquippedWeapon &ew = ecs.getComponent<EquippedWeapon>(entity);
 		WeaponMetadata wdata = WeaponDatabase::getInstance().get(ew.weaponId);
@@ -106,7 +105,7 @@ class FiringSystem final : public System {
 		}
 
 		bool &isShooting = ecs.getComponent<RigidBody>(entity).isShooting;
-		if (ecs.hasComponent<Target>(entity)/* && !isMoving*/) {
+		if (ecs.hasComponent<Target>(entity) /* && !isMoving*/) {
 			Target targetComp = ecs.getComponent<Target>(entity);
 
 			if (!ecs.hasEntity(targetComp.entity)) {

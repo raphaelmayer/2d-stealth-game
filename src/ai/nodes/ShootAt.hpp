@@ -6,7 +6,6 @@
 #include "../../components/RigidBody.hpp"
 #include "../../components/Target.hpp"
 #include "../../components/Tombstone.hpp"
-#include "../../ecs/ECSManager.hpp"
 #include "../../engine/types/Vec2f.hpp"
 #include "../../items/WeaponDatabase.hpp"
 #include "../../items/WeaponMetadata.hpp"
@@ -14,12 +13,13 @@
 #include "behaviortree_cpp/action_node.h"
 #include "behaviortree_cpp/basic_types.h" // ports etc
 #include "behaviortree_cpp/tree_node.h"   // NodeConfig
+#include <easys/easys.hpp>
 #include <iostream>
 #include <string>
 
 class ShootAt : public BT::StatefulActionNode {
   public:
-	ShootAt(const std::string &name, const BT::NodeConfig &config, ECSManager &ecs_)
+	ShootAt(const std::string &name, const BT::NodeConfig &config, Easys::ECS &ecs_)
 	    : BT::StatefulActionNode(name, config), ecs(ecs_), wdb(WeaponDatabase::getInstance())
 	{
 	}
@@ -28,8 +28,8 @@ class ShootAt : public BT::StatefulActionNode {
 	{
 		// clang-format off
 		return {
-			BT::InputPort<Entity>("entity"),
-			BT::InputPort<Entity>("otherEntity"),
+			BT::InputPort<Easys::Entity>("entity"),
+			BT::InputPort<Easys::Entity>("otherEntity"),
 			BT::OutputPort<Vec2f>("position")
 		};
 		// clang-format on
@@ -37,8 +37,8 @@ class ShootAt : public BT::StatefulActionNode {
 
 	BT::NodeStatus onStart() override
 	{
-		BT::Expected<Entity> expEntity = getInput<Entity>("entity");
-		BT::Expected<Entity> expOtherEntity = getInput<Entity>("otherEntity");
+		BT::Expected<Easys::Entity> expEntity = getInput<Easys::Entity>("entity");
+		BT::Expected<Easys::Entity> expOtherEntity = getInput<Easys::Entity>("otherEntity");
 
 		if (!expEntity || !expOtherEntity) {
 			return BT::NodeStatus::FAILURE;
@@ -52,7 +52,7 @@ class ShootAt : public BT::StatefulActionNode {
 
 	BT::NodeStatus onRunning() override
 	{
-		// this check could be its own node. 
+		// this check could be its own node.
 		if (!isInWeaponRange(ecs, entity, otherEntity)) {
 			// TODO: remove Target comp? currently we just reject and let the next node try to handle it.
 			//
@@ -81,14 +81,14 @@ class ShootAt : public BT::StatefulActionNode {
 	}
 
   private:
-	ECSManager &ecs;
+	Easys::ECS &ecs;
 	WeaponDatabase &wdb;
 
-	Entity entity;
-	Entity otherEntity;
+	Easys::Entity entity;
+	Easys::Entity otherEntity;
 
 	// we could think about providing a new module EntityUtils and add this function to it.
-	float calculateDistance(ECSManager &ecs, const Entity entity, const Entity otherEntity) const
+	float calculateDistance(Easys::ECS &ecs, const Easys::Entity entity, const Easys::Entity otherEntity) const
 	{
 		// technically we would need to check if entities even have a position.
 		// especially if we were to make it part of a generic utility module.
@@ -97,7 +97,7 @@ class ShootAt : public BT::StatefulActionNode {
 		return (pos2 - pos1).length();
 	}
 
-	bool isInWeaponRange(ECSManager &ecs, const Entity entity, const Entity otherEntity) const
+	bool isInWeaponRange(Easys::ECS &ecs, const Easys::Entity entity, const Easys::Entity otherEntity) const
 	{
 		const auto id = ecs.getComponent<EquippedWeapon>(entity).weaponId;
 		const WeaponMetadata wdata = wdb.get(id);

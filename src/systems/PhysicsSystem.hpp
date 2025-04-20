@@ -2,10 +2,10 @@
 #include "../components/Positionable.hpp"
 #include "../components/RigidBody.hpp"
 #include "../constants.hpp"
-#include "../ecs/Entity.hpp"
 #include "../map/MapManager.hpp"
 #include "System.hpp"
 #include <cmath>
+#include <easys/easys.hpp>
 #include <set>
 
 /*
@@ -23,11 +23,11 @@ class PhysicsSystem final : public System {
 	{
 	}
 
-	void update(ECSManager &ecs, double deltaTime) override
+	void update(Easys::ECS &ecs, double deltaTime) override
 	{
-		const std::set<Entity> &entities = ecs.getEntities();
+		const std::set<Easys::Entity> &entities = ecs.getEntities();
 
-		for (const Entity &entity : entities) {
+		for (const Easys::Entity &entity : entities) {
 			if (!ecs.hasComponent<RigidBody>(entity) || !ecs.hasComponent<Positionable>(entity)) {
 				continue;
 			}
@@ -48,7 +48,6 @@ class PhysicsSystem final : public System {
 					ecs.getComponent<Pathfinding>(entity).path.clear();
 					ecs.getComponent<Collider>(entity).didCollide = true;
 					ecs.getComponent<Collider>(entity).lastCollisionPosition = nextPos;
-
 				}
 				resetCurrentMovementParams(rigidBody, currentPos);
 				continue;
@@ -105,7 +104,7 @@ class PhysicsSystem final : public System {
 		rigidBody.nextPosition = newPosition;
 	}
 
-	bool wouldCollide(ECSManager &ecs, Entity entity, const Vec2f &nextPos) const
+	bool wouldCollide(Easys::ECS &ecs, Easys::Entity entity, const Vec2f &nextPos) const
 	{
 		const Vec2i tileSizedEndPos = Utils::toTileSize(nextPos);
 
@@ -126,10 +125,10 @@ class PhysicsSystem final : public System {
 	// Check if any collidable entity occupies the tile we are trying to move on.
 	// TODO?: We currently do a next tile check with nextPosition. We might want to switch to a bounding box
 	// approach, where we use newPosition to check, if the move is valid and only then apply it.
-	bool wouldCollideWithEntity(ECSManager &ecs, Entity entity, const Vec2f &nextPos) const
+	bool wouldCollideWithEntity(Easys::ECS &ecs, Easys::Entity entity, const Vec2f &nextPos) const
 	{
 		// TODO: reduce potential O(N²) collision checks
-		for (const Entity &other : ecs.getEntities()) {
+		for (const Easys::Entity &other : ecs.getEntities()) {
 			if (entity != other && ecs.hasComponent<Collider>(other) && ecs.hasComponent<Positionable>(other)) {
 				const auto &otherPosition = ecs.getComponent<Positionable>(other).position;
 				if (Utils::round(otherPosition) == nextPos) {
@@ -148,7 +147,7 @@ class PhysicsSystem final : public System {
 		return false;
 	}
 
-	void handleRotation(ECSManager &ecs, const Entity entity, const Vec2f &direction) const
+	void handleRotation(Easys::ECS &ecs, const Easys::Entity entity, const Vec2f &direction) const
 	{
 		if (ecs.hasComponent<Rotatable>(entity)) {
 			auto &rotatable = ecs.getComponent<Rotatable>(entity);

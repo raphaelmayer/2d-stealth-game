@@ -11,9 +11,9 @@
 #include "../components/Renderable.hpp"
 #include "../components/RigidBody.hpp"
 #include "../constants.hpp"
-#include "../ecs/ECSManager.hpp"
 #include "../engine/types/Vec2i.hpp"
 #include "../modules/Utils.hpp"
+#include <easys/easys.hpp>
 
 #define ITEMS_SPRITESHEET_Y 1000
 #define SPRITE_SIZE TILE_SIZE
@@ -30,9 +30,9 @@ struct InteractableItem {
 };
 
 // instantiate item on map (not in some inventory) with tile values, not pixel values.
-Entity instantiateItemEntity(ECSManager &ecs, const Vec2i position, const Vec2i spriteSheetPos)
+Easys::Entity instantiateItemEntity(Easys::ECS &ecs, const Vec2i position, const Vec2i spriteSheetPos)
 {
-	Entity item = ecs.addEntity();
+	Easys::Entity item = ecs.addEntity();
 
 	ecs.addComponent(item, Positionable{Utils::toFloat(position) * TILE_SIZE});
 	ecs.addComponent(item,
@@ -45,18 +45,18 @@ Entity instantiateItemEntity(ECSManager &ecs, const Vec2i position, const Vec2i 
 	return item;
 }
 
-Entity instantiateCollectableItemEntity(ECSManager &ecs, const Vec2i position, CollectableItem collectableItem)
+Easys::Entity instantiateCollectableItemEntity(Easys::ECS &ecs, const Vec2i position, CollectableItem collectableItem)
 {
-	Entity item = instantiateItemEntity(ecs, position, collectableItem.spriteSheetPos);
+	Easys::Entity item = instantiateItemEntity(ecs, position, collectableItem.spriteSheetPos);
 	ecs.addComponent(item, std::move(collectableItem.interactable));
 	ecs.addComponent(item, std::move(collectableItem.collectable));
 
 	return item;
 }
 
-Entity instantiateInteractableItemEntity(ECSManager &ecs, const Vec2i position, InteractableItem interactableItem)
+Easys::Entity instantiateInteractableItemEntity(Easys::ECS &ecs, const Vec2i position, InteractableItem interactableItem)
 {
-	Entity item = instantiateItemEntity(ecs, position, interactableItem.spriteSheetPos);
+	Easys::Entity item = instantiateItemEntity(ecs, position, interactableItem.spriteSheetPos);
 	ecs.addComponent(item, std::move(interactableItem.interactable));
 
 	return item;

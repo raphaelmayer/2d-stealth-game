@@ -6,17 +6,17 @@
 #include "../components/Pathfinding.hpp"
 #include "../components/Vision.hpp"
 #include "../constants.hpp"
-#include "../ecs/ECSManager.hpp"
 #include "../engine/types/Vec2f.hpp"
 #include "../engine/types/Vec2i.hpp"
 #include "../modules/Utils.hpp"
 #include "character.hpp"
+#include <easys/easys.hpp>
 #include <string>
 
-Entity instantiateNPCEntity(ECSManager &ecs, Vec2i positionInTiles, Rotation rotation = SOUTH,
+Easys::Entity instantiateNPCEntity(Easys::ECS &ecs, Vec2i positionInTiles, Rotation rotation = SOUTH,
                             const std::string &text = "PLACEHOLDER TEXT")
 {
-	Entity npc = instantiateBaseCharacter(ecs, positionInTiles, rotation);
+	Easys::Entity npc = instantiateBaseCharacter(ecs, positionInTiles, rotation);
 	ecs.addComponent<Vision>(npc, Vision{});
 	ecs.addComponent<AI>(npc, AI{positionInTiles * TILE_SIZE});
 	ecs.addComponent<Pathfinding>(npc, Pathfinding{});

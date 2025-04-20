@@ -13,13 +13,13 @@
 #include "../components/RigidBody.hpp"
 #include "../components/Rotatable.hpp"
 #include "../constants.hpp"
-#include "../ecs/ECSManager.hpp"
 #include "../engine/types/Vec2i.hpp"
 #include "character.hpp"
+#include <easys/easys.hpp>
 
-Entity instantiatePlayerEntity(ECSManager &ecs, Vec2i positionInTiles, Rotation rotation = SOUTH)
+Easys::Entity instantiatePlayerEntity(Easys::ECS &ecs, Vec2i positionInTiles, Rotation rotation = SOUTH)
 {
-	Entity player = instantiateBaseCharacter(ecs, positionInTiles, rotation);
+	Easys::Entity player = instantiateBaseCharacter(ecs, positionInTiles, rotation);
 
 	ecs.addComponent(player, Controllable{});
 	ecs.addComponent(player, Inventory{});

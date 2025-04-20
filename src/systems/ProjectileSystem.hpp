@@ -1,11 +1,10 @@
 #include "../components/Positionable.hpp"
 #include "../components/Projectile.hpp"
 #include "../components/Tombstone.hpp"
-#include "../ecs/ECSManager.hpp"
-#include "../ecs/Entity.hpp"
 #include "../map/MapManager.hpp"
 #include "../modules/AABB.hpp"
 #include "System.hpp"
+#include <easys/easys.hpp>
 #include <set>
 
 class ProjectileSystem final : public System {
@@ -14,11 +13,11 @@ class ProjectileSystem final : public System {
 	{
 	}
 
-	void update(ECSManager &ecs, const double deltaTime) override
+	void update(Easys::ECS &ecs, const double deltaTime) override
 	{
-		const std::set<Entity> &entities = ecs.getEntities();
+		const std::set<Easys::Entity> &entities = ecs.getEntities();
 
-		for (const Entity &entity : entities) {
+		for (const Easys::Entity &entity : entities) {
 			if (ecs.hasComponent<Projectile>(entity) && ecs.hasComponent<Positionable>(entity)) {
 				Vec2f &position = ecs.getComponent<Positionable>(entity).position;
 				const Projectile &projectile = ecs.getComponent<Projectile>(entity);
@@ -54,12 +53,12 @@ class ProjectileSystem final : public System {
 		// bool didCollide = false; // TODO: probably need something like this, since we always generate a collision
 		// event.
 		//  but do we need to or could we solve this differently?
-		Entity a = 0;   // entity initiating collision
-		Entity b = 0;   // entity we are colliding with
+		Easys::Entity a = 0;   // entity initiating collision
+		Easys::Entity b = 0;   // entity we are colliding with
 		Vec2f position; // position of collision (wrt. a)
 	};
 
-	bool checkCollisionsWithMap(ECSManager &ecs, const Entity entity, const Vec2f &position) const
+	bool checkCollisionsWithMap(Easys::ECS &ecs, const Easys::Entity entity, const Vec2f &position) const
 	{
 		// TODO: check collision with map
 		// We need to implement a penetrable property for tiles.
@@ -68,10 +67,10 @@ class ProjectileSystem final : public System {
 		return false;
 	}
 
-	std::optional<CollisionResult> checkCollisionsWithEntities(ECSManager &ecs, const Entity entity,
+	std::optional<CollisionResult> checkCollisionsWithEntities(Easys::ECS &ecs, const Easys::Entity entity,
 	                                                           const Vec2f &position) const
 	{
-		const Entity shooter = ecs.getComponent<Projectile>(entity).shooter;
+		const Easys::Entity shooter = ecs.getComponent<Projectile>(entity).shooter;
 
 		for (const auto &otherEntity : ecs.getEntities()) {
 			if (entity == otherEntity) {
@@ -97,11 +96,11 @@ class ProjectileSystem final : public System {
 		return std::nullopt;
 	}
 
-	void applyDamage(ECSManager &ecs, const CollisionResult &collisionResult)
+	void applyDamage(Easys::ECS &ecs, const CollisionResult &collisionResult)
 	{
 		Projectile prj = ecs.getComponent<Projectile>(collisionResult.a);
 		int amount = prj.damage;
-		Entity targetEntity = collisionResult.b;
+		Easys::Entity targetEntity = collisionResult.b;
 		DamageEvent dmgEvent{collisionResult.a, amount};
 
 		if (ecs.hasComponent<DamageBuffer>(targetEntity)) {

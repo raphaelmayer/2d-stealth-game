@@ -5,16 +5,16 @@
 #include "../components/Projectile.hpp"
 #include "../components/Renderable.hpp"
 #include "../constants.hpp"
-#include "../ecs/ECSManager.hpp"
 #include "../engine/types.hpp"
 #include "../items/WeaponDatabase.hpp"
 #include "../modules/Utils.hpp"
+#include <easys/easys.hpp>
 
-void spawnProjectile(ECSManager &ecs, Vec2f start, Vec2f velocity, Entity shooter, WeaponID weaponId)
+void spawnProjectile(Easys::ECS &ecs, Vec2f start, Vec2f velocity, Easys::Entity shooter, WeaponID weaponId)
 {
 	WeaponMetadata wd = WeaponDatabase::getInstance().get(weaponId);
 
-	Entity entity = ecs.addEntity();
+	Easys::Entity entity = ecs.addEntity();
 	ecs.addComponent<Projectile>(entity, {start, velocity, wd.range, wd.damage, shooter, weaponId});
 	ecs.addComponent<Positionable>(entity, {start});
 	ecs.addComponent<Renderable>(entity, {SPRITE_SHEET, Vec2i{0, 13}*TILE_SIZE, {4, 4}, {4, 4}});

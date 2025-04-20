@@ -2,8 +2,6 @@
 #include "../components/Positionable.hpp"
 #include "../components/RigidBody.hpp"
 #include "../components/Target.hpp"
-#include "../ecs/ECSManager.hpp"
-#include "../ecs/Entity.hpp"
 #include "../engine/Engine.hpp"
 #include "../entities/projectile.hpp"
 #include "../modules/AABB.hpp"
@@ -11,6 +9,7 @@
 #include "../modules/Utils.hpp"
 #include "System.hpp"
 #include <SDL.h>
+#include <easys/easys.hpp>
 #include <set>
 
 // Maybe InputSystem should not be a thing, since it is not like the other systems. It only handles inputs and updates
@@ -22,9 +21,9 @@ class InputSystem final : public System {
 	{
 	}
 
-	void update(ECSManager &ecs, const double deltaTime) override
+	void update(Easys::ECS &ecs, const double deltaTime) override
 	{
-		const std::set<Entity> &entities = {PLAYER}; // no need to iterate over all entities
+		const std::set<Easys::Entity> &entities = {PLAYER}; // no need to iterate over all entities
 		const std::array<KeyState, SDL_NUM_SCANCODES> &keyStates = engine_.getKeyStates();
 		const std::array<KeyState, NUM_MOUSE_BUTTONS> &mouseKeyStates = engine_.getMouseButtonStates();
 		const Vec2i &mouseWheelDelta = engine_.getMouseWheelDelta();
@@ -34,14 +33,14 @@ class InputSystem final : public System {
 
 		handleSelection(ecs, mouseKeyStates);
 
-		for (const Entity &entity : selection) {
+		for (const Easys::Entity &entity : selection) {
 			if (ecs.hasComponent<Controllable>(entity)) { // only allow control of entities with controllable component
 				handleEntityControl(ecs, entity, mouseKeyStates, deltaTime);
 			}
 		}
 	}
 
-	std::vector<Entity> selection{}; // this vector holds the player selected entities.
+	std::vector<Easys::Entity> selection{}; // this vector holds the player selected entities.
 	Vec2f start;
 	Vec2f end;
 
@@ -52,13 +51,13 @@ class InputSystem final : public System {
 	static constexpr int LEFT_MOUSE_BUTTON = 0;
 	static constexpr int RIGHT_MOUSE_BUTTON = 2;
 
-	void handleEntityControl(ECSManager &ecs, Entity entity, const std::array<KeyState, NUM_MOUSE_BUTTONS> &keyStates,
+	void handleEntityControl(Easys::ECS &ecs, Easys::Entity entity, const std::array<KeyState, NUM_MOUSE_BUTTONS> &keyStates,
 	                         const double deltaTime) const
 	{
 		if (keyStates[RIGHT_MOUSE_BUTTON].pressed) {
 			const Vec2f mousePos = camera_.screenToWorld(Utils::toFloat(engine_.getMousePosition()));
 			const Rectf r = {mousePos.x, mousePos.y, 1, 1};
-			const std::vector<Entity> entities = getCollidingEntities(ecs, r);
+			const std::vector<Easys::Entity> entities = getCollidingEntities(ecs, r);
 
 			// we need to decide how we want to handle engagements for player characters. a small behaviour tree could
 			// be a good choice especially since we can reuse AI nodes.
@@ -70,7 +69,7 @@ class InputSystem final : public System {
 					ecs.addComponent<Target>(entity, targetComponent);
 
 					// cancel current path. currently done in firingsystem
-					//ecs.addComponent<Pathfinding>(entity, {});
+					// ecs.addComponent<Pathfinding>(entity, {});
 				}
 
 			}
@@ -85,7 +84,7 @@ class InputSystem final : public System {
 		}
 	}
 
-	void handleSelection(ECSManager &ecs, const std::array<KeyState, NUM_MOUSE_BUTTONS> &keyStates)
+	void handleSelection(Easys::ECS &ecs, const std::array<KeyState, NUM_MOUSE_BUTTONS> &keyStates)
 	{
 		if (keyStates[LEFT_MOUSE_BUTTON].pressed) {
 			selection.clear();
@@ -100,9 +99,9 @@ class InputSystem final : public System {
 
 		if (keyStates[LEFT_MOUSE_BUTTON].released) {
 			Rectf r = Utils::vectorsToRectangle(start, end);
-			std::vector<Entity> entities = getCollidingEntities(ecs, r);
+			std::vector<Easys::Entity> entities = getCollidingEntities(ecs, r);
 			if (!entities.empty()) {
-				for (const Entity &e : entities) {
+				for (const Easys::Entity &e : entities) {
 					selection.push_back(e);
 				}
 			}
@@ -111,9 +110,9 @@ class InputSystem final : public System {
 		}
 	}
 
-	std::vector<Entity> getCollidingEntities(ECSManager &ecs, const Rectf &rect) const
+	std::vector<Easys::Entity> getCollidingEntities(Easys::ECS &ecs, const Rectf &rect) const
 	{
-		std::vector<Entity> entities{};
+		std::vector<Easys::Entity> entities{};
 		for (const auto &entity : ecs.getEntities()) {
 			if (ecs.hasComponent<Collider>(entity) && ecs.hasComponent<Positionable>(entity)) {
 
