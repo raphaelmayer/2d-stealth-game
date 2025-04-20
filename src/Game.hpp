@@ -66,16 +66,15 @@ class Game : public Engine {
 		}
 
 		case GameState::PLAYING: {
-			if (getKeyState(SDL_GetScancodeFromKey(SDLK_ESCAPE)).pressed && ecs.hasComponent<Controllable>(0)) {
+			if (getKeyState(SDL_GetScancodeFromKey(SDLK_ESCAPE)).pressed) {
 				if (!menuStack.isEmpty())
 					menuStack.reset();
-				menuStack.push(std::make_unique<InGameMenu>(*this, ecs, gameStateManager, saveGameManager, menuStack));
-				ecs.removeComponent<Controllable>(0);
+				else
+					menuStack.push(
+					    std::make_unique<InGameMenu>(*this, ecs, gameStateManager, saveGameManager, menuStack));
 			}
 
 			if (!addedEntities) {
-				instantiatePlayerEntity(ecs, {2, 55});
-				instantiatePlayerEntity(ecs, {3, 55});
 				addTestEntities();
 				addedEntities = true;
 			}
@@ -147,6 +146,9 @@ class Game : public Engine {
 
 	void addTestEntities()
 	{
+		instantiatePlayerEntity(ecs, {2, 55});
+		instantiatePlayerEntity(ecs, {3, 55});
+
 		createTestEntity({12, 28}, {{Vec2i{17, 32} * TILE_SIZE, Rotation::SOUTH, 6},
 		                            {Vec2i{12, 28} * TILE_SIZE, Rotation::SOUTH, 6}});
 		createTestEntity({20, 28}, {{Vec2i{30, 23} * TILE_SIZE, Rotation::EAST, 2},

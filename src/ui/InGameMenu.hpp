@@ -62,9 +62,7 @@ class InGameMenu final : public ListDialog {
 	void confirmAndSave(Engine &game)
 	{
 		auto saveAction = [this]() {
-			restorePlayerControl(); // Controllable is removed while menu is open
 			saveGameManager_.save(SAVEFILE_PATH);
-			ecs_.removeComponent<Controllable>(PLAYER);
 		};
 		menuStack_.push(std::make_unique<ConfirmationMenu>(
 		    game, menuStack_, "Are you sure you want to overwrite your save?", saveAction));

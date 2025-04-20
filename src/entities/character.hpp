@@ -15,7 +15,7 @@
 #include "../modules/Utils.hpp"
 #include <string>
 
-Entity instantiateBaseEntity(ECSManager &ecs, Vec2i positionInTiles, Rotation rotation = SOUTH,
+Entity instantiateBaseCharacter(ECSManager &ecs, Vec2i positionInTiles, Rotation rotation = SOUTH,
                              int playerSpriteSheetY = 0)
 {
 	Entity base = ecs.addEntity();

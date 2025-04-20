@@ -10,13 +10,13 @@
 #include "../engine/types/Vec2f.hpp"
 #include "../engine/types/Vec2i.hpp"
 #include "../modules/Utils.hpp"
-#include "entity.hpp"
+#include "character.hpp"
 #include <string>
 
 Entity instantiateNPCEntity(ECSManager &ecs, Vec2i positionInTiles, Rotation rotation = SOUTH,
                             const std::string &text = "PLACEHOLDER TEXT")
 {
-	Entity npc = instantiateBaseEntity(ecs, positionInTiles, rotation);
+	Entity npc = instantiateBaseCharacter(ecs, positionInTiles, rotation);
 	ecs.addComponent<Vision>(npc, Vision{});
 	ecs.addComponent<AI>(npc, AI{positionInTiles * TILE_SIZE});
 	ecs.addComponent<Pathfinding>(npc, Pathfinding{});
