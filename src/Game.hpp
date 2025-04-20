@@ -148,6 +148,8 @@ class Game : public Engine {
 	{
 		instantiatePlayerEntity(ecs, {2, 55});
 		instantiatePlayerEntity(ecs, {3, 55});
+		instantiatePlayerEntity(ecs, {2, 56});
+		instantiatePlayerEntity(ecs, {3, 56});
 
 		createTestEntity({12, 28}, {{Vec2i{17, 32} * TILE_SIZE, Rotation::SOUTH, 6},
 		                            {Vec2i{12, 28} * TILE_SIZE, Rotation::SOUTH, 6}});
