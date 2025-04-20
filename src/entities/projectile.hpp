@@ -17,7 +17,7 @@ void spawnProjectile(ECSManager &ecs, Vec2f start, Vec2f velocity, Entity shoote
 	Entity entity = ecs.addEntity();
 	ecs.addComponent<Projectile>(entity, {start, velocity, wd.range, wd.damage, shooter, weaponId});
 	ecs.addComponent<Positionable>(entity, {start});
-	ecs.addComponent<Renderable>(entity, {SPRITE_SHEET, Vec2i{8, 1} * TILE_SIZE, {3, 3}, {3, 3}});
+	ecs.addComponent<Renderable>(entity, {SPRITE_SHEET, Vec2i{0, 13}*TILE_SIZE, {4, 4}, {4, 4}});
 	// TODO: giving projectiles colliders might lead to issues with physicssystem picking up and handling projectiles.
 	// need to look into this more closely.
 	// ecs.addComponent<Collider>(entity, {{3, 3}});
