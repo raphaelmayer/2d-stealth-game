@@ -7,71 +7,37 @@
 #include <string>
 #include <vector>
 
-// Actual tile info
+// Tile properties.
+// `id` represents the tile's index on the spritesheet, offset by +1.
+// This is because in Tiled, tile IDs start from 1 — ID 0 is reserved for "no tile" (i.e., empty space).
+// However, *when selecting tiles in the Tiled editor*, it displays 0-based indices,
+// which can be confusing — the visual index you see is one less than the actual ID used in data.
 struct TileMetadata {
 	int id = 0;
 	bool walkable;
-
-	TileMetadata(int id, bool isWalkable)
-	    : id(id), walkable(isWalkable)
-	{
-	}
-
-	TileMetadata() = default;
 };
 
-// TODO: new struct to replace TileMetadata when we switch to a new tileset
-struct TileMetadata_TBD {
-	int id;                  // corresponds to 1d location in tileset
-	std::string name;        // additional display name?
-	std::string description; // necessary?
-
-	// game-related tile parameters
-	bool walkable;
-
-	// TODO: add constructor for easy instantiation
-};
-
-// TODO: Refactor to use CSVDatabase class, as soon as we switch to the new tileset.
-class TileRegistry {
+class TileRegistry : public CSVDatabase<int, TileMetadata> {
   public:
-	void loadFromFile(const std::string &fileName)
+	TileRegistry() : CSVDatabase(TILE_PROPERTIES, parseRow)
 	{
-		std::ifstream file(fileName);
-		if (!file.is_open()) {
-			throw std::runtime_error("Unable to open tile registry file: " + fileName);
-		}
-
-		std::string line;
-		std::getline(file, line); // Skip header
-		while (std::getline(file, line)) {
-			std::istringstream iss(line);
-			std::string idStr, walkableStr;
-
-			if (std::getline(iss, idStr, ',') && std::getline(iss, walkableStr)) {
-				try {
-					int id = std::stoi(idStr);
-					bool walkable = std::stoi(walkableStr) == 1;
-					tileMap.emplace(id, TileMetadata(id, walkable));
-				} catch (const std::exception &e) {
-					std::cerr << "Conversion error in line: " << line << " (" << e.what() << ")\n";
-				}
-			} else {
-				std::cerr << "Error parsing line: " << line << std::endl;
-			}
-		}
 	}
-
 	const TileMetadata &getTileMetadata(int id) const
 	{
-		auto it = tileMap.find(id);
-		if (it == tileMap.end()) {
+		try {
+			return get(id);
+		} catch (std::out_of_range err) {
+			// TODO: we might want to handle this differently. either notify user of invalid key or return visually
+			// obvious fallback sprite
 			return fallbackSprite;
 		}
-		return it->second;
 	}
 
   private:
-	std::map<int, TileMetadata> tileMap;
 	TileMetadata fallbackSprite{0, true}; // Default fallback sprite
+
+	static std::pair<int, TileMetadata> parseRow(const std::vector<std::string> &tokens)
+	{
+		return {std::stoi(tokens[0]), TileMetadata{std::stoi(tokens[0]), std::stoi(tokens[1]) == 1}};
+	}
 };

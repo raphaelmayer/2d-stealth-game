@@ -17,9 +17,7 @@
 #include "../engine/types/Vec2i.hpp"
 #include "entity.hpp"
 
-// for playerSpriteSheetY use one of the constants PLAYER_{RED|BLUE|WHITE}_SPRITE_SHEET_Y
-Entity instantiatePlayerEntity(ECSManager &ecs, Vec2i positionInTiles, Rotation rotation = SOUTH,
-                               int playerSpriteSheetY = PLAYER_SPRITE_SHEET_Y_RED)
+Entity instantiatePlayerEntity(ECSManager &ecs, Vec2i positionInTiles, Rotation rotation = SOUTH)
 {
 	Entity player = instantiateBaseEntity(ecs, positionInTiles, rotation);
 

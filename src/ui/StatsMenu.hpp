@@ -49,4 +49,6 @@ class StatsMenu final : public UIElement {
 	static constexpr int menuWidth_ = 350;
 	static constexpr int x = WINDOW_WIDTH * PIXEL_SIZE - menuWidth_ - margin;
 	static constexpr int y = margin;
+
+	static constexpr int PROGRESS_STEPS = 13; // a relic from an old time. like this whole ui element.
 };

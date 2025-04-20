@@ -15,26 +15,6 @@ configure_file(
     COPYONLY
 )
 configure_file(
-    ${CMAKE_SOURCE_DIR}/assets/overworld_map_background.txt
-    ${CMAKE_BINARY_DIR}/assets/overworld_map_background.txt
-    COPYONLY
-)
-configure_file(
-    ${CMAKE_SOURCE_DIR}/assets/overworld_map_objects.txt
-    ${CMAKE_BINARY_DIR}/assets/overworld_map_objects.txt
-    COPYONLY
-)
-configure_file(
-    ${CMAKE_SOURCE_DIR}/assets/overworld_char_mapping.csv
-    ${CMAKE_BINARY_DIR}/assets/overworld_char_mapping.csv
-    COPYONLY
-)
-configure_file(
-    ${CMAKE_SOURCE_DIR}/assets/overworld_spritesheet.png
-    ${CMAKE_BINARY_DIR}/assets/overworld_spritesheet.png
-    COPYONLY
-)
-configure_file(
     ${CMAKE_SOURCE_DIR}/assets/hero-spritesheet.png
     ${CMAKE_BINARY_DIR}/assets/hero-spritesheet.png
     COPYONLY

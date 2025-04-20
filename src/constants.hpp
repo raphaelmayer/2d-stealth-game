@@ -1,31 +1,20 @@
 #pragma once
 
-enum Rotation{NORTH, EAST, SOUTH, WEST }; 
+enum Rotation { NORTH, EAST, SOUTH, WEST };
 
 // In Pixel domain:
 #define TILE_SIZE 32
-#define PLAYER_SIZE_X 16
-#define PLAYER_SIZE_Y 24
 
 // In Tile domain (multiply with Tile Size to get pixel values):
 #define BASE_ENTITY_HEIGHT 2
-#define MAP_SIZE_X 90
-#define MAP_SIZE_Y 30
 #define WINDOW_WIDTH 440
 #define WINDOW_HEIGHT 280
 #define PIXEL_SIZE 3
-
-#define LEVEL_1_EAST_BORDER 40
-#define LEVEL_2_WEST_BORDER 43
+#define TILESET_COLUMNS 11 // TODO: Read from actual tileset data
 
 #define COMPONENT_TYPES Positionable
 
-// SpriteSheet addresses
-#define PLAYER_SPRITE_SHEET_Y_WHITE 720
-#define PLAYER_SPRITE_SHEET_Y_BLUE 808
-#define PLAYER_SPRITE_SHEET_Y_RED 896
-
-#define WALK_SPEED 32 // = PIXELS PER SECOND
+#define WALK_SPEED 48 // = PIXELS PER SECOND
 #define FPS 120
 
 // Animation
@@ -34,20 +23,15 @@ enum Rotation{NORTH, EAST, SOUTH, WEST };
 #define PLAYER_STANDING_ANIMATION_NUMBER 1
 #define PLAYER_NUMBER_ANIMATIONS 4
 
-#define TILESET_COLUMNS 11 // TODO: Read from actual tileset data
-
-
 // Asset File Addresses
 // Data
-#define SAVEFILE_PATH "savefile.json"
-#define WORLD_DEFINITION_PATH "../assets/default_game.json"
+#define SAVEFILE_PATH "savefile.json"                       // not used right now
+#define WORLD_DEFINITION_PATH "../assets/default_game.json" // not used right now
 #define WEAPONDATA_PATH "../assets/weapon_data.csv"
 // Graphics
 #define SPRITE_SHEET "../assets/jungle_full.png"
 #define HERO_SHEET "../assets/hero-spritesheet.png"
-#define MAP_CHAR_MAPPING "../assets/tile_properties.csv"
-#define MAP_BACKGROUND "../assets/overworld_map_background.txt"
-#define MAP_OBJECTS "../assets/overworld_map_objects.txt"
+#define TILE_PROPERTIES "../assets/tile_properties.csv"
 #define MAINMENU_BACKGROUND "../assets/mainmenu_background.png"
 #define M4A1 "../assets/weapons/m4a1.png"
 // Audio
@@ -60,15 +44,12 @@ enum Rotation{NORTH, EAST, SOUTH, WEST };
 #define BACKGROUND_MAIN_MENU "../assets/audio/music/mainmenu_background_lttz.mp3"
 // Behavior trees
 #define BT_DIRECTORY "../assets/ai/trees"
-//Fonts
+// Fonts
 #define FONT_ARIAL "../assets/fonts/Arial.ttf"
 
 // menu constants in pixel
 #define PADDING 5
 #define FONT_SIZE 30
-
-// Progress
-#define PROGRESS_STEPS 13
 
 // Entity IDs
 #define PLAYER 0

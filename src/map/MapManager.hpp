@@ -9,7 +9,10 @@
 
 class MapManager {
   public:
-	MapManager() { tileRegistry.loadFromFile(MAP_CHAR_MAPPING); }
+	MapManager()
+	{
+		//tileRegistry.loadFromFile(TILE_PROPERTIES);
+	}
 
 	void loadMap(const int levelId)
 	{

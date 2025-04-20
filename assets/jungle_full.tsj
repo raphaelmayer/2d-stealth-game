@@ -1,14 +1,15 @@
-{ "columns":11,
- "image":"..\/Downloads\/jungle_full.png",
- "imageheight":768,
- "imagewidth":352,
- "margin":0,
- "name":"jungle_full",
- "spacing":0,
- "tilecount":264,
- "tiledversion":"1.11.2",
- "tileheight":32,
- "tilewidth":32,
- "type":"tileset",
- "version":"1.10"
+{
+  "columns": 11,
+  "image": "jungle_full.png",
+  "imageheight": 1024,
+  "imagewidth": 384,
+  "margin": 0,
+  "name": "jungle_full",
+  "spacing": 0,
+  "tilecount": 352,
+  "tiledversion": "1.11.2",
+  "tileheight": 32,
+  "tilewidth": 32,
+  "type": "tileset",
+  "version": "1.10"
 }

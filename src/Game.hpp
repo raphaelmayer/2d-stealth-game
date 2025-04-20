@@ -149,9 +149,9 @@ class Game : public Engine {
 	{
 		createTestEntity({12, 28}, {{Vec2i{17, 32} * TILE_SIZE, Rotation::SOUTH, 6},
 		                            {Vec2i{12, 28} * TILE_SIZE, Rotation::SOUTH, 6}});
-		createTestEntity({19, 28}, {{Vec2i{30, 23} * TILE_SIZE, Rotation::EAST, 2},
+		createTestEntity({20, 28}, {{Vec2i{30, 23} * TILE_SIZE, Rotation::EAST, 2},
 		                            {Vec2i{27, 28} * TILE_SIZE, Rotation::SOUTH, 6},
-		                            {Vec2i{19, 28} * TILE_SIZE, Rotation::SOUTH, 6}});
+		                            {Vec2i{20, 28} * TILE_SIZE, Rotation::SOUTH, 6}});
 		createTestEntity({24, 20}, {{Vec2i{27, 15} * TILE_SIZE, Rotation::EAST, 5},
 		                            {Vec2i{19, 15} * TILE_SIZE, Rotation::NORTH, 5}});
 		createTestEntity({21, 37}, {{Vec2i{21, 37} * TILE_SIZE, Rotation::SOUTH, 60}});

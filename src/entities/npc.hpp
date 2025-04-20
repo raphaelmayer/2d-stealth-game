@@ -12,11 +12,10 @@
 #include "entity.hpp"
 #include <string>
 
-// for playerSpriteSheetY use one of the constants PLAYER_{RED|BLUE|WHITE}_SPRITE_SHEET_Y
 Entity instantiateNPCEntity(ECSManager &ecs, Vec2i positionInTiles, Rotation rotation = SOUTH,
-                            int playerSpriteSheetY = 0, const std::string &text = "PLACEHOLDER TEXT")
+                            const std::string &text = "PLACEHOLDER TEXT")
 {
-	Entity npc = instantiateBaseEntity(ecs, positionInTiles, rotation, playerSpriteSheetY);
+	Entity npc = instantiateBaseEntity(ecs, positionInTiles, rotation);
 	ecs.addComponent<Vision>(npc, Vision{});
 	ecs.addComponent<AI>(npc, AI{positionInTiles * TILE_SIZE});
 	ecs.addComponent<Pathfinding>(npc, Pathfinding{});
