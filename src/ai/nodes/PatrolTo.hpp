@@ -4,17 +4,17 @@
 #include "../../components/Patrol.hpp"
 #include "../../components/Positionable.hpp"
 #include "../../constants.hpp"
-#include "../../ecs/ECSManager.hpp"
 #include "../../engine/types/Vec2f.hpp"
 #include "../../modules/AStar.hpp"
 #include "behaviortree_cpp/action_node.h"
 #include "behaviortree_cpp/basic_types.h" // ports etc
 #include "behaviortree_cpp/tree_node.h"   // NodeConfig
+#include <easys/easys.hpp>
 #include <string>
 
 class PatrolTo : public BT::SyncActionNode {
   public:
-	PatrolTo(const std::string &name, const BT::NodeConfig &config, ECSManager &ecs_)
+	PatrolTo(const std::string &name, const BT::NodeConfig &config, Easys::ECS &ecs_)
 	    : BT::SyncActionNode(name, config), ecs(ecs_)
 	{
 	}
@@ -23,7 +23,7 @@ class PatrolTo : public BT::SyncActionNode {
 	{
 		// clang-format off
 		return {
-			BT::InputPort<Entity>("entity"),
+			BT::InputPort<Easys::Entity>("entity"),
 			BT::OutputPort<Vec2f>("targetPosition"),
 			BT::OutputPort<Rotation>("direction"),
 			BT::OutputPort<double>("duration")
@@ -33,7 +33,7 @@ class PatrolTo : public BT::SyncActionNode {
 
 	BT::NodeStatus tick() override
 	{
-		BT::Expected<Entity> entity = getInput<Entity>("entity");
+		BT::Expected<Easys::Entity> entity = getInput<Easys::Entity>("entity");
 
 		if (!entity)
 			return BT::NodeStatus::FAILURE;
@@ -62,5 +62,5 @@ class PatrolTo : public BT::SyncActionNode {
 	}
 
   private:
-	ECSManager &ecs;
+	Easys::ECS &ecs;
 };

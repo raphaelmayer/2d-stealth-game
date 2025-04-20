@@ -4,7 +4,6 @@
 #include "../components/Positionable.hpp"
 #include "../components/Rotatable.hpp"
 #include "../components/Vision.hpp"
-#include "../ecs/ECSManager.hpp"
 #include "../engine/types/Vec2i.hpp"
 #include "../map/MapManager.hpp"
 #include "../map/TileRegistry.hpp" // TileMetadata struct
@@ -12,6 +11,7 @@
 #include "../modules/Utils.hpp"
 #include "../systems/System.hpp"
 #include <cmath>
+#include <easys/easys.hpp>
 #include <iostream>
 
 // This system is a subsystem of AISystem. This means it is contained and run within the AISystem class.
@@ -22,9 +22,9 @@ class AIPerceptionSystem : public System {
 		visionMap = mapManager.getWalkableMapView();
 	}
 
-	void update(ECSManager &ecs, const double deltaTime)
+	void update(Easys::ECS &ecs, const double deltaTime)
 	{
-		for (const Entity &entity : ecs.getEntities()) {
+		for (const Easys::Entity &entity : ecs.getEntities()) {
 			if (ecs.hasComponent<Vision>(entity)) {
 				const auto &pos = ecs.getComponent<Positionable>(entity).position;
 				const auto &rot = ecs.getComponent<Rotatable>(entity).rotation;
@@ -34,7 +34,7 @@ class AIPerceptionSystem : public System {
 				vision.visibleAllies.clear();
 
 				// update vision
-				for (const Entity &otherEntity : ecs.getEntities()) { // AI currently only needs to see the player
+				for (const Easys::Entity &otherEntity : ecs.getEntities()) { // AI currently only needs to see the player
 					if (entity == otherEntity)
 						continue;
 

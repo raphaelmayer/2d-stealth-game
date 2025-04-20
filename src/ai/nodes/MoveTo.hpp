@@ -3,18 +3,18 @@
 #include "../../components/Pathfinding.hpp"
 #include "../../components/Positionable.hpp"
 #include "../../components/RigidBody.hpp"
-#include "../../ecs/ECSManager.hpp"
 #include "../../engine/types/Vec2f.hpp"
 #include "../../modules/AStar.hpp"
 #include "behaviortree_cpp/action_node.h"
 #include "behaviortree_cpp/basic_types.h" // ports etc
 #include "behaviortree_cpp/tree_node.h"   // NodeConfig
+#include <easys/easys.hpp>
 #include <iostream>
 #include <string>
 
 class MoveTo : public BT::StatefulActionNode {
   public:
-	MoveTo(const std::string &name, const BT::NodeConfig &config, ECSManager &ecs_)
+	MoveTo(const std::string &name, const BT::NodeConfig &config, Easys::ECS &ecs_)
 	    : BT::StatefulActionNode(name, config), ecs(ecs_)
 	{
 	}
@@ -23,7 +23,7 @@ class MoveTo : public BT::StatefulActionNode {
 	{
 		// clang-format off
 		return {
-			BT::InputPort<Entity>("entity"),
+			BT::InputPort<Easys::Entity>("entity"),
 			BT::InputPort<Vec2f>("position")
 		};
 		// clang-format on
@@ -31,7 +31,7 @@ class MoveTo : public BT::StatefulActionNode {
 
 	BT::NodeStatus onStart() override
 	{
-		BT::Expected<Entity> expEntity = getInput<Entity>("entity");
+		BT::Expected<Easys::Entity> expEntity = getInput<Easys::Entity>("entity");
 		BT::Expected<Vec2f> expPosition = getInput<Vec2f>("position");
 
 		if (!expEntity || !expPosition)
@@ -63,8 +63,8 @@ class MoveTo : public BT::StatefulActionNode {
 	}
 
   private:
-	ECSManager &ecs;
+	Easys::ECS &ecs;
 
-	Entity entity;
+	Easys::Entity entity;
 	Vec2f targetPosition;
 };

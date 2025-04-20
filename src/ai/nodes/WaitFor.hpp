@@ -3,15 +3,15 @@
 #include "../../components/Positionable.hpp"
 #include "../../components/Rotatable.hpp"
 #include "../../components/Vision.hpp"
-#include "../../ecs/ECSManager.hpp"
 #include "behaviortree_cpp/action_node.h"
 #include "behaviortree_cpp/basic_types.h" // ports etc
 #include "behaviortree_cpp/tree_node.h"   // NodeConfig
+#include <easys/easys.hpp>
 #include <string>
 
 class WaitFor : public BT::StatefulActionNode {
   public:
-	WaitFor(const std::string &name, const BT::NodeConfig &config, ECSManager &ecs_)
+	WaitFor(const std::string &name, const BT::NodeConfig &config, Easys::ECS &ecs_)
 	    : BT::StatefulActionNode(name, config), ecs(ecs_)
 	{
 	}
@@ -20,7 +20,7 @@ class WaitFor : public BT::StatefulActionNode {
 	{
 		// clang-format off
 		return {
-			BT::InputPort<Entity>("entity"),
+			BT::InputPort<Easys::Entity>("entity"),
 			BT::InputPort<double>("deltaTime"),
 			BT::InputPort<double>("duration")
 		};
@@ -35,7 +35,7 @@ class WaitFor : public BT::StatefulActionNode {
 
 	BT::NodeStatus onRunning() override
 	{
-		BT::Expected<Entity> entity = getInput<Entity>("entity");
+		BT::Expected<Easys::Entity> entity = getInput<Easys::Entity>("entity");
 		BT::Expected<double> deltaTime = getInput<double>("deltaTime");
 		BT::Expected<double> duration = getInput<double>("duration");
 
@@ -57,7 +57,7 @@ class WaitFor : public BT::StatefulActionNode {
 	}
 
   private:
-	ECSManager &ecs;
+	Easys::ECS &ecs;
 	// TODO: acc does not really work here, since it persists and only resets when acc >= maxTime.
 	// We'll probably resort to saving it in some ecs component.
 	double acc = 0;

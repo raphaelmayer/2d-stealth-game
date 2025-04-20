@@ -2,7 +2,6 @@
 
 #include "../components/Controllable.hpp"
 #include "../constants.hpp"
-#include "../ecs/ECSManager.hpp"
 #include "../engine/Engine.hpp"
 #include "../engine/types/Vec2i.hpp"
 #include "../modules/SaveGameManager.hpp"
@@ -12,10 +11,11 @@
 #include "ListDialog.hpp"
 #include "StatsMenu.hpp"
 #include "TextDialog.hpp"
+#include <easys/easys.hpp>
 
 class InGameMenu final : public ListDialog {
   public:
-	InGameMenu(Engine &game, ECSManager &ecs, GameStateManager &gameStateManager, SaveGameManager &saveGameManager,
+	InGameMenu(Engine &game, Easys::ECS &ecs, GameStateManager &gameStateManager, SaveGameManager &saveGameManager,
 	           MenuStack &menuStack)
 	    : ListDialog(game, Vec2i{x, y}, menuWidth_), game_(game), ecs_(ecs), menuStack_(menuStack),
 	      gameStateManager_(gameStateManager), saveGameManager_(saveGameManager)
@@ -42,7 +42,7 @@ class InGameMenu final : public ListDialog {
 
   private:
 	Engine &game_;
-	ECSManager &ecs_;
+	Easys::ECS &ecs_;
 	MenuStack &menuStack_;
 	GameStateManager &gameStateManager_;
 	SaveGameManager &saveGameManager_;
@@ -61,9 +61,7 @@ class InGameMenu final : public ListDialog {
 
 	void confirmAndSave(Engine &game)
 	{
-		auto saveAction = [this]() {
-			saveGameManager_.save(SAVEFILE_PATH);
-		};
+		auto saveAction = [this]() { saveGameManager_.save(SAVEFILE_PATH); };
 		menuStack_.push(std::make_unique<ConfirmationMenu>(
 		    game, menuStack_, "Are you sure you want to overwrite your save?", saveAction));
 	}
@@ -88,5 +86,8 @@ class InGameMenu final : public ListDialog {
 		    game, menuStack_, "Are you sure? Any unsaved progress will be lost.", exitAction));
 	}
 
-	void restorePlayerControl() { ecs_.addComponent(PLAYER, Controllable{}); }
+	void restorePlayerControl()
+	{
+		ecs_.addComponent(PLAYER, Controllable{});
+	}
 };

@@ -9,16 +9,16 @@
 #include "../components/RigidBody.hpp"
 #include "../components/Rotatable.hpp"
 #include "../constants.hpp"
-#include "../ecs/ECSManager.hpp"
 #include "../engine/types/Vec2f.hpp"
 #include "../engine/types/Vec2i.hpp"
 #include "../modules/Utils.hpp"
+#include <easys/easys.hpp>
 #include <string>
 
-Entity instantiateBaseCharacter(ECSManager &ecs, Vec2i positionInTiles, Rotation rotation = SOUTH,
-                             int playerSpriteSheetY = 0)
+Easys::Entity instantiateBaseCharacter(Easys::ECS &ecs, Vec2i positionInTiles, Rotation rotation = SOUTH,
+                                int playerSpriteSheetY = 0)
 {
-	Entity base = ecs.addEntity();
+	Easys::Entity base = ecs.addEntity();
 
 	ecs.addComponent(base, Positionable{Utils::toFloat(positionInTiles) * TILE_SIZE});
 	ecs.addComponent(

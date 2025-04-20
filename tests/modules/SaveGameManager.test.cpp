@@ -10,7 +10,7 @@ TEST_CASE("SaveGameManager Tests", "[SaveGameManager]")
 {
 	SECTION("load")
 	{
-		ECSManager ecs;
+		Easys::ECS ecs;
 		SaveGameManager sgm(ecs);
 
 		Entity entity = ecs.addEntity();
@@ -18,7 +18,7 @@ TEST_CASE("SaveGameManager Tests", "[SaveGameManager]")
 		ecs.addComponent<Positionable>(entity, comp);
 		sgm.save(PATH);
 
-		ECSManager ecs2;
+		Easys::ECS ecs2;
 		SaveGameManager sgm2(ecs2);
 		sgm2.load(PATH);
 
@@ -27,7 +27,7 @@ TEST_CASE("SaveGameManager Tests", "[SaveGameManager]")
 
 	SECTION("save")
 	{
-		ECSManager ecs;
+		Easys::ECS ecs;
 		SaveGameManager sgm(ecs);
 
 		Entity entity = ecs.addEntity();

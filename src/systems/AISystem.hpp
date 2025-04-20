@@ -1,16 +1,15 @@
 #pragma once
 
 #include "../ai/AIState.hpp"
-#include "../behaviortree/ControlNodes.hpp"
 #include "../components/AI.hpp"
 #include "../components/Vision.hpp"
-#include "../ecs/ECSManager.hpp"
 #include "../engine/types/Vec2f.hpp"
 #include "../map/MapManager.hpp"
 #include "../modules/BTManager.hpp"
 #include "../systems/AIPerceptionSystem.hpp"
 #include "../systems/System.hpp"
 #include <cmath>
+#include <easys/easys.hpp>
 #include <iostream>
 
 // The AISystem class is responsible for coordinating all AI-related subsystems, including perception, decision-making,
@@ -21,9 +20,9 @@ class AISystem final : public System {
 	{
 	}
 
-	void update(ECSManager &ecs, const double deltaTime)
+	void update(Easys::ECS &ecs, const double deltaTime)
 	{
-		const std::set<Entity> entities = ecs.getEntities();
+		const std::set<Easys::Entity> entities = ecs.getEntities();
 
 		perceptionSystem.update(ecs, deltaTime);
 		btManager.setGlobalTreeValue<double>("deltaTime", deltaTime);
@@ -31,7 +30,7 @@ class AISystem final : public System {
 		// stateMachine.updateState(ecs, entity, deltaTime);
 
 		// act
-		for (const Entity &entity : entities) {
+		for (const Easys::Entity &entity : entities) {
 			if (ecs.hasComponent<AI>(entity)) {
 				AI &ai = ecs.getComponent<AI>(entity);
 
@@ -49,7 +48,7 @@ class AISystem final : public System {
   private:
 	// TODO: Create dedicated state machine at some point. Currently everything related to state is stored in the AI
 	// component.
-	void updateHighLevelAIState(ECSManager &ecs, Entity entity, double deltaTime) const
+	void updateHighLevelAIState(Easys::ECS &ecs, Easys::Entity entity, double deltaTime) const
 	{
 		// These components are a given at this point, because we check above. Possible error down the line.
 		Vec2f &position = ecs.getComponent<Positionable>(entity).position;

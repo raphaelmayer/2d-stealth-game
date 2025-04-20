@@ -4,14 +4,13 @@
 #include "../components/Renderable.hpp"
 #include "../components/RigidBody.hpp"
 #include "../components/Rotatable.hpp"
-#include "../ecs/ECSManager.hpp"
-#include "../ecs/Entity.hpp"
 #include "../engine/Engine.hpp"
 #include "../map/MapManager.hpp"
 #include "../modules/Camera.hpp"
 #include "../modules/Utils.hpp"
 #include "System.hpp"
 #include <cmath>
+#include <easys/easys.hpp>
 #include <functional>
 #include <iostream>
 
@@ -23,10 +22,10 @@ class AnimationSystem final : public System {
 	{
 	}
 
-	void update(ECSManager &ecs, const double deltaTime) override
+	void update(Easys::ECS &ecs, const double deltaTime) override
 	{
-		const std::set<Entity> &entities = ecs.getEntities();
-		for (const Entity &entity : entities) {
+		const std::set<Easys::Entity> &entities = ecs.getEntities();
+		for (const Easys::Entity &entity : entities) {
 			if (ecs.hasComponent<Animatable>(entity) && ecs.hasComponent<Renderable>(entity)) {
 				auto &sourcePosition = ecs.getComponent<Renderable>(entity).sourcePosition;
 				auto &animatable = ecs.getComponent<Animatable>(entity);
@@ -37,7 +36,7 @@ class AnimationSystem final : public System {
 	}
 
   private:
-	void handleAnimation(ECSManager &ecs, const Entity entity, Animatable &animatable, int &spriteSrcY) const
+	void handleAnimation(Easys::ECS &ecs, const Easys::Entity entity, Animatable &animatable, int &spriteSrcY) const
 	{
 		if (animatable.timeElapsed > ANIMATION_UPDATE_RATE_IN_SECONDS) {
 			animatable.timeElapsed = 0;

@@ -3,11 +3,11 @@
 #include "../components/Positionable.hpp"
 #include "../components/RigidBody.hpp"
 #include "../constants.hpp"
-#include "../ecs/ECSManager.hpp"
 #include "../map/MapManager.hpp"
 #include "../modules/Utils.hpp"
 #include "System.hpp"
 #include <cmath>
+#include <easys/easys.hpp>
 #include <set>
 
 class PathfindingSystem final : public System {
@@ -16,11 +16,11 @@ class PathfindingSystem final : public System {
 	{
 	}
 
-	void update(ECSManager &ecs, const double deltaTime) override
+	void update(Easys::ECS &ecs, const double deltaTime) override
 	{
-		const std::set<Entity> &entities = ecs.getEntities();
+		const std::set<Easys::Entity> &entities = ecs.getEntities();
 
-		for (const Entity &entity : entities) {
+		for (const Easys::Entity &entity : entities) {
 			if (ecs.hasComponent<RigidBody>(entity) && ecs.hasComponent<Positionable>(entity)) {
 				auto &position = ecs.getComponent<Positionable>(entity).position;
 				auto &rigidBody = ecs.getComponent<RigidBody>(entity);
@@ -78,7 +78,7 @@ class PathfindingSystem final : public System {
 
 	// TODO: Replace auto type, as soon as we decided on how to define and share a view.
 	// This function adds collidable entities to our walkable map view.
-	auto populateWalkableView(ECSManager &ecs, Entity entity, auto walkableView) const
+	auto populateWalkableView(Easys::ECS &ecs, Easys::Entity entity, auto walkableView) const
 	{
 		for (const auto &other : ecs.getEntities()) {
 			if (ecs.hasComponent<Collider>(other) && ecs.hasComponent<Positionable>(other) && entity != other) {

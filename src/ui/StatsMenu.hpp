@@ -1,15 +1,15 @@
 #pragma once
 
 #include "../constants.hpp"
-#include "../ecs/ECSManager.hpp"
 #include "../engine/Engine.hpp"
 #include "../engine/types/Vec2i.hpp"
 #include "../ui/MenuStack.hpp"
+#include <easys/easys.hpp>
 #include <string>
 
 class StatsMenu final : public UIElement {
   public:
-	StatsMenu(Engine &game, ECSManager &ecs, MenuStack &menuStack)
+	StatsMenu(Engine &game, Easys::ECS &ecs, MenuStack &menuStack)
 	    : UIElement(game), game_(game), menuStack_(menuStack), stats_(ecs.getComponent<Stats>(PLAYER))
 	{
 	}

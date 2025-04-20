@@ -5,14 +5,13 @@
 #include "../components/Renderable.hpp"
 #include "../components/RigidBody.hpp"
 #include "../components/Rotatable.hpp"
-#include "../ecs/ECSManager.hpp"
-#include "../ecs/Entity.hpp"
 #include "../engine/Engine.hpp"
 #include "../map/MapManager.hpp"
 #include "../modules/Camera.hpp"
 #include "../modules/Utils.hpp"
 #include "System.hpp"
 #include <cmath>
+#include <easys/easys.hpp>
 #include <functional>
 #include <iostream>
 
@@ -28,7 +27,7 @@ class RenderSystem final : public System {
 		textures.emplace(HERO_SHEET, engine_.loadTexture(HERO_SHEET));
 	}
 
-	void update(ECSManager &ecs, const double deltaTime) override
+	void update(Easys::ECS &ecs, const double deltaTime) override
 	{
 		Vec2f camPos = camera_.getPosition();
 		float camZoom = camera_.getZoom();
@@ -37,8 +36,8 @@ class RenderSystem final : public System {
 
 		renderMap(camView, LayerID::BACKGROUND, LayerID::COSMETIC);
 
-		const std::set<Entity> &entities = ecs.getEntities();
-		for (const Entity &entity : entities) {
+		const std::set<Easys::Entity> &entities = ecs.getEntities();
+		for (const Easys::Entity &entity : entities) {
 			if (ecs.hasComponent<Renderable>(entity) && ecs.hasComponent<Positionable>(entity)) {
 				renderEntity(ecs, entity, camView);
 			}
@@ -101,7 +100,7 @@ class RenderSystem final : public System {
 		return pos;
 	}
 
-	void renderEntity(ECSManager &ecs, Entity entity, const Rectf &camView) const
+	void renderEntity(Easys::ECS &ecs, Easys::Entity entity, const Rectf &camView) const
 	{
 		auto &position = ecs.getComponent<Positionable>(entity).position;
 		auto &renderable = ecs.getComponent<Renderable>(entity);

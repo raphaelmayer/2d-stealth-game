@@ -64,12 +64,12 @@ TEST_CASE("ECS Benchmark", "[ECS]")
 	  public:
 		bool updateCalled = false;
 
-		void update(ECSManager &ecs, double deltaTime) override { updateCalled = true; }
+		void update(Easys::ECS &ecs, double deltaTime) override { updateCalled = true; }
 	};
 
 	SECTION("Benchmarking Entity Addition")
 	{
-		ECSManager ecs;
+		Easys::ECS ecs;
 
 		benchmarkSection(
 		    [&] {
@@ -82,7 +82,7 @@ TEST_CASE("ECS Benchmark", "[ECS]")
 
 	SECTION("Benchmarking Entity Removal")
 	{
-		ECSManager ecs;
+		Easys::ECS ecs;
 
 		for (int i = 0; i < NUM_ENT; i++) {
 			Entity e = ecs.addEntity();
@@ -99,7 +99,7 @@ TEST_CASE("ECS Benchmark", "[ECS]")
 
 	SECTION("Benchmarking Component Addition")
 	{
-		ECSManager ecs;
+		Easys::ECS ecs;
 		TestComponent c = TestComponent{};
 
 		for (int i = 0; i < NUM_ENT; i++) {
@@ -117,7 +117,7 @@ TEST_CASE("ECS Benchmark", "[ECS]")
 
 	SECTION("Benchmarking Component Addition 2")
 	{
-		ECSManager ecs;
+		Easys::ECS ecs;
 		TestComponent c = TestComponent{};
 		AnotherComponent a = AnotherComponent{};
 
@@ -137,7 +137,7 @@ TEST_CASE("ECS Benchmark", "[ECS]")
 
 	SECTION("Benchmarking Component Removal")
 	{
-		ECSManager ecs;
+		Easys::ECS ecs;
 		TestComponent c = TestComponent{};
 
 		for (int i = 0; i < NUM_ENT; i++) {
@@ -156,7 +156,7 @@ TEST_CASE("ECS Benchmark", "[ECS]")
 
 	SECTION("Benchmarking Component Retrieval")
 	{
-		ECSManager ecs;
+		Easys::ECS ecs;
 		TestComponent c = TestComponent{};
 
 		for (int i = 0; i < NUM_ENT; i++) {
@@ -175,7 +175,7 @@ TEST_CASE("ECS Benchmark", "[ECS]")
 
 	SECTION("Benchmarking Component Existence Check")
 	{
-		ECSManager ecs;
+		Easys::ECS ecs;
 		TestComponent c = TestComponent{};
 
 		for (int i = 0; i < NUM_ENT; i++) {
@@ -194,7 +194,7 @@ TEST_CASE("ECS Benchmark", "[ECS]")
 
 	SECTION("Benchmarking Component Existence Check")
 	{
-		ECSManager ecs;
+		Easys::ECS ecs;
 		TestComponent c = TestComponent{};
 
 		for (int i = 0; i < NUM_ENT; i++) {
@@ -213,12 +213,12 @@ TEST_CASE("ECS Benchmark", "[ECS]")
 
 	SECTION("Benchmarking simulation with multiple components per entity and systems")
 	{
-		ECSManager ecs;
+		Easys::ECS ecs;
 		Positionable p = Positionable{};
 		RigidBody r = RigidBody{};
 
 		struct TestPhysicsSystem : public System {
-			void update(ECSManager &ecs, double deltaTime)
+			void update(Easys::ECS &ecs, double deltaTime)
 			{
 				for (const Entity &entity : ecs.getEntities()) {
 					if (ecs.hasComponent<RigidBody>(entity) && ecs.hasComponent<Positionable>(entity)) {
@@ -231,7 +231,7 @@ TEST_CASE("ECS Benchmark", "[ECS]")
 		};
 
 		struct TestUpdateSystem : public System {
-			void update(ECSManager &ecs, double deltaTime)
+			void update(Easys::ECS &ecs, double deltaTime)
 			{
 				for (const Entity &entity : ecs.getEntities()) {
 					if (ecs.hasComponent<RigidBody>(entity) && ecs.hasComponent<Positionable>(entity)) {

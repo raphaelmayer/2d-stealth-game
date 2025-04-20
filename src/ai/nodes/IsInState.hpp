@@ -2,10 +2,11 @@
 
 #include "../../ai/AIState.hpp"
 #include "../../components/AI.hpp"
-#include "../../ecs/ECSManager.hpp"
+#include "../../components/Positionable.hpp"
 #include "behaviortree_cpp/action_node.h"
 #include "behaviortree_cpp/basic_types.h" // ports etc
 #include "behaviortree_cpp/tree_node.h"   // NodeConfig
+#include <easys/easys.hpp>
 #include <iostream>
 #include <string>
 
@@ -16,7 +17,7 @@
 
 class IsInState : public BT::SyncActionNode {
   public:
-	IsInState(const std::string &name, const BT::NodeConfig &config, ECSManager &ecs_)
+	IsInState(const std::string &name, const BT::NodeConfig &config, Easys::ECS &ecs_)
 	    : BT::SyncActionNode(name, config), ecs(ecs_)
 	{
 	}
@@ -25,7 +26,7 @@ class IsInState : public BT::SyncActionNode {
 	{
 		// clang-format off
 		return {
-			BT::InputPort<Entity>("entity"),
+			BT::InputPort<Easys::Entity>("entity"),
 			BT::InputPort<AIState>("state")
 		};
 		// clang-format on
@@ -33,7 +34,7 @@ class IsInState : public BT::SyncActionNode {
 
 	BT::NodeStatus tick() override
 	{
-		BT::Expected<Entity> entity = getInput<Entity>("entity");
+		BT::Expected<Easys::Entity> entity = getInput<Easys::Entity>("entity");
 		BT::Expected<AIState> requiredState = getInput<AIState>("state");
 
 		if (!entity || !requiredState)
@@ -48,5 +49,5 @@ class IsInState : public BT::SyncActionNode {
 	}
 
   private:
-	ECSManager &ecs;
+	Easys::ECS &ecs;
 };

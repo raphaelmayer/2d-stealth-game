@@ -1,7 +1,6 @@
 #pragma once
 
 #include "../constants.hpp"
-#include "../ecs/ECSManager.hpp"
 #include "../engine/Engine.hpp"
 #include "../engine/types/Vec2i.hpp"
 #include "../modules/GameStateManager.hpp"
@@ -10,6 +9,7 @@
 #include "ListDialog.hpp"
 #include "TextDialog.hpp"
 #include "UIElement.hpp"
+#include <easys/easys.hpp>
 #include <string>
 
 // A UI component that combines a DialogueBox with a ListMenu for binary ('Yes'/'No') user confirmations.

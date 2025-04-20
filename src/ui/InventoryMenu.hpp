@@ -7,7 +7,6 @@
 #include "../components/Renderable.hpp"
 #include "../components/Stats.hpp"
 #include "../constants.hpp"
-#include "../ecs/ECSManager.hpp"
 #include "../engine/Engine.hpp"
 #include "../engine/types/Vec2i.hpp"
 #include "../modules/SaveGameManager.hpp"
@@ -15,11 +14,12 @@
 #include "ListDialog.hpp"
 #include "ListItem.hpp"
 #include "TextDialog.hpp"
+#include <easys/easys.hpp>
 #include <vector>
 
 class InventoryMenu final : public UIElement {
   public:
-	InventoryMenu(Engine &game, ECSManager &ecs, MenuStack &menuStack)
+	InventoryMenu(Engine &game, Easys::ECS &ecs, MenuStack &menuStack)
 	    : UIElement(game), game_(game), ecs_(ecs), menuStack_(menuStack), listMenu_(game, Vec2i{x, y}, menuWidth_, 6),
 	      textBox_(game, menuStack)
 	{
@@ -44,7 +44,7 @@ class InventoryMenu final : public UIElement {
 
   private:
 	Engine &game_;
-	ECSManager &ecs_;
+	Easys::ECS &ecs_;
 	MenuStack &menuStack_;
 	ListDialog listMenu_;
 	TextDialog textBox_;
@@ -55,7 +55,7 @@ class InventoryMenu final : public UIElement {
 
 	void updateInventoryList()
 	{
-		std::vector<Entity> &inventory = ecs_.getComponent<Inventory>(PLAYER).items;
+		std::vector<Easys::Entity> &inventory = ecs_.getComponent<Inventory>(PLAYER).items;
 		std::vector<ListItem> items;
 
 		for (auto &itemEntity : inventory) {
@@ -67,7 +67,7 @@ class InventoryMenu final : public UIElement {
 		listMenu_.setItems(items);
 	}
 
-	ListItem createListItemForEntity(Entity itemEntity, const Collectable &item)
+	ListItem createListItemForEntity(Easys::Entity itemEntity, const Collectable &item)
 	{
 		return {item.name, [this, itemEntity]() {
 			        applyEffectsIfConsumable(itemEntity);
@@ -75,7 +75,7 @@ class InventoryMenu final : public UIElement {
 		        }};
 	}
 
-	void applyEffectsIfConsumable(Entity itemEntity)
+	void applyEffectsIfConsumable(Easys::Entity itemEntity)
 	{
 		auto &collectable = ecs_.getComponent<Collectable>(itemEntity);
 
@@ -102,7 +102,7 @@ class InventoryMenu final : public UIElement {
 	void updateDescription()
 	{
 		size_t index = listMenu_.getIndex();
-		std::vector<Entity> &items = ecs_.getComponent<Inventory>(PLAYER).items;
+		std::vector<Easys::Entity> &items = ecs_.getComponent<Inventory>(PLAYER).items;
 
 		// we check against the original inventory to see, if we are on an item or the cancel button
 		if (index < items.size()) {
@@ -113,5 +113,8 @@ class InventoryMenu final : public UIElement {
 		}
 	}
 
-	void pushTextDialog(std::string text) { menuStack_.push<TextDialog>(game_, menuStack_, text); }
+	void pushTextDialog(std::string text)
+	{
+		menuStack_.push<TextDialog>(game_, menuStack_, text);
+	}
 };

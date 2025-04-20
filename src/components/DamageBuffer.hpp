@@ -1,11 +1,11 @@
 #pragma once
 
-#include "../ecs/Entity.hpp"
+#include <easys/easys.hpp>
 
 // DamageEvent is not an actual event in the programming kind of sense. It just contains info about damage needing to be
 // applied to an entity.
 struct DamageEvent {
-	Entity source = 0;
+	Easys::Entity source = 0;
 	int amount = 0;
 };
 

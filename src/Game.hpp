@@ -4,8 +4,6 @@
 #include "components/Patrol.hpp"
 #include "components/Projectile.hpp"
 #include "constants.hpp"
-#include "ecs/ECSManager.hpp"
-#include "ecs/Entity.hpp"
 #include "engine/Engine.hpp"
 #include "entities/item.hpp"
 #include "entities/npc.hpp"
@@ -33,6 +31,7 @@
 #include "ui/MainMenu.hpp"
 #include "ui/MenuStack.hpp"
 #include <chrono>
+#include <easys/easys.hpp>
 #include <functional>
 #include <iostream>
 #include <random>
@@ -139,7 +138,7 @@ class Game : public Engine {
 
 	void createTestEntity(const Vec2i &position, const std::vector<PatrolPoint> &waypoints)
 	{
-		Entity e = instantiateNPCEntity(ecs, position);
+		Easys::Entity e = instantiateNPCEntity(ecs, position);
 		ecs.addComponent<Patrol>(e, Patrol{waypoints});
 		btManager.createTreeForEntity(e, "MainTree");
 	}
@@ -193,7 +192,7 @@ class Game : public Engine {
 			return;
 		}
 
-		for (const Entity &e : selection) {
+		for (const Easys::Entity &e : selection) {
 			if (ecs.hasComponent<Positionable>(e)) {
 				auto pos = ecs.getComponent<Positionable>(e).position;
 				const Rectf rect = {pos.x, pos.y, TILE_SIZE, TILE_SIZE};
@@ -203,7 +202,7 @@ class Game : public Engine {
 		}
 	}
 
-	ECSManager ecs;
+	Easys::ECS ecs;
 	MapManager mapManager;
 	BTManager btManager = BTManager(ecs);
 	SaveGameManager saveGameManager = SaveGameManager(ecs);

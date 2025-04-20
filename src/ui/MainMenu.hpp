@@ -1,7 +1,6 @@
 #pragma once
 
 #include "../constants.hpp"
-#include "../ecs/ECSManager.hpp"
 #include "../engine/Engine.hpp"
 #include "../engine/types/Texture.hpp"
 #include "../engine/types/Vec2i.hpp"
@@ -9,6 +8,7 @@
 #include "../modules/SaveGameManager.hpp"
 #include "../ui/MenuStack.hpp"
 #include "ListDialog.hpp"
+#include <easys/easys.hpp>
 
 class MainMenu final : public ListDialog {
   public:
@@ -17,7 +17,7 @@ class MainMenu final : public ListDialog {
 	      ListDialog(game,
 	                 {{"NEW GAME",
 	                   [&gameStateManager, &saveGameManager, &menuStack]() {
-		                   //saveGameManager.load(WORLD_DEFINITION_PATH);
+		                   // saveGameManager.load(WORLD_DEFINITION_PATH);
 		                   gameStateManager.setGameState(GameState::PLAYING);
 		                   menuStack.pop();
 	                   }},
@@ -27,8 +27,8 @@ class MainMenu final : public ListDialog {
 		                   gameStateManager.setGameState(GameState::PLAYING);
 		                   menuStack.pop();
 	                   }},
-					  {"FULLSCREEN", [&game]() {game.setWindowFullscreen(); }},
-					  {"WINDOWED", [&game]() {game.setWindowWindowed(); }},
+	                  {"FULLSCREEN", [&game]() { game.setWindowFullscreen(); }},
+	                  {"WINDOWED", [&game]() { game.setWindowWindowed(); }},
 	                  {"EXIT", [&game]() { game.stop(); }}},
 	                 Vec2i{x, y}, menuWidth_)
 	{

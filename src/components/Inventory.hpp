@@ -1,10 +1,10 @@
 #pragma once
 
-#include "../ecs/Entity.hpp"
+#include <easys/easys.hpp>
 #include <vector>
 
 struct Inventory {
-	std::vector<Entity> items;
+	std::vector<Easys::Entity> items;
 
 	template <class Archive>
 	void serialize(Archive &archive)
