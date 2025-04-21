@@ -76,6 +76,7 @@ class Game : public Engine {
 			if (!addedEntities) {
 				addTestEntities();
 				addedEntities = true;
+				camera.focus(ecs.getComponent<Positionable>(PLAYER).position);
 			}
 
 			inputSystem->update(ecs, deltaTime);

@@ -52,6 +52,10 @@ class ShootAt : public BT::StatefulActionNode {
 
 	BT::NodeStatus onRunning() override
 	{
+		if (!ecs.hasEntity(otherEntity)) {
+			return BT::NodeStatus::FAILURE;
+		}
+		
 		// this check could be its own node.
 		if (!isInWeaponRange(ecs, entity, otherEntity)) {
 			// TODO: remove Target comp? currently we just reject and let the next node try to handle it.

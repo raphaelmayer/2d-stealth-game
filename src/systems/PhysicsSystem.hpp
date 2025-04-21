@@ -25,13 +25,9 @@ class PhysicsSystem final : public System {
 
 	void update(Easys::ECS &ecs, double deltaTime) override
 	{
-		const std::set<Easys::Entity> &entities = ecs.getEntities();
+		const auto &entities = ecs.getEntitiesByComponents<RigidBody, Positionable>();
 
 		for (const Easys::Entity &entity : entities) {
-			if (!ecs.hasComponent<RigidBody>(entity) || !ecs.hasComponent<Positionable>(entity)) {
-				continue;
-			}
-
 			auto &rigidBody = ecs.getComponent<RigidBody>(entity);
 			auto &currentPos = ecs.getComponent<Positionable>(entity).position; // in pixels (float)
 			Vec2f nextPos = Utils::toFloat(rigidBody.nextPosition);
