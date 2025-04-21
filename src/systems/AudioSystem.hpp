@@ -38,15 +38,6 @@ class AudioSystem final : public System {
 						rigidBody.isShooting = false;                          // move to input system or whereever
 					}
 				}
-				// this part stops emission of shot sounds when reloading -> Hack, TODO --> enable loading and
-				// randomizing
-				if (ecs.hasComponent<EquippedWeapon>(entity)) {
-					if (ecs.getComponent<EquippedWeapon>(entity).isReloading) {
-						int channelToHalt =
-						    audioDevice_.getChannelManager().whereIsEmitterPlayingThis(entity, akShot_Ptr_);
-						audioDevice_.stopEmission(channelToHalt);
-					}
-				}
 			}
 		}
 		for (const Easys::Entity &entity : entities) {
