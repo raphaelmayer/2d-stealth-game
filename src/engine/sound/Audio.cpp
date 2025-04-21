@@ -116,11 +116,9 @@ int Audio::emit3D(const int &emitterID, const std::shared_ptr<SoundEffect> &soun
                   const Vec2f &emitterPosition, const Vec2f &listenerPosition, const EmissionOptions &emissionOptions)
 {
 	int channelChosen; // TODO return emit2D directly not with this variable -> I cannot?!
-	if (!channelManager_.isEmitterPlayingThis(emitterID, soundEffect_Ptr)) {
-		channelChosen = emit2D(emitterID, soundEffect_Ptr, emissionOptions);
-	} else {
-		channelChosen = channelManager_.whereIsEmitterPlayingThis(emitterID, soundEffect_Ptr);
-	}
+
+	channelChosen = emit2D(emitterID, soundEffect_Ptr, emissionOptions);
+
 	applySpatialization(emitterID, soundEffect_Ptr, emitterPosition, listenerPosition, emissionOptions);
 
 	return channelChosen;
