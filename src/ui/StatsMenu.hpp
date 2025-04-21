@@ -1,15 +1,15 @@
 #pragma once
 
 #include "../constants.hpp"
-#include "../ecs/ECSManager.hpp"
 #include "../engine/Engine.hpp"
-#include "../engine/Vec2i.hpp"
-#include "../modules/MenuStack.hpp"
+#include "../engine/types/Vec2i.hpp"
+#include "../ui/MenuStack.hpp"
+#include <easys/easys.hpp>
 #include <string>
 
 class StatsMenu final : public UIElement {
   public:
-	StatsMenu(Engine &game, ECSManager &ecs, MenuStack &menuStack)
+	StatsMenu(Engine &game, Easys::ECS &ecs, MenuStack &menuStack)
 	    : UIElement(game), game_(game), menuStack_(menuStack), stats_(ecs.getComponent<Stats>(PLAYER))
 	{
 	}
@@ -49,4 +49,6 @@ class StatsMenu final : public UIElement {
 	static constexpr int menuWidth_ = 350;
 	static constexpr int x = WINDOW_WIDTH * PIXEL_SIZE - menuWidth_ - margin;
 	static constexpr int y = margin;
+
+	static constexpr int PROGRESS_STEPS = 13; // a relic from an old time. like this whole ui element.
 };

@@ -2,8 +2,8 @@
 
 #include "../constants.hpp"
 #include "../engine/Engine.hpp"
-#include "../engine/Vec2i.hpp"
-#include "../modules/MenuStack.hpp"
+#include "../engine/types/Vec2i.hpp"
+#include "../ui/MenuStack.hpp"
 #include "UIElement.hpp"
 #include <string>
 
@@ -52,8 +52,7 @@ class TextDialog final : public UIElement {
 		game_.setRenderScale({1, 1});
 
 		if (currentLine < text_.size()) {
-			game_.drawText(Recti{x + PADDING * 2, y + PADDING * 2, menuWidth_ - 2 * PADDING,
-			                FONT_SIZE},
+			game_.drawText(Recti{x + PADDING * 2, y + PADDING * 2, menuWidth_ - 2 * PADDING, FONT_SIZE},
 			               text_[currentLine]);
 		}
 

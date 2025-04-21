@@ -1,16 +1,15 @@
 #pragma once
 
 #include "../ai/AIState.hpp"
-#include "../behaviortree/ControlNodes.hpp"
 #include "../components/AI.hpp"
 #include "../components/Vision.hpp"
-#include "../ecs/ECSManager.hpp"
-#include "../engine/Vec2i.hpp"
+#include "../engine/types/Vec2f.hpp"
+#include "../map/MapManager.hpp"
 #include "../modules/BTManager.hpp"
-#include "../modules/MapManager.hpp"
 #include "../systems/AIPerceptionSystem.hpp"
 #include "../systems/System.hpp"
 #include <cmath>
+#include <easys/easys.hpp>
 #include <iostream>
 
 // The AISystem class is responsible for coordinating all AI-related subsystems, including perception, decision-making,
@@ -21,9 +20,9 @@ class AISystem final : public System {
 	{
 	}
 
-	void update(ECSManager &ecs, const double deltaTime)
+	void update(Easys::ECS &ecs, const double deltaTime)
 	{
-		const std::set<Entity> entities = ecs.getEntities();
+		const std::set<Easys::Entity> entities = ecs.getEntities();
 
 		perceptionSystem.update(ecs, deltaTime);
 		btManager.setGlobalTreeValue<double>("deltaTime", deltaTime);
@@ -31,7 +30,7 @@ class AISystem final : public System {
 		// stateMachine.updateState(ecs, entity, deltaTime);
 
 		// act
-		for (const Entity &entity : entities) {
+		for (const Easys::Entity &entity : entities) {
 			if (ecs.hasComponent<AI>(entity)) {
 				AI &ai = ecs.getComponent<AI>(entity);
 
@@ -49,10 +48,10 @@ class AISystem final : public System {
   private:
 	// TODO: Create dedicated state machine at some point. Currently everything related to state is stored in the AI
 	// component.
-	void updateHighLevelAIState(ECSManager &ecs, Entity entity, double deltaTime)
+	void updateHighLevelAIState(Easys::ECS &ecs, Easys::Entity entity, double deltaTime) const
 	{
 		// These components are a given at this point, because we check above. Possible error down the line.
-		Vec2i &position = ecs.getComponent<Positionable>(entity).position;
+		Vec2f &position = ecs.getComponent<Positionable>(entity).position;
 		Vision &vision = ecs.getComponent<Vision>(entity);
 		AI &ai = ecs.getComponent<AI>(entity);
 
@@ -73,10 +72,10 @@ class AISystem final : public System {
 				ai.previousState = currentState;
 			} else {
 				ai.detectionTime += deltaTime;
-				if (ai.detectionTime >= detectionThreshold) {
+				if (ai.detectionTime >= ai.detectionThreshold) {
 					ai.detectionTime = 0;
 					ai.originalPosition = (ai.previousState == AIState::Unaware)
-					                          ? position
+					                          ? Utils::toInt(position)
 					                          : ai.originalPosition; // TODO: Should only happen on first detect, bc we
 					                                                 // want to save the position of the idle state
 					ai.previousState = currentState;
@@ -90,7 +89,7 @@ class AISystem final : public System {
 				ai.searchTime += deltaTime;
 				ai.previousState = currentState;
 				ai.state = AIState::Detecting;
-			} else if (ai.searchTime >= searchTimeout) {
+			} else if (ai.searchTime >= ai.searchTimeout) {
 				ai.searchTime = 0;
 				ai.previousState = currentState;
 				ai.state = AIState::Unaware;
@@ -118,9 +117,4 @@ class AISystem final : public System {
 	// AIStateMachine stateMachine;
 
 	BTManager &btManager;
-
-	// TODO: Temporary variables
-	const double detectionThreshold = 2.0; // Time to transition to searching
-	const double searchTimeout = 5.0;      // Timeout for searching
-	const double engageTimeout = 5.0;      // Timeout for engaging (when no enemy is detected)
 };

@@ -1,72 +1,82 @@
-#include "../components/Audio.hpp"
-#include "../ecs/Entity.hpp"
+#include "../components/SoundEmitter.hpp"
 #include "System.hpp"
 #include <SDL.h>
-
-#define BACKGROUND_MUSIC_FADE_MS 700
+#include <easys/easys.hpp>
+#include <memory>
+#include <stdint.h>
 
 class AudioSystem final : public System {
   public:
-	void update(ECSManager &ecs, const double deltaTime) override
+	explicit AudioSystem(Engine &engine, const Camera &camera) : engine_(engine), camera_(camera)
 	{
-		// Play SFX
-		const std::set<Entity> &entities = ecs.getEntities();
-		for (const Entity &entity : entities) {
-			if (ecs.hasComponent<Audio>(entity)) {
-				playSFX(ecs.getComponent<Audio>(entity).file.c_str());
-				ecs.removeComponent<Audio>(entity);
+		audioDevice_.setVolume(50);
+		// assumes that game starts in main menu
+		audioDevice_.streamMusic(mainMenuMusic_, -1);
+	};
+
+	void update(Easys::ECS &ecs, const double deltaTime) override
+	{
+		// Start Ingame Background Music at Start of Game loop
+		if (!backgroundMusic_) {
+			backgroundMusic_ = audioDevice_.loadMusicFile(BACKGROUND_JUNGLE_AMBIENCE);
+			audioDevice_.streamMusic(backgroundMusic_, -1);
+		}
+
+		// testing to check for isMoving here or not could work well
+		const std::set<Easys::Entity> &entities = ecs.getEntities();
+		for (Easys::Entity entity : entities) {
+			if (ecs.hasComponent<RigidBody>(entity)) {
+				RigidBody &rigidBody = ecs.getComponent<RigidBody>(entity);
+				if (rigidBody.isMoving) {
+					if (!ecs.hasComponent<SoundEmitter>(entity)) {
+						ecs.addComponent<SoundEmitter>(entity, {footStep_Ptr_}); // TODO --> MOVE TO RELEVANT SYSTEM
+					}
+				}
+				if (rigidBody.isShooting) {
+					if (!ecs.hasComponent<SoundEmitter>(entity)) {
+						ecs.addComponent<SoundEmitter>(entity, {akShot_Ptr_}); // TODO --> MOVE TO RELEVANT SYSTEM
+						rigidBody.isShooting = false;                          // move to input system or whereever
+					}
+				}
+				// this part stops emission of shot sounds when reloading -> Hack, TODO --> enable loading and
+				// randomizing
+				if (ecs.hasComponent<EquippedWeapon>(entity)) {
+					if (ecs.getComponent<EquippedWeapon>(entity).isReloading) {
+						int channelToHalt =
+						    audioDevice_.getChannelManager().whereIsEmitterPlayingThis(entity, akShot_Ptr_);
+						audioDevice_.stopEmission(channelToHalt);
+					}
+				}
 			}
 		}
-		// Change background music depending on the players position
-		Vec2i playerPosition = ecs.getComponent<Positionable>(player_).position;
-		switch (currentLevel) {
-		case 1:
-			if (playerPosition.x > LEVEL_2_WEST_BORDER * TILE_SIZE) {
-				playBackgroundMusic(BACKGROUND_MUSIC_2);
-				currentLevel = 2;
+		for (const Easys::Entity &entity : entities) {
+
+			if (ecs.hasComponent<SoundEmitter>(entity)) {
+				SoundEmitter soundEffect = ecs.getComponent<SoundEmitter>(entity);
+				Vec2f &emitterPosition = ecs.getComponent<Positionable>(entity).position;
+				Vec2f listenerPosition = camera_.getPosition() + (Utils::toFloat(engine_.getScreenSize()) / 2);
+				if (soundEffect.soundFile_Ptr == footStep_Ptr_ && entity == PLAYER) {
+					audioDevice_.emit3D(entity, footStep_Ptr_, emitterPosition, listenerPosition, {});
+				} else if (soundEffect.soundFile_Ptr == akShot_Ptr_) {
+					audioDevice_.emit3D(entity, akShot_Ptr_, emitterPosition, listenerPosition, {});
+				}
 			}
-			break;
-		case 2:
-			if (playerPosition.x < LEVEL_1_EAST_BORDER * TILE_SIZE) {
-				playBackgroundMusic(BACKGROUND_MUSIC_1);
-				currentLevel = 1;
-			}
-			break;
+			ecs.removeComponent<SoundEmitter>(entity);
 		}
-	}
-	explicit AudioSystem(const Entity player)
-	{
-		player_ = player;
-		currentLevel = 1;
-		playBackgroundMusic(BACKGROUND_MUSIC_1);
 	}
 
   private:
-	// use next free channel to play sfx
-	static void playSFX(const char *file)
-	{
-		auto chunk = Mix_LoadWAV(file);
-		if (chunk) {
-			Mix_PlayChannel(-1, chunk, 0);
-		} else {
-			fprintf(stderr, "Failed to load sfx sound at: %s\n%s", file, Mix_GetError());
-		}
-	}
+	Engine &engine_;
+	Audio &audioDevice_ =
+	    engine_
+	        .getAudioDevice(); // let´s try to change this to only need the audio and not the whole engine -> low prio
+	const Camera &camera_;
 
-	void playBackgroundMusic(const char *file)
-	{
-		// Although documented differently, this method does block and therefore stop other systems from updating
-		// causing to stop the player from walking
-		// Mix_FadeOutMusic(BACKGROUND_MUSIC_FADE_MS);
-		backgroundMusic = Mix_LoadMUS(file);
-		if (backgroundMusic) {
-			Mix_FadeInMusic(backgroundMusic, -1, BACKGROUND_MUSIC_FADE_MS);
-		} else {
-			fprintf(stderr, "Failed to load background music at: %s\n%s", file, Mix_GetError());
-		}
-	}
-
-	Entity player_;
-	uint16_t currentLevel;
-	Mix_Music *backgroundMusic;
+	// internal types and pointers
+	Music mainMenuMusic_ = audioDevice_.loadMusicFile(BACKGROUND_MAIN_MENU);
+	Music backgroundMusic_;
+	std::shared_ptr<SoundEffect> footStep_Ptr_ = std::make_shared<SoundEffect>(
+	    audioDevice_.loadSoundEffectFile(SFX_FOOTSTEP)); // probably SoundEffect should be a pointer by itself?
+	std::shared_ptr<SoundEffect> akShot_Ptr_ =
+	    std::make_shared<SoundEffect>(audioDevice_.loadSoundEffectFile(SFX_AK_SHOT_FULL_AUTO_LONG));
 };

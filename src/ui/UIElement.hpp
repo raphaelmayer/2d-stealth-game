@@ -2,7 +2,8 @@
 
 #include "../constants.hpp"
 #include "../engine/Engine.hpp"
-#include "../engine/Vec2i.hpp"
+#include "../engine/types/Recti.hpp"
+#include "../engine/types/Vec2i.hpp"
 #include <vector>
 
 // UIElement is a base class for text-based UI elements like menus and dialog boxes.
@@ -18,16 +19,32 @@ class UIElement {
   protected:
 	void renderContainer(Vec2i position, int menuWidth, int menuHeight)
 	{
-		ColorRGBA BLACK = {0, 0, 0, 0};
-		ColorRGBA WHITE = {255, 255, 255, 0};
+		ColorRGBA BLACK = {0, 0, 0, 255};
+		ColorRGBA WHITE = {255, 255, 255, 255};
 
 		game_.setRenderScale({1, 1});
 
-		game_.fillRectangle(position, menuWidth, menuHeight, WHITE);
-		game_.drawRectangle(position, menuWidth, menuHeight, BLACK);
-		game_.drawRectangle(position + 1, menuWidth - 2, menuHeight - 2, BLACK);
-		game_.drawRectangle(position + PADDING, menuWidth - 2 * PADDING, menuHeight - 2 * PADDING, BLACK);
-		game_.drawRectangle(position + PADDING + 1, menuWidth - 2 * PADDING - 2, menuHeight - 2 * PADDING - 2, BLACK);
+		// Fill the main menu rectangle with white color
+		game_.fillRectangle(Recti{position.x, position.y, menuWidth, menuHeight}, WHITE);
+
+		// Draw the outer border of the menu in black
+		game_.drawRectangle(Recti{position.x, position.y, menuWidth, menuHeight}, BLACK);
+
+		// Draw a slightly smaller inner border in black
+		Vec2i innerPos1 = position + 1;
+		Vec2i innerSize1 = Vec2i{menuWidth - 2, menuHeight - 2};
+		game_.drawRectangle(Recti{innerPos1.x, innerPos1.y, innerSize1.x, innerSize1.y}, BLACK);
+
+		// Draw a padded inner border in black
+		Vec2i paddedPos = position + PADDING;
+		Vec2i paddedSize = Vec2i{menuWidth, menuHeight} - 2 * PADDING;
+		game_.drawRectangle(Recti{paddedPos.x, paddedPos.y, paddedSize.x, paddedSize.y}, BLACK);
+
+		// Draw a smaller padded inner border in black
+		Vec2i smallerPaddedPos = position + PADDING + 1;
+		Vec2i smallerPaddedSize = Vec2i{menuWidth, menuHeight} - 2 * PADDING - 2;
+		game_.drawRectangle(Recti{smallerPaddedPos.x, smallerPaddedPos.y, smallerPaddedSize.x, smallerPaddedSize.y},
+		                    BLACK);
 
 		// adjustable parameters
 		int oRad = 5;   // outer circles radius

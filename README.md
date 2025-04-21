@@ -1,16 +1,18 @@
-# Ants & Islands
+# Tactical Squad
 
-Ants & Islands is an RPG exploration game, that is built with C++, CMake, SDL2 and Catch2.
+Tactical Squad is an top down tactical shooter game, that is built with C++, CMake, SDL2 and Catch2.
 
 ![alt text for screen readers](/assets/mainmenu_background.png "Text to show on mouseover")
 
 ## Controls
 
-| Action                                                                                          | Key(s)     |
-|-------------------------------------------------------------------------------------------------|------------|
-| Movement / Navigating menus                                                                     | W, A, S, D |
-| Toggle in-game menu                                                                             | ESCAPE     |
-| Select menu item / Advance text <br/> Interact / Collect item <br/> Consume item from inventory | ENTER      |
+| Action                                                                                          | Key(s)      |
+|-------------------------------------------------------------------------------------------------|-------------|
+| Selection				                                                                          | LEFT MOUSE  |
+| Movement / Firing			                                                                      | RIGHT MOUSE |
+| Navigating menus                                                                     		      | W, A, S, D  |
+| Toggle in-game menu                                                                             | ESCAPE      |
+| Select menu item / Advance text <br/> 							                              | ENTER       |
 
 
 ## How to build
@@ -23,8 +25,8 @@ The basic requirements to build this project are:
 - Git
 
 The main CMake targets are:
-- ```Ants_And_Islands```: runs the main application
-- ```testing_app```: runs all test suites
+- ```Tactical_Squad```: runs the main application
+- ```Tactical_Squad_Tests```: runs all test suites
 - ```benchmark_ecs```: runs the ECS benchmarks
 
 ### Windows
@@ -68,8 +70,8 @@ cmake --build build
 To build specific target::
 
 ```bash
-cmake --build build --target Ants_And_Islands
-cmake --build build --target testing_app
+cmake --build build --target Tactical_Squad
+cmake --build build --target Tactical_Squad_Tests
 cmake --build build --target benchmark_ecs
 ```
 
@@ -80,44 +82,22 @@ cmake -S . -B xbuild -GXcode
 cmake --open xbuild
 ```
 
-## Work distribution
-#### Raphael Mayer
-- project setup & CMake
-- /engine
-- /ecs
-- Game.hpp (excluding tilemap code and viewport code)
-- GameStateManager.hpp
-- SaveGameManager.hpp
-- MenuStack.hpp and UI elements (/ui)
-- InputSystem.hpp (handle movement)
-- PhysicsSystem.hpp
-- RenderSystem.hpp (excluding animation code)
-- all tests for my code
-
-#### Joshua Meyer
-- /assets (designing map, initial game state, etc.)
-- AudioSystem.hpp
-- InteractionSystem.hpp
-- ProgressSystem.hpp
-
 ## TODO
-- Switch to new ECS version
-	- Load ECS dynamically from Github with CMake [x]
-	- Change `ECSManager` to `ECS` to switch to new version.
-	- Remove old files.
-- Pathfinding & Movement:
-	- If `targetPosition` is blocked or unreachable we try to recalculate a path every iteration. We need to check, if `targetPosition` is reachable. If not, we could use a couple of strategies like finding the nearest reachable tile, resetting, etc.
-- switch from TXT to TMX map files
-- need to adjust camera scrolling speed based on zoom level
-
 ### Features 
 - implement actual AI state machine
-- create and switch to a new testing map 
 - Sprint feature
 - Stances? Crouch, Prone
+- design and implement a dedicated `AnimationSystem`
+- switch to bounding box collision?
+- implement player AI for engaging? I.e. move into range and LOS
 
 ### Low priority
-- handle window resizing
-- UI rendering needs to be adjusted
-- we broke `ProgressSystem` because it relies on `interactable.isTextVisible`
-- Change CMake config for assets. Currently it is kind of cumbersome (see `src/CMakeLists.txt`)
+- State machines: We need a generic state machine class to simplify a couple of areas:
+	- Weapon firing state
+	- AI alert state
+	- ...
+- Still using SDL specific types for mouse and keycodes.
+- integrate ImGUI?
+
+## Ideas for sound engine
+- add SoundLibrary class to hold all sound chunks (in game context)

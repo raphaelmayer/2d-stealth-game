@@ -1,5 +1,5 @@
 #include <catch2/catch.hpp>
-#include "../../src/engine/Vec2i.hpp"
+#include "../../src/engine/types/Vec2i.hpp"
 
 TEST_CASE("Vec2i Operations", "[Vec2i]")
 {
@@ -76,14 +76,5 @@ TEST_CASE("Vec2i Operations", "[Vec2i]")
 		REQUIRE(vec1.sign() == Vec2i{1, 1});
 		REQUIRE(Vec2i{-3, -4}.sign() == Vec2i{-1, -1});
 		REQUIRE(vecZero.sign() == Vec2i{0, 0});
-	}
-
-	SECTION("toTileSize")
-	{
-		Vec2i vec = {32, 47};
-		REQUIRE(vec.toTileSize().x == 2);
-		REQUIRE(vec.toTileSize().y == 2);
-		REQUIRE(vec1.toTileSize().x == 0);
-		REQUIRE(vec1.toTileSize().y == 0);
 	}
 }

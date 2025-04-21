@@ -1,8 +1,8 @@
 #pragma once
 
 #include <vector>
-#include "../engine/Vec2i.hpp"
-#include "../engine/Vec2f.hpp"
+#include "../engine/types/Vec2i.hpp"
+#include "../engine/types/Vec2f.hpp"
 #include <iostream>
 #include <cmath> // for sqrt
 

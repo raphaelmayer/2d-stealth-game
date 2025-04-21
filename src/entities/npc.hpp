@@ -1,33 +1,27 @@
 #pragma once
 
-#include "../components/Animatable.hpp"
-#include "../components/Collider.hpp"
-#include "../components/Controllable.hpp"
+#include "../components/AI.hpp"
+#include "../components/EquippedWeapon.hpp"
 #include "../components/Interactable.hpp"
-#include "../components/Positionable.hpp"
-#include "../components/Renderable.hpp"
-#include "../components/RigidBody.hpp"
-#include "../components/Rotatable.hpp"
+#include "../components/Pathfinding.hpp"
+#include "../components/Vision.hpp"
 #include "../constants.hpp"
-#include "../ecs/ECSManager.hpp"
-#include "../engine/Vec2i.hpp"
+#include "../engine/types/Vec2f.hpp"
+#include "../engine/types/Vec2i.hpp"
+#include "../modules/Utils.hpp"
+#include "character.hpp"
+#include <easys/easys.hpp>
 #include <string>
 
-// for playerSpriteSheetY use one of the constants PLAYER_{RED|BLUE|WHITE}_SPRITE_SHEET_Y
-Entity instantiateNPCEntity(ECSManager &ecs, Vec2i positionInTiles, Rotation rotation = SOUTH,
-                            int playerSpriteSheetY = PLAYER_SPRITE_SHEET_Y_RED, const std::string &text = "PLACEHOLDER TEXT")
+Easys::Entity instantiateNPCEntity(Easys::ECS &ecs, Vec2i positionInTiles, Rotation rotation = SOUTH,
+                            const std::string &text = "PLACEHOLDER TEXT")
 {
-	Entity npc = ecs.addEntity();
-
-	ecs.addComponent(npc, Positionable{{positionInTiles.x * TILE_SIZE, positionInTiles.y * TILE_SIZE}});
-	ecs.addComponent(npc, Rotatable{rotation});
-	ecs.addComponent(npc, RigidBody{false, positionInTiles * TILE_SIZE, positionInTiles * TILE_SIZE});
-	ecs.addComponent(npc, Animatable{PLAYER_STANDING_ANIMATION_NUMBER,
-	                                 {playerSpriteSheetY, playerSpriteSheetY + PLAYER_SIZE_Y,
-	                                  playerSpriteSheetY + 2 * PLAYER_SIZE_Y, playerSpriteSheetY + PLAYER_SIZE_Y}});
-	ecs.addComponent(npc, Renderable{{2 * PLAYER_SIZE_X, playerSpriteSheetY}, {PLAYER_SIZE_X, PLAYER_SIZE_Y}, -8});
-	ecs.addComponent(npc, Collider{});
+	Easys::Entity npc = instantiateBaseCharacter(ecs, positionInTiles, rotation);
+	ecs.addComponent<Vision>(npc, Vision{});
+	ecs.addComponent<AI>(npc, AI{positionInTiles * TILE_SIZE});
+	ecs.addComponent<Pathfinding>(npc, Pathfinding{});
 	ecs.addComponent(npc, Interactable{text});
+	ecs.addComponent(npc, EquippedWeapon{1, 30}); // assault rifle with full mag
 
 	return npc;
 }

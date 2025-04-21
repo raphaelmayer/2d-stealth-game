@@ -4,16 +4,15 @@
 #include "../../components/Rotatable.hpp"
 #include "../../components/Vision.hpp"
 #include "../../constants.hpp"
-#include "../../ecs/ECSManager.hpp"
-#include "../../engine/Vec2i.hpp"
 #include "behaviortree_cpp/action_node.h"
 #include "behaviortree_cpp/basic_types.h" // ports etc
 #include "behaviortree_cpp/tree_node.h"   // NodeConfig
+#include <easys/easys.hpp>
 #include <string>
 
 class TurnTo : public BT::SyncActionNode {
   public:
-	TurnTo(const std::string &name, const BT::NodeConfig &config, ECSManager &ecs_)
+	TurnTo(const std::string &name, const BT::NodeConfig &config, Easys::ECS &ecs_)
 	    : BT::SyncActionNode(name, config), ecs(ecs_)
 	{
 	}
@@ -22,7 +21,7 @@ class TurnTo : public BT::SyncActionNode {
 	{
 		// clang-format off
 		return {
-			BT::InputPort<Entity>("entity"),
+			BT::InputPort<Easys::Entity>("entity"),
 			BT::InputPort<Rotation>("direction")
 		};
 		// clang-format on
@@ -30,7 +29,7 @@ class TurnTo : public BT::SyncActionNode {
 
 	BT::NodeStatus tick() override
 	{
-		BT::Expected<Entity> entity = getInput<Entity>("entity");
+		BT::Expected<Easys::Entity> entity = getInput<Easys::Entity>("entity");
 		BT::Expected<Rotation> direction = getInput<Rotation>("direction");
 
 		if (!entity)
@@ -43,5 +42,5 @@ class TurnTo : public BT::SyncActionNode {
 	}
 
   private:
-	ECSManager &ecs;
+	Easys::ECS &ecs;
 };

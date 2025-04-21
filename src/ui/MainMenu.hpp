@@ -1,24 +1,23 @@
 #pragma once
 
 #include "../constants.hpp"
-#include "../ecs/ECSManager.hpp"
 #include "../engine/Engine.hpp"
-#include "../engine/Texture.hpp"
-#include "../engine/Vec2i.hpp"
+#include "../engine/types/Texture.hpp"
+#include "../engine/types/Vec2i.hpp"
 #include "../modules/GameStateManager.hpp"
-#include "../modules/MenuStack.hpp"
 #include "../modules/SaveGameManager.hpp"
+#include "../ui/MenuStack.hpp"
 #include "ListDialog.hpp"
+#include <easys/easys.hpp>
 
 class MainMenu final : public ListDialog {
   public:
 	MainMenu(Engine &game, GameStateManager &gameStateManager, SaveGameManager &saveGameManager, MenuStack &menuStack)
-	    : background(game.loadTexture(MAINMENU_BACKGROUND)),
-	      engine(game),
+	    : background(game.loadTexture(MAINMENU_BACKGROUND)), engine(game),
 	      ListDialog(game,
 	                 {{"NEW GAME",
 	                   [&gameStateManager, &saveGameManager, &menuStack]() {
-		                   saveGameManager.load(WORLD_DEFINITION_PATH);
+		                   // saveGameManager.load(WORLD_DEFINITION_PATH);
 		                   gameStateManager.setGameState(GameState::PLAYING);
 		                   menuStack.pop();
 	                   }},
@@ -28,6 +27,8 @@ class MainMenu final : public ListDialog {
 		                   gameStateManager.setGameState(GameState::PLAYING);
 		                   menuStack.pop();
 	                   }},
+	                  {"FULLSCREEN", [&game]() { game.setWindowFullscreen(); }},
+	                  {"WINDOWED", [&game]() { game.setWindowWindowed(); }},
 	                  {"EXIT", [&game]() { game.stop(); }}},
 	                 Vec2i{x, y}, menuWidth_)
 	{
@@ -42,7 +43,7 @@ class MainMenu final : public ListDialog {
   private:
 	const Engine &engine;
 	const Texture background;
-	static constexpr int menuWidth_ = 300;
-	static constexpr int x = WINDOW_WIDTH * PIXEL_SIZE - menuWidth_ - 20;
-	static constexpr int y = 218;
+	static constexpr int menuWidth_ = 200;
+	static constexpr int x = WINDOW_WIDTH * PIXEL_SIZE - menuWidth_;
+	static constexpr int y = 650;
 };

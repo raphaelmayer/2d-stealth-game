@@ -15,23 +15,23 @@ configure_file(
     COPYONLY
 )
 configure_file(
-    ${CMAKE_SOURCE_DIR}/assets/overworld_map_background.txt
-    ${CMAKE_BINARY_DIR}/assets/overworld_map_background.txt
+    ${CMAKE_SOURCE_DIR}/assets/hero-spritesheet.png
+    ${CMAKE_BINARY_DIR}/assets/hero-spritesheet.png
     COPYONLY
 )
 configure_file(
-    ${CMAKE_SOURCE_DIR}/assets/overworld_map_objects.txt
-    ${CMAKE_BINARY_DIR}/assets/overworld_map_objects.txt
+    ${CMAKE_SOURCE_DIR}/assets/ai/trees/DetectTree.xml
+    ${CMAKE_BINARY_DIR}/assets/ai/trees/DetectTree.xml
     COPYONLY
 )
 configure_file(
-    ${CMAKE_SOURCE_DIR}/assets/overworld_char_mapping.csv
-    ${CMAKE_BINARY_DIR}/assets/overworld_char_mapping.csv
+    ${CMAKE_SOURCE_DIR}/assets/ai/trees/EngageTree.xml
+    ${CMAKE_BINARY_DIR}/assets/ai/trees/EngageTree.xml
     COPYONLY
 )
 configure_file(
-    ${CMAKE_SOURCE_DIR}/assets/overworld_spritesheet.png
-    ${CMAKE_BINARY_DIR}/assets/overworld_spritesheet.png
+    ${CMAKE_SOURCE_DIR}/assets/ai/trees/IdleTree.xml
+    ${CMAKE_BINARY_DIR}/assets/ai/trees/IdleTree.xml
     COPYONLY
 )
 configure_file(
@@ -43,6 +43,7 @@ configure_file(
 # Add your main.cpp and lib.cpp files if they are not already included
 add_executable(${PROJECT_NAME} main.cpp 
 	engine/Engine.cpp
+    engine/sound/Audio.cpp
  )
 
 # SYSTEM symbol suppresses warnings for specified directory

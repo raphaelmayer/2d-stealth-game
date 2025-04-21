@@ -5,16 +5,16 @@ FetchContent_Declare(
   GIT_TAG v2.13.6)
 FetchContent_MakeAvailable(catch)
 
-add_executable(testing_app main.test.cpp
+add_executable(Tactical_Squad_Tests main.test.cpp
 	# add other source files here
 )
 
 include_directories(${CMAKE_SOURCE_DIR}/include)
 
-target_compile_features(testing_app PRIVATE cxx_std_20)
-target_link_libraries(testing_app PUBLIC Catch2::Catch2)
+target_compile_features(Tactical_Squad_Tests PRIVATE cxx_std_20)
+target_link_libraries(Tactical_Squad_Tests PUBLIC Catch2::Catch2)
 
-add_test(NAME test COMMAND testing_app) # Command can be a target
+add_test(NAME test COMMAND Tactical_Squad_Tests) # Command can be a target
 
 add_executable(benchmark_ecs ecs/ECSManager.benchmark.cpp)
 

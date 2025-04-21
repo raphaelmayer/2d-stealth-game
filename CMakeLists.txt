@@ -1,7 +1,7 @@
 ﻿cmake_minimum_required(VERSION 3.14) # FetchContent_MakeAvailable requires 3.14
 
 project(
-        Ants_And_Islands
+        Tactical_Squad
         VERSION 1.0
         DESCRIPTION "A simple RPG in C++ configured with CMake, SDL2 and Catch2"
         LANGUAGES CXX)
@@ -31,13 +31,6 @@ FetchContent_Declare(
     SDL2
     URL https://libsdl.org/release/SDL2-2.30.11.tar.gz
 )
-#FetchContent_Declare(
-#    SDL2
-#    GIT_REPOSITORY  https://github.com/libsdl-org/SDL
-#    GIT_TAG         release-2.30.11
-#    GIT_PROGRESS    TRUE
-#)
-
 
 set(SDL2TTF_INSTALL OFF)
 set(SDL2IMAGE_INSTALL OFF)

@@ -10,17 +10,12 @@ Engine::Engine(const std::string title, const Vec2i screenSize, const Vec2i pixe
 		fprintf(stderr, "could not init SDL2_image: %s\n", IMG_GetError());
 	if (TTF_Init() != 0)
 		fprintf(stderr, "SDL_ttf initialization failed: %s\n", TTF_GetError());
-	// Mix_Init(); // automatically called when opening a music file
-	if (Mix_OpenAudio(22050, MIX_DEFAULT_FORMAT, 2, 4096) < 0)
-		fprintf(stderr, "Audio initialization failed: %s\n", Mix_GetError());
 
 	font_ = std::unique_ptr<TTF_Font, SDL_Deleter>(TTF_OpenFontDPI(FONT_ARIAL, 8, 100, 200));
 }
 
 Engine::~Engine()
 {
-	Mix_CloseAudio();
-	Mix_Quit();      // if we need Mix_Init(), we also need to call this
 	font_.release(); // font needs to be released before TTF_Quit(), otherwise throws
 	TTF_Quit();
 	IMG_Quit();
@@ -29,7 +24,7 @@ Engine::~Engine()
 
 void Engine::start()
 {
-	windowSize_ = screenSize_ * pixelSize_;
+	windowSize_ = screenSize_ * pixelSize_.x;
 
 	// Initialize renderer and open window
 	window_ = std::unique_ptr<SDL_Window, SDL_Deleter>(
@@ -40,7 +35,7 @@ void Engine::start()
 	    std::unique_ptr<SDL_Renderer, SDL_Deleter>(SDL_CreateRenderer(window_.get(), -1, SDL_RENDERER_ACCELERATED));
 
 	// Set the scaling factor
-	SDL_RenderSetScale(renderer_.get(), pixelSize_.x, pixelSize_.y);
+	SDL_RenderSetScale(renderer_.get(), static_cast<float>(pixelSize_.x), static_cast<float>(pixelSize_.y));
 
 	// Call the user's start method
 	onStart();
@@ -52,6 +47,7 @@ void Engine::start()
 		frameTimer.update();
 		keyboard_.reset();
 		mouse_.reset();
+		audioDevice_.update();
 
 		SDL_Event event;
 		while (SDL_PollEvent(&event)) {
@@ -83,10 +79,26 @@ Vec2i Engine::getWindowSize() const
 {
 	return windowSize_;
 }
+// TODO:
+// should this even exist? (since window size is derived from screen size). Should setScreenSize exist?.
+// We definitely need to adjust all functions here to set all related values when setting a single value.
+// A resizeWindow implementation is also necessary and might just be the best first step to figuring this out\
+// and it might just be enough. No need for those setters.
 void Engine::setWindowSize(Vec2i windowSize)
 {
 	windowSize_ = windowSize;
 }
+
+void Engine::setWindowFullscreen() // TODO: implement  engine side update of WindowSize when this is called
+{
+	SDL_SetWindowFullscreen(window_.get(), SDL_WINDOW_FULLSCREEN_DESKTOP);
+}
+
+void Engine::setWindowWindowed() // TODO: implement  engine side update of WindowSize when this is called
+{
+	SDL_SetWindowFullscreen(window_.get(), 0);
+}
+
 Vec2i Engine::getScreenSize() const
 {
 	return screenSize_;
@@ -94,15 +106,17 @@ Vec2i Engine::getScreenSize() const
 void Engine::setScreenSize(Vec2i screenSize)
 {
 	screenSize_ = screenSize;
+	windowSize_ = screenSize * pixelSize_.x;
 }
 void Engine::setRenderScale(Vec2i pixelSize)
 {
 	pixelSize_ = pixelSize;
-	SDL_RenderSetScale(renderer_.get(), pixelSize_.x, pixelSize_.y);
+	SDL_RenderSetScale(renderer_.get(), static_cast<float>(pixelSize_.x), static_cast<float>(pixelSize_.y));
 }
-Vec2i Engine::getRenderScale() const
+int Engine::getRenderScale() const
 {
-	return pixelSize_;
+	// TODO: Taking the x could lead to issues. should design this better. vector / vector division is not clearly defined.
+	return pixelSize_.x;
 }
 void Engine::resizeWindow(Vec2i pos, Vec2i size)
 {
@@ -139,50 +153,30 @@ void Engine::drawLine(const Vec2f &start, const Vec2f &end, const ColorRGBA &col
 	SDL_RenderDrawLineF(renderer_.get(), start.x, start.y, end.x, end.y);
 }
 
-void Engine::fillRectangle(const Vec2i &pos, const int &width, const int &height, const ColorRGBA &color) const
+void Engine::fillRectangle(const Recti &rect, const ColorRGBA &color) const
 {
-	SDL_Rect r;
-	r.x = pos.x;
-	r.y = pos.y;
-	r.w = width;
-	r.h = height;
-
+	SDL_Rect r = rect.toSDLRect();
 	SDL_SetRenderDrawColor(renderer_.get(), color.r, color.g, color.b, color.a);
 	SDL_RenderFillRect(renderer_.get(), &r);
 }
 
-void Engine::fillRectangle(const Vec2f &pos, const int &width, const int &height, const ColorRGBA &color) const
+void Engine::fillRectangle(const Rectf &rect, const ColorRGBA &color) const
 {
-	SDL_FRect r;
-	r.x = pos.x;
-	r.y = pos.y;
-	r.w = width;
-	r.h = height;
-
+	SDL_FRect r = rect.toSDLRect();
 	SDL_SetRenderDrawColor(renderer_.get(), color.r, color.g, color.b, color.a);
 	SDL_RenderFillRectF(renderer_.get(), &r);
 }
 
-void Engine::drawRectangle(const Vec2i &pos, const int &width, const int &height, const ColorRGBA &color) const
+void Engine::drawRectangle(const Recti &rect, const ColorRGBA &color) const
 {
-	SDL_Rect r;
-	r.x = pos.x;
-	r.y = pos.y;
-	r.w = width;
-	r.h = height;
-
+	SDL_Rect r = rect.toSDLRect();
 	SDL_SetRenderDrawColor(renderer_.get(), color.r, color.g, color.b, color.a);
 	SDL_RenderDrawRect(renderer_.get(), &r);
 }
 
-void Engine::drawRectangle(const Vec2f &pos, const int &width, const int &height, const ColorRGBA &color) const
+void Engine::drawRectangle(const Rectf &rect, const ColorRGBA &color) const
 {
-	SDL_FRect r;
-	r.x = pos.x;
-	r.y = pos.y;
-	r.w = width;
-	r.h = height;
-
+	SDL_FRect r = rect.toSDLRect();
 	SDL_SetRenderDrawColor(renderer_.get(), color.r, color.g, color.b, color.a);
 	SDL_RenderDrawRectF(renderer_.get(), &r);
 }
@@ -407,4 +401,14 @@ void Engine::drawText(const Rectf &dst, const std::string &text) const
 
 	SDL_DestroyTexture(textTexture);
 	SDL_FreeSurface(textSurface);
+}
+
+// We might want to allow more fine-grained control over blending in the future.
+void Engine::enableAlphaBlending()
+{
+	SDL_SetRenderDrawBlendMode(renderer_.get(), SDL_BLENDMODE_BLEND);
+}
+void Engine::disableAlphaBlending()
+{
+	SDL_SetRenderDrawBlendMode(renderer_.get(), SDL_BLENDMODE_NONE);
 }
