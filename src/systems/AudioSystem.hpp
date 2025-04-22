@@ -10,7 +10,7 @@ class AudioSystem final : public System {
 	explicit AudioSystem(Engine &engine, const Camera &camera) : engine_(engine), camera_(camera)
 	{
 		audioDevice_.setVolume(50);
-		// assumes that game starts in main menu
+		// assumes that game starts in main menu -> TODO: wrong assumption, needs to come back when switching back to main menu
 		audioDevice_.streamMusic(mainMenuMusic_, -1);
 	};
 
@@ -36,15 +36,6 @@ class AudioSystem final : public System {
 					if (!ecs.hasComponent<SoundEmitter>(entity)) {
 						ecs.addComponent<SoundEmitter>(entity, {akShot_Ptr_}); // TODO --> MOVE TO RELEVANT SYSTEM
 						rigidBody.isShooting = false;                          // move to input system or whereever
-					}
-				}
-				// this part stops emission of shot sounds when reloading -> Hack, TODO --> enable loading and
-				// randomizing
-				if (ecs.hasComponent<EquippedWeapon>(entity)) {
-					if (ecs.getComponent<EquippedWeapon>(entity).isReloading) {
-						int channelToHalt =
-						    audioDevice_.getChannelManager().whereIsEmitterPlayingThis(entity, akShot_Ptr_);
-						audioDevice_.stopEmission(channelToHalt);
 					}
 				}
 			}
@@ -78,5 +69,5 @@ class AudioSystem final : public System {
 	std::shared_ptr<SoundEffect> footStep_Ptr_ = std::make_shared<SoundEffect>(
 	    audioDevice_.loadSoundEffectFile(SFX_FOOTSTEP)); // probably SoundEffect should be a pointer by itself?
 	std::shared_ptr<SoundEffect> akShot_Ptr_ =
-	    std::make_shared<SoundEffect>(audioDevice_.loadSoundEffectFile(SFX_AK_SHOT_FULL_AUTO_LONG));
+	    std::make_shared<SoundEffect>(audioDevice_.loadSoundEffectFile(SFX_AK_SHOT_SINGLE));
 };
