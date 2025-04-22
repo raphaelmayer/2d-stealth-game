@@ -6,6 +6,7 @@
 #include "../entities/projectile.hpp"
 #include "../modules/AABB.hpp"
 #include "../modules/Camera.hpp"
+#include "../modules/SelectionManager.hpp"
 #include "../modules/Utils.hpp"
 #include "System.hpp"
 #include <SDL.h>
@@ -17,7 +18,8 @@
 // decide.
 class InputSystem final : public System {
   public:
-	explicit InputSystem(const Engine &engine, Camera &camera) : engine_(engine), camera_(camera)
+	explicit InputSystem(const Engine &engine, Camera &camera, SelectionManager &selectionManager)
+	    : engine_(engine), camera_(camera), selectionManager_(selectionManager)
 	{
 	}
 
@@ -33,26 +35,23 @@ class InputSystem final : public System {
 
 		handleSelection(ecs, mouseKeyStates);
 
-		for (const Easys::Entity &entity : selection) {
+		for (const Easys::Entity &entity : selectionManager_.getSelection()) {
 			if (ecs.hasComponent<Controllable>(entity)) { // only allow control of entities with controllable component
 				handleEntityControl(ecs, entity, mouseKeyStates, deltaTime);
 			}
 		}
 	}
 
-	std::vector<Easys::Entity> selection{}; // this vector holds the player selected entities.
-	Vec2f start;
-	Vec2f end;
-
   private:
 	const Engine &engine_;
 	Camera &camera_;
+	SelectionManager &selectionManager_;
 
 	static constexpr int LEFT_MOUSE_BUTTON = 0;
 	static constexpr int RIGHT_MOUSE_BUTTON = 2;
 
-	void handleEntityControl(Easys::ECS &ecs, Easys::Entity entity, const std::array<KeyState, NUM_MOUSE_BUTTONS> &keyStates,
-	                         const double deltaTime) const
+	void handleEntityControl(Easys::ECS &ecs, Easys::Entity entity,
+	                         const std::array<KeyState, NUM_MOUSE_BUTTONS> &keyStates, const double deltaTime) const
 	{
 		if (keyStates[RIGHT_MOUSE_BUTTON].pressed) {
 			const Vec2f mousePos = camera_.screenToWorld(Utils::toFloat(engine_.getMousePosition()));
@@ -87,26 +86,21 @@ class InputSystem final : public System {
 	void handleSelection(Easys::ECS &ecs, const std::array<KeyState, NUM_MOUSE_BUTTONS> &keyStates)
 	{
 		if (keyStates[LEFT_MOUSE_BUTTON].pressed) {
-			selection.clear();
-			Vec2f mousePos = Utils::toFloat(engine_.getMousePosition());
-			start = camera_.screenToWorld(mousePos);
+			const Vec2f mousePos = Utils::toFloat(engine_.getMousePosition());
+			selectionManager_.setStart(camera_.screenToWorld(mousePos));
 		}
 
 		if (keyStates[LEFT_MOUSE_BUTTON].held) {
-			Vec2f mousePos = Utils::toFloat(engine_.getMousePosition());
-			end = camera_.screenToWorld(mousePos);
+			const Vec2f mousePos = Utils::toFloat(engine_.getMousePosition());
+			selectionManager_.setEnd(camera_.screenToWorld(mousePos));
 		}
 
 		if (keyStates[LEFT_MOUSE_BUTTON].released) {
-			Rectf r = Utils::vectorsToRectangle(start, end);
-			std::vector<Easys::Entity> entities = getCollidingEntities(ecs, r);
-			if (!entities.empty()) {
-				for (const Easys::Entity &e : entities) {
-					selection.push_back(e);
-				}
-			}
+			const Rectf selectionRect = Utils::vectorsToRectangle(selectionManager_.getStart(), selectionManager_.getEnd());
+			selectionManager_.setSelection(getCollidingEntities(ecs, selectionRect));
 
-			start = {0.0f, 0.0f}, end = {0.0f, 0.0f};
+			selectionManager_.setStart({0.f, 0.f});
+			selectionManager_.setEnd({0.f, 0.f});
 		}
 	}
 

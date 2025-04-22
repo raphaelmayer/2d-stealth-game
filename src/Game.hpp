@@ -15,6 +15,7 @@
 #include "modules/Camera.hpp"
 #include "modules/GameStateManager.hpp"
 #include "modules/SaveGameManager.hpp"
+#include "modules/SelectionManager.hpp"
 #include "systems/AISystem.hpp"
 #include "systems/AnimationSystem.hpp"
 #include "systems/AudioSystem.hpp"
@@ -103,10 +104,6 @@ class Game : public Engine {
 
 			cleanupSystem->update(ecs, deltaTime);
 
-			// TODO: render selection rectangle and entities in render system.
-			renderSelectionRectangle();
-			renderSelectionEntities();
-
 			break;
 		}
 		}
@@ -123,10 +120,10 @@ class Game : public Engine {
   private:
 	void initializeSystems()
 	{
-		inputSystem = std::make_unique<InputSystem>(*this, camera);
+		inputSystem = std::make_unique<InputSystem>(*this, camera, selectionManager);
 		aiSystem = std::make_unique<AISystem>(btManager, mapManager);
 		physicsSystem = std::make_unique<PhysicsSystem>(mapManager);
-		renderSystem = std::make_unique<RenderSystem>(*this, mapManager, camera);
+		renderSystem = std::make_unique<RenderSystem>(*this, mapManager, camera, selectionManager);
 		audioSystem = std::make_unique<AudioSystem>(*this, camera);
 		debugSystem = std::make_unique<DebugSystem>(*this, mapManager, camera);
 		pathfindingSystem = std::make_unique<PathfindingSystem>(mapManager);
@@ -165,48 +162,11 @@ class Game : public Engine {
 		                            {Vec2i{20, 24} * TILE_SIZE, Rotation::SOUTH, 0}});
 	}
 
-	// These two rendering functions are here temporarily so we can render the selection on top of everything. This is
-	// necessary because these values are within input system and we don't have a simple way to share data between
-	// systems. The solution is to implement another class, which is passed to both systems, like a PlayerController or
-	// SelectionHandler.
-	void renderSelectionRectangle()
-	{
-		auto start = inputSystem->start;
-		auto end = inputSystem->end;
-
-		if (start == end) {
-			return;
-		}
-
-		const Rectf selectionRectWorld = Utils::vectorsToRectangle(start, end);
-		const Rectf selectionRectScreen = camera.rectToScreen(selectionRectWorld);
-		enableAlphaBlending();
-		fillRectangle(selectionRectScreen, {66, 135, 245, 50});
-		drawRectangle(selectionRectScreen, {66, 135, 245, 255});
-		disableAlphaBlending();
-	}
-	void renderSelectionEntities()
-	{
-		auto selection = inputSystem->selection;
-
-		if (selection.empty()) {
-			return;
-		}
-
-		for (const Easys::Entity &e : selection) {
-			if (ecs.hasComponent<Positionable>(e)) {
-				auto pos = ecs.getComponent<Positionable>(e).position;
-				const Rectf rect = {pos.x, pos.y, TILE_SIZE, TILE_SIZE};
-				const Rectf dst = camera.rectToScreen(rect);
-				drawRectangle(dst, {66, 135, 245, 255});
-			}
-		}
-	}
-
 	Easys::ECS ecs;
 	MapManager mapManager;
 	BTManager btManager = BTManager(ecs);
 	SaveGameManager saveGameManager = SaveGameManager(ecs);
+	SelectionManager selectionManager;
 	GameStateManager gameStateManager;
 	MenuStack menuStack;
 	Camera camera;

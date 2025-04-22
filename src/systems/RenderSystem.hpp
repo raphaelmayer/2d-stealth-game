@@ -8,6 +8,7 @@
 #include "../engine/Engine.hpp"
 #include "../map/MapManager.hpp"
 #include "../modules/Camera.hpp"
+#include "../modules/SelectionManager.hpp"
 #include "../modules/Utils.hpp"
 #include "System.hpp"
 #include <cmath>
@@ -19,8 +20,9 @@
 // It performs visibility culling using the camera's position to avoid unnecessary rendering.
 class RenderSystem final : public System {
   public:
-	RenderSystem(const Engine &engine, const MapManager &mapManager, const Camera &camera)
-	    : engine_(engine), mapManager_(mapManager), camera_(camera)
+	RenderSystem(Engine &engine, const MapManager &mapManager, const Camera &camera,
+	             const SelectionManager &selectionManager)
+	    : engine_(engine), mapManager_(mapManager), camera_(camera), selectionManager_(selectionManager)
 	{
 		textures.emplace(SPRITE_SHEET, engine_.loadTexture(SPRITE_SHEET));
 		textures.emplace(M4A1, engine_.loadTexture(M4A1));
@@ -44,6 +46,9 @@ class RenderSystem final : public System {
 		}
 
 		renderMap(camView, LayerID::FOREGROUND);
+
+		renderSelectedEntities(ecs);
+		renderSelectionRectangle();
 	}
 
   private:
@@ -244,9 +249,49 @@ class RenderSystem final : public System {
 		engine_.fillRectangle(dst, {50, 168, 82, 255});
 	}
 
-	const Engine &engine_;
+	// These two rendering functions are here temporarily so we can render the selection on top of everything. This is
+	// necessary because these values are within input system and we don't have a simple way to share data between
+	// systems. The solution is to implement another class, which is passed to both systems, like a PlayerController or
+	// SelectionHandler.
+	void renderSelectionRectangle()
+	{
+		auto start = selectionManager_.getStart();
+		auto end = selectionManager_.getEnd();
+
+		if (start == end) {
+			return;
+		}
+
+		const Rectf selectionRectWorld = Utils::vectorsToRectangle(start, end);
+		const Rectf selectionRectScreen = camera_.rectToScreen(selectionRectWorld);
+		engine_.enableAlphaBlending();
+		engine_.fillRectangle(selectionRectScreen, {66, 135, 245, 50});
+		engine_.drawRectangle(selectionRectScreen, {66, 135, 245, 255});
+		engine_.disableAlphaBlending();
+	}
+
+	void renderSelectedEntities(const Easys::ECS &ecs)
+	{
+		auto selection = selectionManager_.getSelection();
+
+		if (selection.empty()) {
+			return;
+		}
+
+		for (const Easys::Entity &e : selection) {
+			if (ecs.hasComponent<Positionable>(e)) {
+				auto pos = ecs.getComponent<Positionable>(e).position;
+				const Rectf rect = {pos.x, pos.y, TILE_SIZE, TILE_SIZE};
+				const Rectf dst = camera_.rectToScreen(rect);
+				engine_.drawRectangle(dst, {66, 135, 245, 255});
+			}
+		}
+	}
+
+	Engine &engine_;
 	const MapManager &mapManager_;
 	const Camera &camera_;
+	const SelectionManager &selectionManager_;
 
 	// we do not have a dedicated resource manager as of now, so we load textures here in the constructor and store them
 	// in this map. we index textures by their respective file paths.
