@@ -28,9 +28,11 @@
 #include "systems/PhysicsSystem.hpp"
 #include "systems/ProjectileSystem.hpp"
 #include "systems/RenderSystem.hpp"
+#include "systems/UIRenderSystem.hpp"
 #include "ui/InGameMenu.hpp"
 #include "ui/MainMenu.hpp"
 #include "ui/MenuStack.hpp"
+#include "ui/SelectionUIElement.hpp"
 #include <chrono>
 #include <easys/easys.hpp>
 #include <functional>
@@ -66,6 +68,8 @@ class Game : public Engine {
 		}
 
 		case GameState::PLAYING: {
+			// move this somewhere? maybe InputSystem? Passing everything down to the UI elements would mean input
+			// system needsthose references aswell. this does not seem to be a good solution.
 			if (getKeyState(SDL_GetScancodeFromKey(SDLK_ESCAPE)).pressed) {
 				if (!menuStack.isEmpty())
 					menuStack.reset();
@@ -93,9 +97,8 @@ class Game : public Engine {
 			animationSystem->update(ecs, deltaTime);
 			renderSystem->update(ecs, deltaTime);
 
-			// Needs to happen after rendering entities to be on top but before interactionsystem,
-			// otherwise same input might close just opened dialogue.
-			menuStack.update();
+			// Needs to happen after rendering entities to be rendered on top
+			uiRenderSystem->update(ecs, deltaTime);
 
 			audioSystem->update(ecs, deltaTime);
 			// progressSystem->update(ecs, deltaTime);
@@ -124,6 +127,7 @@ class Game : public Engine {
 		aiSystem = std::make_unique<AISystem>(btManager, mapManager);
 		physicsSystem = std::make_unique<PhysicsSystem>(mapManager);
 		renderSystem = std::make_unique<RenderSystem>(*this, mapManager, camera, selectionManager);
+		uiRenderSystem = std::make_unique<UIRenderSystem>(*this, menuStack, selectionManager);
 		audioSystem = std::make_unique<AudioSystem>(*this, camera);
 		debugSystem = std::make_unique<DebugSystem>(*this, mapManager, camera);
 		pathfindingSystem = std::make_unique<PathfindingSystem>(mapManager);
@@ -168,7 +172,8 @@ class Game : public Engine {
 	SaveGameManager saveGameManager = SaveGameManager(ecs);
 	SelectionManager selectionManager;
 	GameStateManager gameStateManager;
-	MenuStack menuStack;
+	MenuStack menuStack; // should this even live here? For now we keep it here since we might want other systems to
+	                     // push menus aswell.
 	Camera camera;
 	bool addedEntities = false;
 
@@ -176,6 +181,7 @@ class Game : public Engine {
 	std::unique_ptr<AISystem> aiSystem;
 	std::unique_ptr<PhysicsSystem> physicsSystem;
 	std::unique_ptr<RenderSystem> renderSystem;
+	std::unique_ptr<UIRenderSystem> uiRenderSystem;
 	std::unique_ptr<AudioSystem> audioSystem;
 	std::unique_ptr<DebugSystem> debugSystem;
 	std::unique_ptr<PathfindingSystem> pathfindingSystem;
