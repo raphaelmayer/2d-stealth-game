@@ -3,6 +3,10 @@
 #include <easys/easys.hpp>
 #include <vector>
 
+// This class is a "dumb" storage class for the selection area the player draws with his mouse and the selected
+// entities. It might make sense to give it more responsibility in the future like holding the selection rectangle
+// instead of vectors and calculate the selected entities itself. Currently we set the selected entities in InputSystem
+// and recalculate the rectangle every frame in the RenderSystem.
 class SelectionManager {
   public:
 	const std::vector<Easys::Entity> &getSelection() const

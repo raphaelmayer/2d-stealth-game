@@ -249,10 +249,7 @@ class RenderSystem final : public System {
 		engine_.fillRectangle(dst, {50, 168, 82, 255});
 	}
 
-	// These two rendering functions are here temporarily so we can render the selection on top of everything. This is
-	// necessary because these values are within input system and we don't have a simple way to share data between
-	// systems. The solution is to implement another class, which is passed to both systems, like a PlayerController or
-	// SelectionHandler.
+	// TODO: It is debatable if these functions should be here or in the UIRenderSystem.
 	void renderSelectionRectangle()
 	{
 		auto start = selectionManager_.getStart();
