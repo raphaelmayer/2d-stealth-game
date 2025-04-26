@@ -15,6 +15,7 @@
 #include "modules/Camera.hpp"
 #include "modules/GameStateManager.hpp"
 #include "modules/SaveGameManager.hpp"
+#include "modules/SelectionManager.hpp"
 #include "systems/AISystem.hpp"
 #include "systems/AnimationSystem.hpp"
 #include "systems/AudioSystem.hpp"
@@ -27,9 +28,11 @@
 #include "systems/PhysicsSystem.hpp"
 #include "systems/ProjectileSystem.hpp"
 #include "systems/RenderSystem.hpp"
+#include "systems/UIRenderSystem.hpp"
 #include "ui/InGameMenu.hpp"
 #include "ui/MainMenu.hpp"
 #include "ui/MenuStack.hpp"
+#include "ui/SelectionUIElement.hpp"
 #include <chrono>
 #include <easys/easys.hpp>
 #include <functional>
@@ -65,6 +68,8 @@ class Game : public Engine {
 		}
 
 		case GameState::PLAYING: {
+			// move this somewhere? maybe InputSystem? Passing everything down to the UI elements would mean input
+			// system needsthose references aswell. this does not seem to be a good solution.
 			if (getKeyState(SDL_GetScancodeFromKey(SDLK_ESCAPE)).pressed) {
 				if (!menuStack.isEmpty())
 					menuStack.reset();
@@ -92,9 +97,8 @@ class Game : public Engine {
 			animationSystem->update(ecs, deltaTime);
 			renderSystem->update(ecs, deltaTime);
 
-			// Needs to happen after rendering entities to be on top but before interactionsystem,
-			// otherwise same input might close just opened dialogue.
-			menuStack.update();
+			// Needs to happen after rendering entities to be rendered on top
+			uiRenderSystem->update(ecs, deltaTime);
 
 			audioSystem->update(ecs, deltaTime);
 			// progressSystem->update(ecs, deltaTime);
@@ -102,10 +106,6 @@ class Game : public Engine {
 			projectileSystem->update(ecs, deltaTime);
 
 			cleanupSystem->update(ecs, deltaTime);
-
-			// TODO: render selection rectangle and entities in render system.
-			renderSelectionRectangle();
-			renderSelectionEntities();
 
 			break;
 		}
@@ -123,10 +123,11 @@ class Game : public Engine {
   private:
 	void initializeSystems()
 	{
-		inputSystem = std::make_unique<InputSystem>(*this, camera);
+		inputSystem = std::make_unique<InputSystem>(*this, camera, selectionManager);
 		aiSystem = std::make_unique<AISystem>(btManager, mapManager);
 		physicsSystem = std::make_unique<PhysicsSystem>(mapManager);
-		renderSystem = std::make_unique<RenderSystem>(*this, mapManager, camera);
+		renderSystem = std::make_unique<RenderSystem>(*this, mapManager, camera, selectionManager);
+		uiRenderSystem = std::make_unique<UIRenderSystem>(*this, menuStack, selectionManager);
 		audioSystem = std::make_unique<AudioSystem>(*this, camera);
 		debugSystem = std::make_unique<DebugSystem>(*this, mapManager, camera);
 		pathfindingSystem = std::make_unique<PathfindingSystem>(mapManager);
@@ -165,50 +166,14 @@ class Game : public Engine {
 		                            {Vec2i{20, 24} * TILE_SIZE, Rotation::SOUTH, 0}});
 	}
 
-	// These two rendering functions are here temporarily so we can render the selection on top of everything. This is
-	// necessary because these values are within input system and we don't have a simple way to share data between
-	// systems. The solution is to implement another class, which is passed to both systems, like a PlayerController or
-	// SelectionHandler.
-	void renderSelectionRectangle()
-	{
-		auto start = inputSystem->start;
-		auto end = inputSystem->end;
-
-		if (start == end) {
-			return;
-		}
-
-		const Rectf selectionRectWorld = Utils::vectorsToRectangle(start, end);
-		const Rectf selectionRectScreen = camera.rectToScreen(selectionRectWorld);
-		enableAlphaBlending();
-		fillRectangle(selectionRectScreen, {66, 135, 245, 50});
-		drawRectangle(selectionRectScreen, {66, 135, 245, 255});
-		disableAlphaBlending();
-	}
-	void renderSelectionEntities()
-	{
-		auto selection = inputSystem->selection;
-
-		if (selection.empty()) {
-			return;
-		}
-
-		for (const Easys::Entity &e : selection) {
-			if (ecs.hasComponent<Positionable>(e)) {
-				auto pos = ecs.getComponent<Positionable>(e).position;
-				const Rectf rect = {pos.x, pos.y, TILE_SIZE, TILE_SIZE};
-				const Rectf dst = camera.rectToScreen(rect);
-				drawRectangle(dst, {66, 135, 245, 255});
-			}
-		}
-	}
-
 	Easys::ECS ecs;
 	MapManager mapManager;
 	BTManager btManager = BTManager(ecs);
 	SaveGameManager saveGameManager = SaveGameManager(ecs);
+	SelectionManager selectionManager;
 	GameStateManager gameStateManager;
-	MenuStack menuStack;
+	MenuStack menuStack; // should this even live here? For now we keep it here since we might want other systems to
+	                     // push menus aswell.
 	Camera camera;
 	bool addedEntities = false;
 
@@ -216,6 +181,7 @@ class Game : public Engine {
 	std::unique_ptr<AISystem> aiSystem;
 	std::unique_ptr<PhysicsSystem> physicsSystem;
 	std::unique_ptr<RenderSystem> renderSystem;
+	std::unique_ptr<UIRenderSystem> uiRenderSystem;
 	std::unique_ptr<AudioSystem> audioSystem;
 	std::unique_ptr<DebugSystem> debugSystem;
 	std::unique_ptr<PathfindingSystem> pathfindingSystem;

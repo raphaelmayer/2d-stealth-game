@@ -8,7 +8,8 @@
 struct EquippedWeapon {
 	WeaponID weaponId = 0;
 
-	int magazineSize = 0; // tracks the amount of bullets in a magazine
+	int magazineSize = 0;              // tracks the amount of bullets in a magazine
+	int maxMagazineSize = magazineSize; // we should read this from the wdb or rethink how we instantiate weapons
 
 	float warmupAccumulator = 0;     // accumulator for the weapon's warmup phase
 	float firerateAccumulator = 0;   // fire rate control enforcing a delay between shots
