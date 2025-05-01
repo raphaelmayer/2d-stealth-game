@@ -7,7 +7,7 @@ class DamageSystem : System {
   public:
 	DamageSystem() = default;
 
-	void update(Easys::ECS &ecs, double deltaTime)
+	void update(Easys::ECS &ecs, const double deltaTime)
 	{
 		auto entities = ecs.getEntities();
 		for (const auto &entity : entities) {

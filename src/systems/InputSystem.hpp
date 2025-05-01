@@ -25,7 +25,6 @@ class InputSystem final : public System {
 
 	void update(Easys::ECS &ecs, const double deltaTime) override
 	{
-		const std::set<Easys::Entity> &entities = {PLAYER}; // no need to iterate over all entities
 		const std::array<KeyState, SDL_NUM_SCANCODES> &keyStates = engine_.getKeyStates();
 		const std::array<KeyState, NUM_MOUSE_BUTTONS> &mouseKeyStates = engine_.getMouseButtonStates();
 		const Vec2i &mouseWheelDelta = engine_.getMouseWheelDelta();
@@ -77,8 +76,7 @@ class InputSystem final : public System {
 				// tile is free -> handle movement
 				ecs.removeComponent<Target>(entity);
 				auto &pathfinding = ecs.getComponent<Pathfinding>(entity);
-				const Vec2f mousePos = Utils::toFloat(engine_.getMousePosition());
-				pathfinding.targetPosition = Utils::toGrid(camera_.screenToWorld(mousePos));
+				pathfinding.targetPosition = Utils::toGrid(mousePos);
 			}
 		}
 	}

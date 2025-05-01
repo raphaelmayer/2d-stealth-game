@@ -7,7 +7,7 @@ class CleanupSystem : System {
   public:
 	CleanupSystem() = default;
 
-	void update(Easys::ECS &ecs, double deltaTime)
+	void update(Easys::ECS &ecs, const double deltaTime)
 	{
 		const auto entities = ecs.getEntities();
 		for (const auto &entity : entities) {

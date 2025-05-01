@@ -46,12 +46,12 @@ Vec2i toTileSize(const Vec2f &vec, const int tileSize = TILE_SIZE)
 
 Vec2i toGrid(const Vec2i &vec, const int tileSize = TILE_SIZE)
 {
-	return toTileSize(vec) * TILE_SIZE;
+	return toTileSize(vec) * tileSize;
 }
 
 Vec2i toGrid(const Vec2f &vec, const int tileSize = TILE_SIZE)
 {
-	return toTileSize(vec) * TILE_SIZE;
+	return toTileSize(vec) * tileSize;
 }
 
 Vec2f discreteDirection4_signBased(const Vec2f &vec)

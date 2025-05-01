@@ -99,7 +99,7 @@ class DebugSystem : public System {
 						engine_.drawLine(screenOffset(Utils::toFloat(pf.path[i])),
 						                 screenOffset(Utils::toFloat(pf.path[i + 1])), {255, 255, 255, 255});
 				}
-				engine_.drawCircle(screenOffset(Utils::toFloat(pf.targetPosition)), (TILE_SIZE / 2) * camera_.getZoom(),
+				engine_.drawCircle(screenOffset(Utils::toFloat(pf.targetPosition)), (TILE_SIZE / 2.f) * camera_.getZoom(),
 				                   {255, 255, 255, 255});
 			}
 		}

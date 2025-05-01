@@ -40,6 +40,6 @@ class LevelMap {
   private:
 	Layer &getLayerNonConst(LayerID layerid) { return layers[static_cast<size_t>(layerid)]; }
 	
-	int width, height;
+	int width, height; // in tile space
 	std::array<Layer, static_cast<size_t>(LayerID::NUM_LAYERS)> layers;
 };
