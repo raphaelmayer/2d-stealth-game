@@ -15,10 +15,3 @@ target_compile_features(Tactical_Squad_Tests PRIVATE cxx_std_20)
 target_link_libraries(Tactical_Squad_Tests PUBLIC Catch2::Catch2)
 
 add_test(NAME test COMMAND Tactical_Squad_Tests) # Command can be a target
-
-add_executable(benchmark_ecs ecs/ECSManager.benchmark.cpp)
-
-target_compile_features(benchmark_ecs PRIVATE cxx_std_20)
-target_link_libraries(benchmark_ecs PUBLIC Catch2::Catch2)
-
-add_test(NAME benchmark COMMAND benchmark_ecs)
