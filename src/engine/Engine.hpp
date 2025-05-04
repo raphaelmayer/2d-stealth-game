@@ -9,7 +9,7 @@
 #include "frame/FrameTimer.hpp"
 #include "input/Keyboard.hpp"
 #include "input/Mouse.hpp"
-#include "sound/Audio.hpp" 
+#include "audio/Audio.hpp" 
 #include "types.hpp"
 #include <SDL.h>
 #include <SDL_image.h>
@@ -89,9 +89,9 @@ class Engine {
 
 	double getFPS() const { return fpsCounter_.getFPS(); }
 
-	Audio &getAudioDevice() { return audioDevice_; } 
+	Audio &getAudio() { return audio_; } 
 
-	const Audio &getAudioDevice() const { return audioDevice_; } 
+	const Audio &getAudio() const { return audio_; } 
 
 	virtual bool onStart() = 0;
 	virtual bool onUpdate(double deltaTime) = 0;
@@ -114,5 +114,5 @@ class Engine {
 	Mouse mouse_;
 	FPSCounter fpsCounter_;
 	FrameRateLimiter frameRateLimiter_;
-	Audio audioDevice_;
+	Audio audio_;
 };

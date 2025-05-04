@@ -47,7 +47,7 @@ void Engine::start()
 		frameTimer.update();
 		keyboard_.reset();
 		mouse_.reset();
-		audioDevice_.update();
+		audio_.update();
 
 		SDL_Event event;
 		while (SDL_PollEvent(&event)) {

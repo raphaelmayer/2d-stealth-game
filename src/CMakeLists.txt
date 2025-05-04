@@ -43,7 +43,7 @@ configure_file(
 # Add your main.cpp and lib.cpp files if they are not already included
 add_executable(${PROJECT_NAME} main.cpp 
 	engine/Engine.cpp
-    engine/sound/Audio.cpp
+    engine/audio/Audio.cpp
  )
 
 # SYSTEM symbol suppresses warnings for specified directory
