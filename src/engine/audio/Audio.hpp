@@ -30,7 +30,7 @@ class Audio {
 	// loads file from specified path in proprietary format. please use .mp3 or .ogg files only
 	Music loadMusicFile(const std::string &pathToSoundFile) const;
 
-	void streamMusic(const Music &loadedSoundFile, int loops, int fadeMs = 0) const;
+	void streamMusic(const std::shared_ptr<Music> music_Ptr, int loops, int fadeMs = 0) const;
 
 	//pauses the music stream (timestamp kept)
 	void pauseStream() const;

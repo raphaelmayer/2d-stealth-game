@@ -63,7 +63,7 @@ class Game : public Engine {
 				menuStack.push(std::make_unique<MainMenu>(*this, gameStateManager, saveGameManager, menuStack));
 
 			menuStack.update();
-
+			audioSystem->update(ecs, deltaTime);
 			break;
 		}
 

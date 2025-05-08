@@ -30,9 +30,9 @@ Music Audio::loadMusicFile(const std::string &pathToSoundFile) const // make a t
 	return Music(cStrPath);
 }
 
-void Audio::streamMusic(const Music &loadedSoundFile, int loops, int fadeMs) const
+void Audio::streamMusic(const std::shared_ptr<Music>  music_Ptr, int loops, int fadeMs) const
 {
-	Mix_Music *SDL_MusicType = loadedSoundFile.getMusic();
+	Mix_Music *SDL_MusicType = music_Ptr->getMusic();
 	if (fadeMs > 0) {
 		Mix_FadeInMusic(SDL_MusicType, loops, fadeMs);
 	} else {
