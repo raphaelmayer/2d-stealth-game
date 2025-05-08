@@ -128,7 +128,7 @@ class Game : public Engine {
 		physicsSystem = std::make_unique<PhysicsSystem>(mapManager);
 		renderSystem = std::make_unique<RenderSystem>(*this, mapManager, camera, selectionManager);
 		uiRenderSystem = std::make_unique<UIRenderSystem>(*this, menuStack, selectionManager);
-		audioSystem = std::make_unique<AudioSystem>(*this, camera);
+		audioSystem = std::make_unique<AudioSystem>(*this, gameStateManager, camera);
 		debugSystem = std::make_unique<DebugSystem>(*this, mapManager, camera);
 		pathfindingSystem = std::make_unique<PathfindingSystem>(mapManager);
 		projectileSystem = std::make_unique<ProjectileSystem>(mapManager);

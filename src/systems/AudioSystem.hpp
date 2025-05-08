@@ -6,9 +6,12 @@
 #include <memory>
 #include <stdint.h>
 
+
+//TODO: comment on this system being special
 class AudioSystem final : public System {
   public:
-	explicit AudioSystem(Engine &game, const Camera &camera) : game_(game), camera_(camera)
+	explicit AudioSystem(Engine &game, const GameStateManager &gameStateManager, const Camera &camera)
+	    : game_(game), gameStateManager_(gameStateManager), camera_(camera)
 	{
 		audio_.setVolume(50);
 		// assumes that game starts in main menu -> TODO: wrong assumption, needs to come back when switching back to main menu
@@ -17,7 +20,7 @@ class AudioSystem final : public System {
 	void update(Easys::ECS &ecs, const double deltaTime) override
 	{
 		// Set Background Music according to Gamestate
-		game_.get
+		const GameState &gameState = gameStateManager_.getGameState();
 		switch ()
 		if (!audio_.getChannelManager().isStreaming()) {
 			backgroundMusic_ = audio_.loadMusicFile(BACKGROUND_JUNGLE_AMBIENCE);
@@ -60,6 +63,7 @@ class AudioSystem final : public System {
 
   private:
 	Engine &game_;
+	const GameStateManager &gameStateManager_;
 	Audio &audio_ =
 	    game_
 	        .getAudio(); // let´s try to change this to only need the audio and not the whole engine -> low prio
