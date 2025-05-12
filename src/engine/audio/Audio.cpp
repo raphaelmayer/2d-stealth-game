@@ -30,14 +30,15 @@ Music Audio::loadMusicFile(const std::string &pathToSoundFile) const // make a t
 	return Music(cStrPath);
 }
 
-void Audio::streamMusic(const Music &loadedSoundFile, int loops, int fadeMs) const
+void Audio::streamMusic(std::shared_ptr<Music>  music_Ptr, int loops, int fadeMs)
 {
-	Mix_Music *SDL_MusicType = loadedSoundFile.getMusic();
+	Mix_Music *SDL_MusicType = music_Ptr->getMusic();
 	if (fadeMs > 0) {
 		Mix_FadeInMusic(SDL_MusicType, loops, fadeMs);
 	} else {
 		Mix_PlayMusic(SDL_MusicType, loops);
 	}
+	channelManager_.setMusicChannelData(music_Ptr, AudioConfig::DEFAULT_VOLUME);
 }
 
 void Audio::pauseStream() const

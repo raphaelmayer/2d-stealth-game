@@ -1,25 +1,38 @@
 #include "../components/SoundEmitter.hpp"
+#include "../modules/GameStateManager.hpp"
 #include "System.hpp"
 #include <SDL.h>
 #include <easys/easys.hpp>
 #include <memory>
 #include <stdint.h>
 
+
+//TODO: comment on this system being special
 class AudioSystem final : public System {
   public:
-	explicit AudioSystem(Engine &engine, const Camera &camera) : engine_(engine), camera_(camera)
+	explicit AudioSystem(Engine &game, const GameStateManager &gameStateManager, const Camera &camera)
+	    : game_(game), gameStateManager_(gameStateManager), camera_(camera)
 	{
 		audio_.setVolume(50);
 		// assumes that game starts in main menu -> TODO: wrong assumption, needs to come back when switching back to main menu
-		audio_.streamMusic(mainMenuMusic_, -1);
 	};
 
 	void update(Easys::ECS &ecs, const double deltaTime) override
 	{
-		// Start Ingame Background Music at Start of Game loop
-		if (!backgroundMusic_) {
-			backgroundMusic_ = audio_.loadMusicFile(BACKGROUND_JUNGLE_AMBIENCE);
-			audio_.streamMusic(backgroundMusic_, -1);
+		// Set Background Music according to Gamestate
+		const GameState &gameState = gameStateManager_.getGameState();
+		switch (gameState) {
+			case GameState::MAINMENU:
+				
+				if (!audio_.getChannelManager().isThisStreaming(mainMenuMusic_Ptr_)) {
+					audio_.streamMusic(mainMenuMusic_Ptr_, -1);
+				}
+			    break;
+			case GameState::PLAYING:
+				if (audio_.getChannelManager().whatIsStreaming() != backgroundMusic_Ptr_) {
+					audio_.streamMusic(backgroundMusic_Ptr_, -1);
+				}
+			    break;
 		}
 
 		// testing to check for isMoving here or not could work well
@@ -45,7 +58,7 @@ class AudioSystem final : public System {
 			if (ecs.hasComponent<SoundEmitter>(entity)) {
 				SoundEmitter soundEffect = ecs.getComponent<SoundEmitter>(entity);
 				Vec2f &emitterPosition = ecs.getComponent<Positionable>(entity).position;
-				Vec2f listenerPosition = camera_.getPosition() + (Utils::toFloat(engine_.getScreenSize()) / 2);
+				Vec2f listenerPosition = camera_.getPosition() + (Utils::toFloat(game_.getScreenSize()) / 2);
 				if (soundEffect.soundFile_Ptr == footStep_Ptr_ && entity == PLAYER) {
 					audio_.emit3D(entity, footStep_Ptr_, emitterPosition, listenerPosition, {});
 				} else if (soundEffect.soundFile_Ptr == akShot_Ptr_) {
@@ -57,15 +70,17 @@ class AudioSystem final : public System {
 	}
 
   private:
-	Engine &engine_;
+	Engine &game_;
+	const GameStateManager &gameStateManager_;
 	Audio &audio_ =
-	    engine_
+	    game_
 	        .getAudio(); // let´s try to change this to only need the audio and not the whole engine -> low prio
 	const Camera &camera_;
 
 	// internal types and pointers
-	Music mainMenuMusic_ = audio_.loadMusicFile(BACKGROUND_MAIN_MENU);
-	Music backgroundMusic_;
+	std::shared_ptr<Music> mainMenuMusic_Ptr_ =
+	    std::make_shared<Music>(audio_.loadMusicFile(BACKGROUND_MAIN_MENU));
+	std::shared_ptr<Music> backgroundMusic_Ptr_ = std::make_shared<Music>(audio_.loadMusicFile(BACKGROUND_JUNGLE_AMBIENCE));
 	std::shared_ptr<SoundEffect> footStep_Ptr_ = std::make_shared<SoundEffect>(
 	    audio_.loadSoundEffectFile(SFX_FOOTSTEP)); // probably SoundEffect should be a pointer by itself?
 	std::shared_ptr<SoundEffect> akShot_Ptr_ =

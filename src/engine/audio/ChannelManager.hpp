@@ -30,6 +30,13 @@ public:
 		int assingedGroup; //TODO --> necessary functions to get groups
 	};
 
+	struct MusicChannelData {
+		int emitterID = 0;
+		std::shared_ptr<Music> activeTrack_Ptr;
+		int volume;
+		int assingedGroup = 0; 
+	};
+
 	//TODO --> Exchange with callback function
 	void resetChannels() 
 	{
@@ -50,7 +57,24 @@ public:
 		}
 	}
 
+	void setMusicChannelData(const std::shared_ptr<Music> activeTrack_Ptr, const int volume)
+	{
+		MusicChannelData nowPlaying = {0, activeTrack_Ptr, volume, 0};
+		musicChannelManagementList_[0] = nowPlaying;
+	}
+
 	ChannelData getChannelData(const int channelID) const { return channelManagementList_[channelID]; }
+	
+	MusicChannelData getMusicChannelData() const { return musicChannelManagementList_[0]; }
+
+	bool isStreaming() const
+	{
+		if (Mix_PlayingMusic() == 0) {
+			return false;
+		} else {
+			return true;
+		}
+	}
 
 	bool isChannelPlaying(const int channelID) const
 	{
@@ -81,6 +105,16 @@ public:
 		return false;
 	}
 
+	bool isThisStreaming(const std::shared_ptr<Music> &trackPtr) const 
+	{
+		MusicChannelData activeMusic = musicChannelManagementList_[0];
+		if (activeMusic.activeTrack_Ptr == trackPtr) {
+			return true;
+		} else {
+			return false;
+		}	
+	}
+
 	int whereIsEmitterPlayingThis(const int emitterID, const std::shared_ptr<SoundEffect>& trackPtr) const
 	{
 		for (int index = 0; index < channelManagementList_.size(); index++) {
@@ -93,9 +127,15 @@ public:
 		return -1; //we could think about custom type
 	}
 
+	std::shared_ptr<Music> whatIsStreaming() const
+	{
+		return getMusicChannelData().activeTrack_Ptr;
+	}
+
   private:
 
-	std::array<ChannelData, AudioConfig::VIRTUAL_CHANNELS> channelManagementList_;
+	std::array<ChannelData, (AudioConfig::VIRTUAL_CHANNELS)> channelManagementList_;
+	std::array<MusicChannelData, 1>  musicChannelManagementList_;
 
 };
 
