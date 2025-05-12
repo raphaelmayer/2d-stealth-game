@@ -14,7 +14,6 @@ class AudioSystem final : public System {
 	    : game_(game), gameStateManager_(gameStateManager), camera_(camera)
 	{
 		audio_.setVolume(50);
-		// assumes that game starts in main menu -> TODO: wrong assumption, needs to come back when switching back to main menu
 	};
 
 	void update(Easys::ECS &ecs, const double deltaTime) override
@@ -36,34 +35,41 @@ class AudioSystem final : public System {
 		}
 
 		// testing to check for isMoving here or not could work well
-		const std::set<Easys::Entity> &entities = ecs.getEntities();
-		for (Easys::Entity entity : entities) {
-			if (ecs.hasComponent<RigidBody>(entity)) {
-				RigidBody &rigidBody = ecs.getComponent<RigidBody>(entity);
-				if (rigidBody.isMoving) {
-					if (!ecs.hasComponent<SoundEmitter>(entity)) {
-						ecs.addComponent<SoundEmitter>(entity, {footStep_Ptr_}); // TODO --> MOVE TO RELEVANT SYSTEM
-					}
-				}
-				if (rigidBody.isShooting) {
-					if (!ecs.hasComponent<SoundEmitter>(entity)) {
-						ecs.addComponent<SoundEmitter>(entity, {akShot_Ptr_}); // TODO --> MOVE TO RELEVANT SYSTEM
-						rigidBody.isShooting = false;                          // move to input system or whereever
-					}
+		const std::vector<Easys::Entity> &entitiesRigidBody = ecs.getEntitiesByComponent<RigidBody>();
+		for (Easys::Entity entity : entitiesRigidBody) {
+			RigidBody &rigidBody = ecs.getComponent<RigidBody>(entity);
+			if (rigidBody.isMoving) {
+				if (!ecs.hasComponent<SoundEmitter>(entity)) {
+					ecs.addComponent<SoundEmitter>(entity, {footStep_Ptr_}); // TODO --> MOVE TO RELEVANT SYSTEM
 				}
 			}
-		}
-		for (const Easys::Entity &entity : entities) {
-
-			if (ecs.hasComponent<SoundEmitter>(entity)) {
-				SoundEmitter soundEffect = ecs.getComponent<SoundEmitter>(entity);
-				Vec2f &emitterPosition = ecs.getComponent<Positionable>(entity).position;
-				Vec2f listenerPosition = camera_.getPosition() + (Utils::toFloat(game_.getScreenSize()) / 2);
-				if (soundEffect.soundFile_Ptr == footStep_Ptr_ && entity == PLAYER) {
-					audio_.emit3D(entity, footStep_Ptr_, emitterPosition, listenerPosition, {});
-				} else if (soundEffect.soundFile_Ptr == akShot_Ptr_) {
-					audio_.emit3D(entity, akShot_Ptr_, emitterPosition, listenerPosition, {});
+			if (rigidBody.isShooting) {
+				if (!ecs.hasComponent<SoundEmitter>(entity)) {
+					ecs.addComponent<SoundEmitter>(entity, {akShot_Ptr_}); // TODO --> MOVE TO RELEVANT SYSTEM
+					rigidBody.isShooting = false;                          // move to input system or whereever
 				}
+			}	
+		}
+		const std::vector<Easys::Entity> &entitiesEquippedWeapon = ecs.getEntitiesByComponent<EquippedWeapon>();
+		for (Easys::Entity entity : entitiesEquippedWeapon) {
+			EquippedWeapon &equippedWeapon = ecs.getComponent<EquippedWeapon>(entity);
+			if (equippedWeapon.isReloading) {
+				ecs.addComponent<SoundEmitter>(entity, {akReload_Ptr_});
+				equippedWeapon.isReloading = false; //bandaid fix
+			}
+		}
+
+		const std::vector<Easys::Entity> &entitiesSoundEmitter = ecs.getEntitiesByComponent<SoundEmitter>();
+		for (const Easys::Entity &entity : entitiesSoundEmitter) {
+
+			SoundEmitter soundEffect = ecs.getComponent<SoundEmitter>(entity);
+			Vec2f &emitterPosition = ecs.getComponent<Positionable>(entity).position;
+			Vec2f listenerPosition = camera_.getPosition() + (Utils::toFloat(game_.getScreenSize()) / 2);
+			if (soundEffect.soundFile_Ptr == footStep_Ptr_ && entity == PLAYER) {
+				audio_.emit3D(entity, footStep_Ptr_, emitterPosition, listenerPosition, {});
+			} else {
+				audio_.emit3D(entity, soundEffect.soundFile_Ptr, emitterPosition, listenerPosition, {});
+				
 			}
 			ecs.removeComponent<SoundEmitter>(entity);
 		}
@@ -85,4 +91,6 @@ class AudioSystem final : public System {
 	    audio_.loadSoundEffectFile(SFX_FOOTSTEP)); // probably SoundEffect should be a pointer by itself?
 	std::shared_ptr<SoundEffect> akShot_Ptr_ =
 	    std::make_shared<SoundEffect>(audio_.loadSoundEffectFile(SFX_AK_SHOT_SINGLE));
+	std::shared_ptr<SoundEffect> akReload_Ptr_ =
+	    std::make_shared<SoundEffect>(audio_.loadSoundEffectFile(SFX_AK_RELOAD));
 };
