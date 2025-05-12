@@ -107,7 +107,7 @@ int Audio::applySpatialization(const int &emitterID, const std::shared_ptr<Sound
 		}
 		Mix_SetPosition(channel, static_cast<Sint16>(angle), static_cast<Uint8>(distance));
 	} else {
-		setVolume(channel, 0);
+		setVolume(0, channel);
 	}
 	return channel;
 }
@@ -120,8 +120,7 @@ int Audio::emit3D(const int &emitterID, const std::shared_ptr<SoundEffect> &soun
 
 	channelChosen = emit2D(emitterID, soundEffect_Ptr, emissionOptions);
 
-	applySpatialization(emitterID, soundEffect_Ptr, emitterPosition, listenerPosition, emissionOptions);
-
+	int channel = applySpatialization(emitterID, soundEffect_Ptr, emitterPosition, listenerPosition, emissionOptions);
 	return channelChosen;
 }
 

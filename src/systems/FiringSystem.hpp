@@ -89,7 +89,6 @@ class FiringSystem final : public System {
 		}
 
 		if (ew.reloadTimeAccumulator >= wdata.reloadTime) {
-			isReloading = false;
 			ew.magazineSize = wdata.magazineSize;
 			ew.reloadTimeAccumulator = 0.f;
 		}
