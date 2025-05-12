@@ -74,7 +74,7 @@ FetchContent_MakeAvailable(BehaviorTreeCPP)
 FetchContent_Declare(
     EASYS
     GIT_REPOSITORY  https://github.com/raphaelmayer/easys
-    GIT_TAG         master
+    GIT_TAG         v1.0.0
     GIT_PROGRESS    TRUE
 )
 FetchContent_MakeAvailable(EASYS)

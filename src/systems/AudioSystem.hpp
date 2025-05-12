@@ -21,10 +21,18 @@ class AudioSystem final : public System {
 	{
 		// Set Background Music according to Gamestate
 		const GameState &gameState = gameStateManager_.getGameState();
-		switch ()
-		if (!audio_.getChannelManager().isStreaming()) {
-			backgroundMusic_ = audio_.loadMusicFile(BACKGROUND_JUNGLE_AMBIENCE);
-			audio_.streamMusic(backgroundMusic_, -1);
+		switch (gameState) {
+			case GameState::MAINMENU:
+				
+				if (!audio_.getChannelManager().isThisStreaming(mainMenuMusic_Ptr_)) {
+					audio_.streamMusic(mainMenuMusic_Ptr_, -1);
+				}
+			    break;
+			case GameState::PLAYING:
+				if (audio_.getChannelManager().whatIsStreaming() != backgroundMusic_Ptr_) {
+					audio_.streamMusic(backgroundMusic_Ptr_, -1);
+				}
+			    break;
 		}
 
 		// testing to check for isMoving here or not could work well
