@@ -1,11 +1,13 @@
 #include "../components/AI.hpp"
 #include "../components/Animatable.hpp"
+#include "../components/EquippedWeapon.hpp"
 #include "../components/Health.hpp"
 #include "../components/Positionable.hpp"
 #include "../components/Renderable.hpp"
 #include "../components/RigidBody.hpp"
 #include "../components/Rotatable.hpp"
 #include "../engine/Engine.hpp"
+#include "../items/WeaponDatabase.hpp"
 #include "../map/MapManager.hpp"
 #include "../modules/Camera.hpp"
 #include "../modules/SelectionManager.hpp"
@@ -196,7 +198,7 @@ class RenderSystem final : public System {
 			return;
 		}
 
-		float fillPercent = health.health / health.maxHealth;
+		float fillPercent = static_cast<float>(health.health) / static_cast<float>(health.maxHealth);
 		// renderLoadingBar(Rectf{position.x, position.y, TILE_SIZE, 8}, fillPercent);
 		Vec2f dst = camera_.vecToScreen(position);
 		engine_.drawLine(dst, {dst.x + TILE_SIZE * camera_.getZoom() * fillPercent, dst.y}, {255, 120, 80, 255});
