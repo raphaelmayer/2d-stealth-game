@@ -26,13 +26,13 @@ class ListDialog : public UIElement {
 
 	void handleInput()
 	{
-		if (game_.getKeyState(SDL_SCANCODE_S).pressed)
+		if (game_.input().getKeyState(SDL_SCANCODE_S).pressed)
 			navigateDown();
 
-		if (game_.getKeyState(SDL_SCANCODE_W).pressed)
+		if (game_.input().getKeyState(SDL_SCANCODE_W).pressed)
 			navigateUp();
 
-		if (game_.getKeyState(SDL_SCANCODE_RETURN).pressed)
+		if (game_.input().getKeyState(SDL_SCANCODE_RETURN).pressed)
 			select();
 	}
 

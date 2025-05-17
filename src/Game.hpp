@@ -70,7 +70,7 @@ class Game : public Engine {
 		case GameState::PLAYING: {
 			// move this somewhere? maybe InputSystem? Passing everything down to the UI elements would mean input
 			// system needsthose references aswell. this does not seem to be a good solution.
-			if (getKeyState(SDL_GetScancodeFromKey(SDLK_ESCAPE)).pressed) {
+			if (input().getKeyState(SDL_GetScancodeFromKey(SDLK_ESCAPE)).pressed) {
 				if (!menuStack.isEmpty())
 					menuStack.reset();
 				else

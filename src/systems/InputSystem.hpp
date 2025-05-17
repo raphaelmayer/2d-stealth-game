@@ -25,10 +25,10 @@ class InputSystem final : public System {
 
 	void update(Easys::ECS &ecs, const double deltaTime) override
 	{
-		const std::array<KeyState, SDL_NUM_SCANCODES> &keyStates = engine_.getKeyStates();
-		const std::array<KeyState, NUM_MOUSE_BUTTONS> &mouseKeyStates = engine_.getMouseButtonStates();
-		const Vec2i &mouseWheelDelta = engine_.getMouseWheelDelta();
-		const Vec2i &mousePos = engine_.getMousePosition();
+		const std::array<KeyState, SDL_NUM_SCANCODES> &keyStates = engine_.input().getKeyStates();
+		const std::array<KeyState, NUM_MOUSE_BUTTONS> &mouseKeyStates = engine_.input().getMouseButtonStates();
+		const Vec2i &mouseWheelDelta = engine_.input().getMouseWheelDelta();
+		const Vec2i &mousePos = engine_.input().getMousePosition();
 
 		handleCamera(mouseWheelDelta, mousePos, keyStates);
 
@@ -53,7 +53,7 @@ class InputSystem final : public System {
 	                         const std::array<KeyState, NUM_MOUSE_BUTTONS> &keyStates, const double deltaTime) const
 	{
 		if (keyStates[RIGHT_MOUSE_BUTTON].pressed) {
-			const Vec2f mousePos = camera_.screenToWorld(Utils::toFloat(engine_.getMousePosition()));
+			const Vec2f mousePos = camera_.screenToWorld(Utils::toFloat(engine_.input().getMousePosition()));
 			const Rectf r = {mousePos.x, mousePos.y, 1, 1};
 			const std::vector<Easys::Entity> entities = getCollidingEntities(ecs, r);
 
@@ -84,12 +84,12 @@ class InputSystem final : public System {
 	void handleSelection(Easys::ECS &ecs, const std::array<KeyState, NUM_MOUSE_BUTTONS> &keyStates)
 	{
 		if (keyStates[LEFT_MOUSE_BUTTON].pressed) {
-			const Vec2f mousePos = Utils::toFloat(engine_.getMousePosition());
+			const Vec2f mousePos = Utils::toFloat(engine_.input().getMousePosition());
 			selectionManager_.setStart(camera_.screenToWorld(mousePos));
 		}
 
 		if (keyStates[LEFT_MOUSE_BUTTON].held) {
-			const Vec2f mousePos = Utils::toFloat(engine_.getMousePosition());
+			const Vec2f mousePos = Utils::toFloat(engine_.input().getMousePosition());
 			selectionManager_.setEnd(camera_.screenToWorld(mousePos));
 		}
 

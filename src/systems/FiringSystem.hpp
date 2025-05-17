@@ -17,7 +17,7 @@ class FiringSystem final : public System {
 
 	void update(Easys::ECS &ecs, const double deltaTime) override
 	{
-		const Vec2i mousePos = engine_.getMousePosition();
+		const Vec2i mousePos = engine_.input().getMousePosition();
 		const std::set<Easys::Entity> &entities = ecs.getEntities(); // no need to iterate over all entities
 
 		for (const Easys::Entity &entity : entities) {

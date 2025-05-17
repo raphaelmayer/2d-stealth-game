@@ -16,7 +16,8 @@ class StatsMenu final : public UIElement {
 
 	void handleInput() override
 	{
-		if (game_.getKeyState(SDL_SCANCODE_ESCAPE).pressed || game_.getKeyState(SDL_SCANCODE_RETURN).pressed)
+		if (game_.input().getKeyState(SDL_SCANCODE_ESCAPE).pressed
+		    || game_.input().getKeyState(SDL_SCANCODE_RETURN).pressed)
 			menuStack_.pop();
 	}
 

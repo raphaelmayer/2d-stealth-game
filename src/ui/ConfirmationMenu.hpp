@@ -31,7 +31,7 @@ class ConfirmationMenu final : public UIElement {
 
 	void handleInput() override
 	{
-		if (game_.getKeyState(SDL_GetScancodeFromKey(SDLK_ESCAPE)).pressed)
+		if (game_.input().getKeyState(SDL_GetScancodeFromKey(SDLK_ESCAPE)).pressed)
 			menuStack_.pop();
 		else
 			listMenu.handleInput();

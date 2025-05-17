@@ -4,12 +4,13 @@
 
 #include "../constants.hpp"
 #include "SDL_Deleter.hpp"
+#include "audio/Audio.hpp"
 #include "frame/FPSCounter.hpp"
 #include "frame/FrameRateLimiter.hpp"
 #include "frame/FrameTimer.hpp"
+#include "input/Input.hpp"
 #include "input/Keyboard.hpp"
 #include "input/Mouse.hpp"
-#include "audio/Audio.hpp" 
 #include "types.hpp"
 #include <SDL.h>
 #include <SDL_image.h>
@@ -30,12 +31,15 @@ class Engine {
 	~Engine();
 
 	void start();
-	void stop() { quit_ = true; }
+	void stop()
+	{
+		quit_ = true;
+	}
 
 	Vec2i getWindowSize() const;
 	void setWindowSize(Vec2i windowSize);
 	void setWindowFullscreen();
-	void setWindowWindowed(); //TODO -> IMPLEMENT
+	void setWindowWindowed(); // TODO -> IMPLEMENT
 	Vec2i getScreenSize() const;
 	void setScreenSize(Vec2i screenSize);
 	int getRenderScale() const;
@@ -72,26 +76,30 @@ class Engine {
 	void enableAlphaBlending();
 	void disableAlphaBlending();
 
-	// Get the state of all keys
-	const std::array<KeyState, SDL_NUM_SCANCODES> &getKeyStates() const { return keyboard_.getKeyStates(); }
-	// Get the state of a specific key
-	const KeyState &getKeyState(const SDL_Scancode key) const { return keyboard_.getKeyState(key); }
-	// Returns the current state of all buttons.
-	// SDL mouse buttons are 1-based (1 = Left, 2 = Middle, etc.)
-	const std::array<KeyState, NUM_MOUSE_BUTTONS> &getMouseButtonStates() const { return mouse_.getButtonStates(); }
-	// Returns the state of a specific mouse button.
-	// SDL mouse buttons are 1-based (1 = Left, 2 = Middle, etc.)
-	const KeyState &getMouseButtonState(const Uint8 button) const { return mouse_.getButtonState(button); }
-	// Returns the current mouse position.
-	const Vec2i getMousePosition() const { return mouse_.getPosition() / getRenderScale(); }
-	// Returns the mouse wheel delta since the last frame.
-	const Vec2i &getMouseWheelDelta() const { return mouse_.getWheelDelta(); }
+	const Input &input() const
+	{
+		return input_;
+	}
 
-	double getFPS() const { return fpsCounter_.getFPS(); }
+	Input &input()
+	{
+		return input_;
+	}
 
-	Audio &getAudio() { return audio_; } 
+	double getFPS() const
+	{
+		return fpsCounter_.getFPS();
+	}
 
-	const Audio &getAudio() const { return audio_; } 
+	Audio &getAudio()
+	{
+		return audio_;
+	}
+
+	const Audio &getAudio() const
+	{
+		return audio_;
+	}
 
 	virtual bool onStart() = 0;
 	virtual bool onUpdate(double deltaTime) = 0;
@@ -101,7 +109,6 @@ class Engine {
 	std::unique_ptr<SDL_Window, SDL_Deleter> window_;
 	std::unique_ptr<SDL_Renderer, SDL_Deleter> renderer_;
 	std::unique_ptr<TTF_Font, SDL_Deleter> font_;
-
 
 	const std::string title_;
 	Vec2i screenSize_;
@@ -114,5 +121,6 @@ class Engine {
 	Mouse mouse_;
 	FPSCounter fpsCounter_;
 	FrameRateLimiter frameRateLimiter_;
+	Input input_;
 	Audio audio_;
 };

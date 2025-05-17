@@ -31,7 +31,7 @@ class InGameMenu final : public ListDialog {
 
 	void handleInput() override
 	{
-		if (game_.getKeyState(SDL_GetScancodeFromKey(SDLK_ESCAPE)).pressed && !openedThisFrame) {
+		if (game_.input().getKeyState(SDL_GetScancodeFromKey(SDLK_ESCAPE)).pressed && !openedThisFrame) {
 			restorePlayerControl();
 			menuStack_.pop();
 		} else {

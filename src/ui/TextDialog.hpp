@@ -23,9 +23,9 @@ class TextDialog final : public UIElement {
 
 	void handleInput()
 	{
-		if (game_.getKeyState(SDL_SCANCODE_ESCAPE).pressed)
+		if (game_.input().getKeyState(SDL_SCANCODE_ESCAPE).pressed)
 			close();
-		if (game_.getKeyState(SDL_SCANCODE_RETURN).pressed)
+		if (game_.input().getKeyState(SDL_SCANCODE_RETURN).pressed)
 			advance();
 	}
 

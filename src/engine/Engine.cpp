@@ -45,9 +45,8 @@ void Engine::start()
 	while (!quit_) {
 		frameRateLimiter_.startFrame();
 		frameTimer.update();
-		keyboard_.reset();
-		mouse_.reset();
-		audio_.update();
+
+		input_.reset();
 
 		SDL_Event event;
 		while (SDL_PollEvent(&event)) {
@@ -55,9 +54,10 @@ void Engine::start()
 				// Handle close window event
 				quit_ = true;
 			}
-			keyboard_.update(event);
-			mouse_.update(event);
+			input_.update(event);
 		}
+
+		audio_.update();
 
 		clearWindow();
 
