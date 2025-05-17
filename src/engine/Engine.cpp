@@ -1,7 +1,8 @@
 #include "Engine.hpp"
 
 Engine::Engine(const std::string title, const Vec2i screenSize, const Vec2i pixelSize, const int frameRate)
-    : title_(title), screenSize_(screenSize), pixelSize_(pixelSize), quit_(false), frameRateLimiter_(frameRate)
+    : title_(title), screenSize_(screenSize), pixelSize_(pixelSize), quit_(false), frameRateLimiter_(frameRate),
+      input_(*this)
 {
 	// Initialize SDL2 related components
 	if (SDL_Init(SDL_INIT_VIDEO) < 0)
@@ -115,7 +116,8 @@ void Engine::setRenderScale(Vec2i pixelSize)
 }
 int Engine::getRenderScale() const
 {
-	// TODO: Taking the x could lead to issues. should design this better. vector / vector division is not clearly defined.
+	// TODO: Taking the x could lead to issues. should design this better. vector / vector division is not clearly
+	// defined.
 	return pixelSize_.x;
 }
 void Engine::resizeWindow(Vec2i pos, Vec2i size)

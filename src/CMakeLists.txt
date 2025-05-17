@@ -40,10 +40,11 @@ configure_file(
     COPYONLY
 )
 
-# Add your main.cpp and lib.cpp files if they are not already included
+# Add cpp files here
 add_executable(${PROJECT_NAME} main.cpp 
 	engine/Engine.cpp
     engine/audio/Audio.cpp
+    engine/input/Input.cpp
  )
 
 # SYSTEM symbol suppresses warnings for specified directory

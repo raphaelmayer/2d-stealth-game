@@ -121,6 +121,7 @@ class Engine {
 	Mouse mouse_;
 	FPSCounter fpsCounter_;
 	FrameRateLimiter frameRateLimiter_;
-	Input input_;
+
 	Audio audio_;
+	Input input_;
 };
