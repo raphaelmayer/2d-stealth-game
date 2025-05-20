@@ -1,6 +1,5 @@
 #pragma once
 
-#include "SDL_mixer.h"
 #include "components/Patrol.hpp"
 #include "components/Projectile.hpp"
 #include "constants.hpp"

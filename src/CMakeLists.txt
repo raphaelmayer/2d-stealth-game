@@ -40,23 +40,21 @@ configure_file(
     COPYONLY
 )
 
-# Add cpp files here
-add_executable(${PROJECT_NAME} main.cpp 
-	engine/Engine.cpp
-    engine/audio/Audio.cpp
-    engine/input/Input.cpp
- )
+add_subdirectory(engine)
 
-# SYSTEM symbol suppresses warnings for specified directory
+# Add cpp files here
+add_executable(${PROJECT_NAME} main.cpp)
+
+target_link_libraries(${PROJECT_NAME} PRIVATE engine)
+
 include_directories(SYSTEM ${CMAKE_SOURCE_DIR}/include)
 
-# Link the necessary libraries, including SDL
-target_link_libraries(${PROJECT_NAME} PRIVATE ${SDL_LIBRARIES})
+
 target_link_libraries(${PROJECT_NAME} PRIVATE BT::behaviortree_cpp)
 target_link_libraries(${PROJECT_NAME} PRIVATE easys)
 
 # Enable warnings if supported by the compiler
 target_compile_options(${PROJECT_NAME} PRIVATE
-  $<$<CXX_COMPILER_ID:MSVC>:/W4>
-  $<$<NOT:$<CXX_COMPILER_ID:MSVC>>:-Wall -Wextra -Wpedantic>
+    $<$<CXX_COMPILER_ID:MSVC>:/W4>
+    $<$<NOT:$<CXX_COMPILER_ID:MSVC>>:-Wall -Wextra -Wpedantic>
 )
